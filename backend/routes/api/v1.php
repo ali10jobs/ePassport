@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\EquipmentController;
 use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\OpenApiController;
 use App\Http\Controllers\Api\V1\WorkerCertificationController;
@@ -40,5 +41,17 @@ Route::middleware('auth:sanctum')->group(function () {
         // Worker medical records
         Route::get('/{worker}/medical-records', [WorkerMedicalRecordController::class, 'index'])->name('medical.index');
         Route::post('/{worker}/medical-records', [WorkerMedicalRecordController::class, 'store'])->name('medical.store');
+    });
+
+    // Equipment
+    Route::prefix('equipment')->name('equipment.')->group(function () {
+        Route::get('/', [EquipmentController::class, 'index'])->name('index');
+        Route::post('/', [EquipmentController::class, 'store'])->name('store');
+        Route::get('/{equipment}', [EquipmentController::class, 'show'])->name('show');
+        Route::patch('/{equipment}', [EquipmentController::class, 'update'])->name('update');
+        Route::delete('/{equipment}', [EquipmentController::class, 'destroy'])->name('destroy');
+        Route::get('/{equipment}/qr', [EquipmentController::class, 'qr'])->name('qr');
+        Route::post('/{equipment}/certifications', [EquipmentController::class, 'attachCertification'])->name('certifications.store');
+        Route::post('/{equipment}/operators', [EquipmentController::class, 'pairOperator'])->name('operators.pair');
     });
 });
