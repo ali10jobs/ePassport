@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\EquipmentController;
+use App\Http\Controllers\Api\V1\HazardReportAnonymousController;
 use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\OpenApiController;
 use App\Http\Controllers\Api\V1\PermitController;
@@ -22,6 +23,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('/health', [HealthController::class, 'check'])->name('health');
 Route::get('/openapi.json', [OpenApiController::class, 'spec'])->name('openapi');
 Route::post('/auth/login', [AuthController::class, 'login'])->name('auth.login');
+
+// Anonymous hazard reporting (public; NO auth, NO PII captured)
+Route::post('/hazard-reports/anonymous', [HazardReportAnonymousController::class, 'store'])->name('hazard.anonymous.store');
+Route::get('/hazard-reports/anonymous/{anonymousReportId}', [HazardReportAnonymousController::class, 'status'])->name('hazard.anonymous.status');
 
 // Authenticated endpoints
 Route::middleware('auth:sanctum')->group(function () {
