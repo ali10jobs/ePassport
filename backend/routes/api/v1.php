@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\EquipmentController;
 use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\OpenApiController;
@@ -17,9 +18,11 @@ use Illuminate\Support\Facades\Route;
 // Public endpoints (no auth)
 Route::get('/health', [HealthController::class, 'check'])->name('health');
 Route::get('/openapi.json', [OpenApiController::class, 'spec'])->name('openapi');
+Route::post('/auth/login', [AuthController::class, 'login'])->name('auth.login');
 
 // Authenticated endpoints
 Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/auth/logout', [AuthController::class, 'logout'])->name('auth.logout');
     Route::get('/me', [HealthController::class, 'me'])->name('me');
 
     // Workers
