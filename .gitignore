@@ -2,6 +2,13 @@
 files.zip
 plan-files/
 
+# Repo-root composer artifacts should never be tracked. Each codebase has
+# its own composer.json under backend/, web/, etc. (commit blocked here so a
+# stray `composer require` at the repo root never gets pushed.)
+/composer.json
+/composer.lock
+/vendor/
+
 # Backend (Laravel)
 backend/vendor/
 backend/node_modules/
