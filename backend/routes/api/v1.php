@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\EquipmentController;
 use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\OpenApiController;
+use App\Http\Controllers\Api\V1\ScanController;
 use App\Http\Controllers\Api\V1\WorkerCertificationController;
 use App\Http\Controllers\Api\V1\WorkerController;
 use App\Http\Controllers\Api\V1\WorkerMedicalRecordController;
@@ -45,6 +46,14 @@ Route::middleware('auth:sanctum')->group(function () {
         // Worker medical records
         Route::get('/{worker}/medical-records', [WorkerMedicalRecordController::class, 'index'])->name('medical.index');
         Route::post('/{worker}/medical-records', [WorkerMedicalRecordController::class, 'store'])->name('medical.store');
+    });
+
+    // Scans (gate verification)
+    Route::prefix('scans')->name('scans.')->group(function () {
+        Route::get('/', [ScanController::class, 'index'])->name('index');
+        Route::post('/verify', [ScanController::class, 'verify'])->name('verify');
+        Route::post('/verify-pair', [ScanController::class, 'verifyPair'])->name('verify_pair');
+        Route::post('/verify-equipment-operator', [ScanController::class, 'verifyEquipmentOperator'])->name('verify_eq_op');
     });
 
     // Equipment
