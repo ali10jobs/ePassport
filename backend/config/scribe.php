@@ -14,7 +14,7 @@ return [
     'title' => config('app.name').' API Documentation',
 
     // A short description of your API. Will be included in the docs webpage, Postman collection and OpenAPI spec.
-    'description' => '',
+    'description' => 'REST API for the ePassport construction safety platform. Authentication: Sanctum cookie session (web SPA), Sanctum personal access tokens (mobile, ERPs). All write endpoints accept Idempotency-Key header. Errors follow {error: {code, message, details, request_id}} with stable codes.',
 
     // Text to place in the "Introduction" section, right after the `description`. Markdown and HTML are supported.
     'intro_text' => <<<'INTRO'
@@ -71,8 +71,8 @@ return [
         'add_routes' => true,
 
         // URL path to use for the docs endpoint (if `add_routes` is true).
-        // By default, `/docs` opens the HTML page, `/docs.postman` opens the Postman collection, and `/docs.openapi` the OpenAPI spec.
-        'docs_url' => '/docs',
+        // /api/v1/docs opens the HTML page, /api/v1/docs.openapi serves the OpenAPI 3.1 spec.
+        'docs_url' => '/api/v1/docs',
 
         // Directory within `public` in which to store CSS and JS assets.
         // By default, assets are stored in `public/vendor/scribe`.
@@ -105,17 +105,16 @@ return [
     // How is your API authenticated? This information will be used in the displayed docs, generated examples and response calls.
     'auth' => [
         // Set this to true if ANY endpoints in your API use authentication.
-        'enabled' => false,
+        'enabled' => true,
 
-        // Set this to true if your API should be authenticated by default. If so, you must also set `enabled` (above) to true.
-        // You can then use @unauthenticated or @authenticated on individual endpoints to change their status from the default.
-        'default' => false,
+        // Default-authenticated; use @unauthenticated on individual endpoints (anonymous hazard report, health) to opt out.
+        'default' => true,
 
         // Where is the auth value meant to be sent in a request?
         'in' => AuthIn::BEARER->value,
 
         // The name of the auth parameter (e.g. token, key, apiKey) or header (e.g. Authorization, Api-Key).
-        'name' => 'key',
+        'name' => 'token',
 
         // The value of the parameter to be used by Scribe to authenticate response calls.
         // This will NOT be included in the generated documentation. If empty, Scribe will use a random value.
@@ -160,7 +159,7 @@ return [
         // The OpenAPI spec version to generate. Supported versions: '3.0.3', '3.1.0'.
         // OpenAPI 3.1 is more compatible with JSON Schema and is becoming the dominant version.
         // See https://spec.openapis.org/oas/v3.1.0 for details on 3.1 changes.
-        'version' => '3.0.3',
+        'version' => '3.1.0',
 
         'overrides' => [
             // 'info.version' => '2.0.0',
