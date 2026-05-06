@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\EquipmentController;
 use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\OpenApiController;
+use App\Http\Controllers\Api\V1\PermitController;
 use App\Http\Controllers\Api\V1\ScanController;
 use App\Http\Controllers\Api\V1\WorkerCertificationController;
 use App\Http\Controllers\Api\V1\WorkerController;
@@ -67,5 +68,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{equipment}/qr', [EquipmentController::class, 'qr'])->name('qr');
         Route::post('/{equipment}/certifications', [EquipmentController::class, 'attachCertification'])->name('certifications.store');
         Route::post('/{equipment}/operators', [EquipmentController::class, 'pairOperator'])->name('operators.pair');
+    });
+
+    // Permits
+    Route::prefix('permits')->name('permits.')->group(function () {
+        Route::get('/', [PermitController::class, 'index'])->name('index');
+        Route::post('/', [PermitController::class, 'store'])->name('store');
+        Route::get('/{permit}', [PermitController::class, 'show'])->name('show');
+        Route::post('/{permit}/workers', [PermitController::class, 'attachWorkers'])->name('workers.attach');
+        Route::post('/{permit}/equipment', [PermitController::class, 'attachEquipment'])->name('equipment.attach');
     });
 });
