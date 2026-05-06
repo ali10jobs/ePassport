@@ -61,7 +61,10 @@ class Equipment extends Model
 
     public function latestCertification(): HasOne
     {
-        return $this->hasOne(EquipmentCertification::class)->latestOfMany('inspection_date');
+        // latestOfMany() adds MAX(id) as tiebreaker; Postgres can't MAX a UUID.
+        return $this->hasOne(EquipmentCertification::class)
+            ->orderByDesc('inspection_date')
+            ->orderByDesc('created_at');
     }
 
     public function operatorPairings(): HasMany

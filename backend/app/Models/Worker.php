@@ -90,7 +90,11 @@ class Worker extends Model implements HasMedia
 
     public function latestMedicalRecord(): HasOne
     {
-        return $this->hasOne(WorkerMedicalRecord::class)->latestOfMany('exam_date');
+        // latestOfMany() adds MAX(id) as tiebreaker; Postgres can't MAX a UUID,
+        // so we order by exam_date desc, created_at desc and take 1.
+        return $this->hasOne(WorkerMedicalRecord::class)
+            ->orderByDesc('exam_date')
+            ->orderByDesc('created_at');
     }
 
     public function operatorPairings(): HasMany
