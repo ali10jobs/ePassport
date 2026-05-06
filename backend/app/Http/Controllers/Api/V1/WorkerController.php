@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\V1\BulkWorkerRequest;
 use App\Http\Requests\V1\StoreWorkerRequest;
 use App\Http\Requests\V1\UpdateWorkerRequest;
 use App\Http\Resources\V1\WorkerResource;
 use App\Models\Worker;
 use App\Services\QrCode\QrCodeService;
+use App\Services\Worker\BulkWorkerService;
 use App\Services\Worker\WorkerService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -26,6 +28,7 @@ class WorkerController extends Controller
     public function __construct(
         private readonly WorkerService $workers,
         private readonly QrCodeService $qrCodes,
+        private readonly BulkWorkerService $bulk,
     ) {
     }
 
@@ -179,5 +182,26 @@ class WorkerController extends Controller
             'Content-Disposition' => sprintf('inline; filename="worker-%s-coverall.png"', $worker->id),
             'Cache-Control' => 'private, no-store',
         ]);
+    }
+
+    /**
+     * Bulk-import workers.
+     *
+     * Accepts {"workers": [{...}, ...]}. Per-record success/failure: a single
+     * record's validation failure does NOT fail the rest of the batch. Each
+     * record is validated against the same rules as the single-record POST.
+     *
+     * Idempotency-Key supported globally; replays return the same response.
+     *
+     * @authenticated
+     */
+    public function bulkImport(BulkWorkerRequest $request): JsonResponse
+    {
+        $result = $this->bulk->importMany($request->validated('workers'));
+
+        // 207 Multi-Status if any record failed; 201 if all succeeded.
+        $status = $result['summary']['failed'] > 0 ? 207 : 201;
+
+        return response()->json($result, $status);
     }
 }

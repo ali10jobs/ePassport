@@ -6,12 +6,14 @@ use App\Exceptions\Api\ApiException;
 use App\Exceptions\Api\ErrorCodes;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\AttachEquipmentCertificationRequest;
+use App\Http\Requests\V1\BulkEquipmentRequest;
 use App\Http\Requests\V1\PairEquipmentOperatorRequest;
 use App\Http\Requests\V1\StoreEquipmentRequest;
 use App\Http\Requests\V1\UpdateEquipmentRequest;
 use App\Http\Resources\V1\EquipmentResource;
 use App\Models\Equipment;
 use App\Models\Worker;
+use App\Services\Equipment\BulkEquipmentService;
 use App\Services\Equipment\EquipmentService;
 use App\Services\QrCode\QrCodeService;
 use Illuminate\Http\JsonResponse;
@@ -29,6 +31,7 @@ class EquipmentController extends Controller
     public function __construct(
         private readonly EquipmentService $equipment,
         private readonly QrCodeService $qrCodes,
+        private readonly BulkEquipmentService $bulk,
     ) {
     }
 
@@ -186,5 +189,19 @@ class EquipmentController extends Controller
                 'is_currently_valid' => $pairing->isCurrentlyValid(),
             ],
         ], 201);
+    }
+
+    /**
+     * Bulk-import equipment. Same per-record-success/failure semantics as
+     * the worker bulk endpoint.
+     *
+     * @authenticated
+     */
+    public function bulkImport(BulkEquipmentRequest $request): JsonResponse
+    {
+        $result = $this->bulk->importMany($request->validated('equipment'));
+        $status = $result['summary']['failed'] > 0 ? 207 : 201;
+
+        return response()->json($result, $status);
     }
 }

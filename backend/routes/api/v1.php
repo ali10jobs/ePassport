@@ -24,6 +24,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Workers
     Route::prefix('workers')->name('workers.')->group(function () {
+        Route::post('/bulk', [WorkerController::class, 'bulkImport'])->name('bulk');
         Route::get('/', [WorkerController::class, 'index'])->name('index');
         Route::post('/', [WorkerController::class, 'store'])->name('store');
         Route::get('/{worker}', [WorkerController::class, 'show'])->name('show');
@@ -45,6 +46,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Equipment
     Route::prefix('equipment')->name('equipment.')->group(function () {
+        Route::post('/bulk', [EquipmentController::class, 'bulkImport'])->name('bulk');
         Route::get('/', [EquipmentController::class, 'index'])->name('index');
         Route::post('/', [EquipmentController::class, 'store'])->name('store');
         Route::get('/{equipment}', [EquipmentController::class, 'show'])->name('show');
