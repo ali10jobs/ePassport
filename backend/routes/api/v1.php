@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\OpenApiController;
+use App\Http\Controllers\Api\V1\WorkerCertificationController;
 use App\Http\Controllers\Api\V1\WorkerController;
+use App\Http\Controllers\Api\V1\WorkerMedicalRecordController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -29,5 +31,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{worker}/passport', [WorkerController::class, 'passport'])->name('passport');
         Route::get('/{worker}/qr/helmet', [WorkerController::class, 'helmetQr'])->name('qr.helmet');
         Route::get('/{worker}/qr/coverall', [WorkerController::class, 'coverallQr'])->name('qr.coverall');
+
+        // Worker certifications
+        Route::get('/{worker}/certifications', [WorkerCertificationController::class, 'index'])->name('certifications.index');
+        Route::post('/{worker}/certifications', [WorkerCertificationController::class, 'store'])->name('certifications.store');
+        Route::delete('/{worker}/certifications/{certificationId}', [WorkerCertificationController::class, 'destroy'])->name('certifications.destroy');
+
+        // Worker medical records
+        Route::get('/{worker}/medical-records', [WorkerMedicalRecordController::class, 'index'])->name('medical.index');
+        Route::post('/{worker}/medical-records', [WorkerMedicalRecordController::class, 'store'])->name('medical.store');
     });
 });
