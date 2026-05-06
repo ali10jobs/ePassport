@@ -24,7 +24,7 @@ class PermitTypeSeeder extends Seeder
             consultant: true,
             gasTest: true,
             fireWatch: true,
-            requiredCerts: ['SITE_INDUCTION', 'MEDICAL_FITNESS', 'WELDING_6G', 'FIRE_WATCH', 'GAS_TESTER'],
+            requiredCerts: ['WELDING_6G', 'FIRE_WATCH', 'GAS_TESTER'],
             requiredCertsByRole: [
                 'WELDING_6G' => 'worker_only',
                 'FIRE_WATCH' => 'worker_only',
@@ -42,7 +42,7 @@ class PermitTypeSeeder extends Seeder
             consultant: true,
             gasTest: true,
             fireWatch: false,
-            requiredCerts: ['SITE_INDUCTION', 'MEDICAL_FITNESS', 'CONFINED_ENTRY', 'ARAMCO_SAEP_55', 'GAS_TESTER'],
+            requiredCerts: ['CONFINED_ENTRY', 'ARAMCO_SAEP_55', 'GAS_TESTER'],
             requiredCertsByRole: [
                 'GAS_TESTER' => 'supervisor_only',
             ],
@@ -58,7 +58,7 @@ class PermitTypeSeeder extends Seeder
             consultant: true,
             gasTest: false,
             fireWatch: false,
-            requiredCerts: ['SITE_INDUCTION', 'MEDICAL_FITNESS', 'WAH_CERT', 'ARAMCO_SAEP_88'],
+            requiredCerts: ['WAH_CERT', 'ARAMCO_SAEP_88'],
         );
 
         $this->seedType(
@@ -71,7 +71,7 @@ class PermitTypeSeeder extends Seeder
             consultant: true,
             gasTest: false,
             fireWatch: false,
-            requiredCerts: ['SITE_INDUCTION', 'MEDICAL_FITNESS'],
+            requiredCerts: [],
         );
 
         $this->seedType(
@@ -84,7 +84,7 @@ class PermitTypeSeeder extends Seeder
             consultant: true,
             gasTest: false,
             fireWatch: false,
-            requiredCerts: ['SITE_INDUCTION', 'MEDICAL_FITNESS', 'ELECTRICIAN_LV'],
+            requiredCerts: ['ELECTRICIAN_LV'],
             requiredCertsByRole: [
                 'ELECTRICIAN_LV' => 'worker_only',
             ],
@@ -100,7 +100,7 @@ class PermitTypeSeeder extends Seeder
             consultant: true,
             gasTest: false,
             fireWatch: false,
-            requiredCerts: ['SITE_INDUCTION', 'MEDICAL_FITNESS', 'CRANE_OPERATOR', 'RIGGER_LVL2', 'BANKSMAN'],
+            requiredCerts: ['CRANE_OPERATOR', 'RIGGER_LVL2', 'BANKSMAN'],
             requiredCertsByRole: [
                 'CRANE_OPERATOR' => 'worker_only',
                 'RIGGER_LVL2' => 'worker_only',

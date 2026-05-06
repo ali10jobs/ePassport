@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\EquipmentController;
 use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\OpenApiController;
 use App\Http\Controllers\Api\V1\PermitController;
+use App\Http\Controllers\Api\V1\PermitLifecycleController;
 use App\Http\Controllers\Api\V1\ScanController;
 use App\Http\Controllers\Api\V1\WorkerCertificationController;
 use App\Http\Controllers\Api\V1\WorkerController;
@@ -77,5 +78,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{permit}', [PermitController::class, 'show'])->name('show');
         Route::post('/{permit}/workers', [PermitController::class, 'attachWorkers'])->name('workers.attach');
         Route::post('/{permit}/equipment', [PermitController::class, 'attachEquipment'])->name('equipment.attach');
+
+        // Lifecycle
+        Route::post('/{permit}/submit', [PermitLifecycleController::class, 'submit'])->name('submit');
+        Route::post('/{permit}/approve', [PermitLifecycleController::class, 'approve'])->name('approve');
+        Route::post('/{permit}/reject', [PermitLifecycleController::class, 'reject'])->name('reject');
+        Route::post('/{permit}/close', [PermitLifecycleController::class, 'close'])->name('close');
+        Route::get('/{permit}/events', [PermitLifecycleController::class, 'events'])->name('events');
     });
 });
