@@ -13,7 +13,8 @@ use Illuminate\Support\Facades\Schema;
  *
  * Internal notes MUST NEVER be returned by the public status endpoint.
  */
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::create('hazard_report_notes', function (Blueprint $table) {

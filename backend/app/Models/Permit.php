@@ -16,10 +16,15 @@ class Permit extends Model
     use HasUuids, LogsActivity, SoftDeletes;
 
     public const STATUS_DRAFT = 'draft';
+
     public const STATUS_SUBMITTED = 'submitted';
+
     public const STATUS_APPROVED = 'approved';
+
     public const STATUS_REJECTED = 'rejected';
+
     public const STATUS_CLOSED = 'closed';
+
     public const STATUS_EXPIRED = 'expired';
 
     protected $fillable = [

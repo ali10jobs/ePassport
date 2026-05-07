@@ -20,6 +20,7 @@ use Endroid\QrCode\Writer\PngWriter;
 class QrCodeService
 {
     public const DEFAULT_SIZE_PX = 600;
+
     public const DEFAULT_MARGIN_PX = 24;
 
     /**
@@ -39,7 +40,7 @@ class QrCodeService
             roundBlockSizeMode: RoundBlockSizeMode::Margin,
         );
 
-        return (new PngWriter())->write($qr)->getString();
+        return (new PngWriter)->write($qr)->getString();
     }
 
     /**

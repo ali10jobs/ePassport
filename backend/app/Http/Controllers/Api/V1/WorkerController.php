@@ -29,8 +29,7 @@ class WorkerController extends Controller
         private readonly WorkerService $workers,
         private readonly QrCodeService $qrCodes,
         private readonly BulkWorkerService $bulk,
-    ) {
-    }
+    ) {}
 
     /**
      * List workers.

@@ -12,6 +12,7 @@ class HazardReportNote extends Model
     use HasUuids, SoftDeletes;
 
     public const TYPE_INTERNAL = 'internal';
+
     public const TYPE_PUBLIC = 'public';
 
     protected $fillable = [

@@ -2,11 +2,12 @@
 
 namespace App\Http\Resources\V1;
 
+use App\Models\WorkerCertification;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * @mixin \App\Models\WorkerCertification
+ * @mixin WorkerCertification
  */
 class WorkerCertificationResource extends JsonResource
 {

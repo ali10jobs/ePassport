@@ -34,7 +34,7 @@ use App\Models\Worker;
 class ScanVerificationService
 {
     /**
-     * @param array<string, mixed> $context  Optional: project_id, site_id
+     * @param  array<string, mixed>  $context  Optional: project_id, site_id
      */
     public function verifyToken(string $token, array $context = []): ScanResult
     {
@@ -82,6 +82,7 @@ class ScanVerificationService
             if ($coverallWorker === null) {
                 $missing[] = 'coverall';
             }
+
             return new ScanResult(
                 result: ScanEvent::RESULT_RED,
                 subjectType: ScanEvent::SUBJECT_WORKER,

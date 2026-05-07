@@ -11,7 +11,8 @@ use Illuminate\Support\Facades\Schema;
  * Equipment scan returns RED if scanned alongside a worker who is not a paired
  * authorized operator.
  */
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::create('equipment_operator_pairings', function (Blueprint $table) {

@@ -51,11 +51,11 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"cf3344cc-efcc-4d2d-a5c1-f1a3797d5800"}}'
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"bf859632-8050-4afc-85c5-5c084a431be9"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-request-id: cf3344cc-efcc-4d2d-a5c1-f1a3797d5800
+          x-request-id: bf859632-8050-4afc-85c5-5c084a431be9
           access-control-allow-origin: '*'
         description: null
     responseFields: []
@@ -132,7 +132,7 @@ endpoints:
         name: status
         description: ''
         required: true
-        example: fit_with_restrictions
+        example: unfit
         type: string
         enumValues:
           - fit
@@ -199,7 +199,7 @@ endpoints:
     cleanBodyParameters:
       exam_date: '2022-05-31'
       valid_until: '2052-05-30'
-      status: fit_with_restrictions
+      status: unfit
       examining_clinic_en: 'n'
       examining_clinic_ar: g
       restrictions_en: z

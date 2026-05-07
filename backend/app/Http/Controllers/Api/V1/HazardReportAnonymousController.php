@@ -29,9 +29,7 @@ use Illuminate\Support\Str;
  */
 class HazardReportAnonymousController extends Controller
 {
-    public function __construct(private readonly HazardPhotoService $photos)
-    {
-    }
+    public function __construct(private readonly HazardPhotoService $photos) {}
 
     /**
      * Submit an anonymous hazard report. Photo EXIF stripped server-side

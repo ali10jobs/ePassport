@@ -110,8 +110,8 @@ class PermitTypeSeeder extends Seeder
     }
 
     /**
-     * @param array<int, string> $requiredCerts
-     * @param array<string, string> $requiredCertsByRole
+     * @param  array<int, string>  $requiredCerts
+     * @param  array<string, string>  $requiredCertsByRole
      */
     private function seedType(
         string $code,

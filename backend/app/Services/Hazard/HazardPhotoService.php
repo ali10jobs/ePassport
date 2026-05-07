@@ -25,7 +25,7 @@ class HazardPhotoService
 
     public function __construct()
     {
-        $this->manager = new ImageManager(new GdDriver());
+        $this->manager = new ImageManager(new GdDriver);
     }
 
     /**

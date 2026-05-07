@@ -13,7 +13,8 @@ use Illuminate\Support\Facades\Schema;
  *
  * The same organization can act as different types on different projects via engagements.
  */
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::create('organizations', function (Blueprint $table) {

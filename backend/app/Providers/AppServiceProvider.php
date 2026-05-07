@@ -37,6 +37,7 @@ class AppServiceProvider extends ServiceProvider
             $userId = optional($request->user())->getAuthIdentifier();
             $key = $userId ? 'user:'.$userId : 'ip:'.$request->ip();
             $limit = $userId ? 600 : 60;
+
             return [Limit::perMinute($limit)->by($key)];
         });
 
@@ -44,6 +45,7 @@ class AppServiceProvider extends ServiceProvider
         // requiring identification. 10/min and 100/hour per IP.
         RateLimiter::for('hazard-anonymous', function (Request $request) {
             $key = 'ip:'.$request->ip();
+
             return [
                 Limit::perMinute(10)->by('m:'.$key),
                 Limit::perHour(100)->by('h:'.$key),
@@ -53,6 +55,7 @@ class AppServiceProvider extends ServiceProvider
         // Stricter on login to slow credential stuffing: 10/minute per (ip,email).
         RateLimiter::for('login', function (Request $request) {
             $key = 'login:'.$request->ip().':'.strtolower((string) $request->input('email'));
+
             return [Limit::perMinute(10)->by($key)];
         });
     }

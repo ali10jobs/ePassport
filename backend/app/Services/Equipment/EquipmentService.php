@@ -7,12 +7,10 @@ use App\Services\QrCode\QrCodeService;
 
 class EquipmentService
 {
-    public function __construct(private readonly QrCodeService $qrCodes)
-    {
-    }
+    public function __construct(private readonly QrCodeService $qrCodes) {}
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function create(array $data): Equipment
     {

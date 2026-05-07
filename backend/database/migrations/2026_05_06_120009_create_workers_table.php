@@ -12,7 +12,8 @@ use Illuminate\Support\Facades\Schema;
  * scanned at site gates. Mismatch between scanned helmet and scanned coverall
  * triggers the IMPERSONATION_FLAG.
  */
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::create('workers', function (Blueprint $table) {

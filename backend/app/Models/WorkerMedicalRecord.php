@@ -12,7 +12,9 @@ class WorkerMedicalRecord extends Model
     use HasUuids, SoftDeletes;
 
     public const STATUS_FIT = 'fit';
+
     public const STATUS_FIT_WITH_RESTRICTIONS = 'fit_with_restrictions';
+
     public const STATUS_UNFIT = 'unfit';
 
     protected $fillable = [

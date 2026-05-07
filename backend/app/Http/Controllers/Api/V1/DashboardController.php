@@ -6,7 +6,6 @@ use App\Exceptions\Api\ApiException;
 use App\Exceptions\Api\ErrorCodes;
 use App\Http\Controllers\Controller;
 use App\Models\Organization;
-use App\Models\UserOrganizationRole;
 use App\Services\Dashboard\DashboardService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,9 +18,7 @@ use Illuminate\Http\Request;
  */
 class DashboardController extends Controller
 {
-    public function __construct(private readonly DashboardService $dashboards)
-    {
-    }
+    public function __construct(private readonly DashboardService $dashboards) {}
 
     /**
      * Client dashboard: cross-project metrics across all owned projects.
@@ -31,6 +28,7 @@ class DashboardController extends Controller
     public function client(Request $request): JsonResponse
     {
         $org = $this->resolveOrgForUser($request, Organization::ROLE_CLIENT);
+
         return response()->json(['data' => $this->dashboards->clientSummary($org)]);
     }
 
@@ -42,6 +40,7 @@ class DashboardController extends Controller
     public function mainContractor(Request $request): JsonResponse
     {
         $org = $this->resolveOrgForUser($request, Organization::ROLE_MAIN_CONTRACTOR);
+
         return response()->json(['data' => $this->dashboards->mainContractorSummary($org)]);
     }
 
@@ -53,6 +52,7 @@ class DashboardController extends Controller
     public function consultant(Request $request): JsonResponse
     {
         $org = $this->resolveOrgForUser($request, Organization::ROLE_CONSULTANT);
+
         return response()->json(['data' => $this->dashboards->consultantSummary($org)]);
     }
 
@@ -64,6 +64,7 @@ class DashboardController extends Controller
     public function subcontractor(Request $request): JsonResponse
     {
         $org = $this->resolveOrgForUser($request, Organization::ROLE_SUBCONTRACTOR);
+
         return response()->json(['data' => $this->dashboards->subcontractorSummary($org)]);
     }
 
@@ -89,6 +90,7 @@ class DashboardController extends Controller
                     status: 403,
                 );
             }
+
             return $org;
         }
 
@@ -100,6 +102,7 @@ class DashboardController extends Controller
                 status: 403,
             );
         }
+
         return $org;
     }
 }

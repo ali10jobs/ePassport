@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\Schema;
  * categories, scaffolding (basic/advanced), working at heights, confined space entry,
  * first aid, fire watch, etc. Bilingual.
  */
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::create('certification_types', function (Blueprint $table) {

@@ -240,6 +240,7 @@ class DashboardService
     private function scanCountsLast24h(): array
     {
         $since = now()->subDay();
+
         return [
             'total_24h' => ScanEvent::where('scanned_at', '>=', $since)->count(),
             'green_24h' => ScanEvent::where('result', ScanEvent::RESULT_GREEN)->where('scanned_at', '>=', $since)->count(),

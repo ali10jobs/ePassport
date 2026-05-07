@@ -15,7 +15,8 @@ use Illuminate\Support\Facades\Schema;
  *
  * Photos are uploaded with EXIF stripped client-side AND server-side (Intervention).
  */
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::create('hazard_reports', function (Blueprint $table) {

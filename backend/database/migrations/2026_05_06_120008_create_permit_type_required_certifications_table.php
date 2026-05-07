@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\Schema;
  * Pivot: which certification types each permit type requires from named workers.
  * Drives the hard-block validation on permit submission.
  */
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::create('permit_type_required_certifications', function (Blueprint $table) {

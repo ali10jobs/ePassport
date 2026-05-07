@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Exceptions\Api\ApiException;
+use App\Exceptions\Api\ErrorCodes;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\AttachPermitEquipmentRequest;
 use App\Http\Requests\V1\AttachPermitWorkersRequest;
@@ -23,9 +25,7 @@ use Spatie\QueryBuilder\QueryBuilder;
  */
 class PermitController extends Controller
 {
-    public function __construct(private readonly PermitService $permits)
-    {
-    }
+    public function __construct(private readonly PermitService $permits) {}
 
     /**
      * @authenticated
@@ -121,8 +121,8 @@ class PermitController extends Controller
     private function ensureDraft(Permit $permit): void
     {
         if ($permit->status !== Permit::STATUS_DRAFT) {
-            throw new \App\Exceptions\Api\ApiException(
-                errorCode: \App\Exceptions\Api\ErrorCodes::PERMIT_INVALID_TRANSITION,
+            throw new ApiException(
+                errorCode: ErrorCodes::PERMIT_INVALID_TRANSITION,
                 message: "Cannot modify a permit in '{$permit->status}' status.",
                 status: 409,
                 details: ['current_status' => $permit->status],

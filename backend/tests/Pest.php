@@ -1,8 +1,11 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Artisan;
+use Tests\TestCase;
 
-pest()->extend(Tests\TestCase::class)
+pest()->extend(TestCase::class)
     ->use(RefreshDatabase::class)
     ->in('Feature');
 
@@ -14,7 +17,7 @@ expect()->extend('toBeOne', fn () => $this->toBe(1));
  */
 function seedAll(): void
 {
-    \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'Database\\Seeders\\DatabaseSeeder', '--force' => true]);
+    Artisan::call('db:seed', ['--class' => 'Database\\Seeders\\DatabaseSeeder', '--force' => true]);
 }
 
 /**
@@ -22,6 +25,7 @@ function seedAll(): void
  */
 function tokenFor(string $email): string
 {
-    $user = \App\Models\User::where('email', $email)->firstOrFail();
+    $user = User::where('email', $email)->firstOrFail();
+
     return $user->createToken('test')->plainTextToken;
 }

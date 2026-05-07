@@ -13,16 +13,27 @@ class WebhookSubscription extends Model
     use HasUuids, SoftDeletes;
 
     public const EVENT_SCAN_GREEN = 'scan.green';
+
     public const EVENT_SCAN_RED = 'scan.red';
+
     public const EVENT_SCAN_IMPERSONATION = 'scan.impersonation_flag';
+
     public const EVENT_PERMIT_CREATED = 'permit.created';
+
     public const EVENT_PERMIT_SUBMITTED = 'permit.submitted';
+
     public const EVENT_PERMIT_VALIDATED = 'permit.validated';
+
     public const EVENT_PERMIT_APPROVED = 'permit.approved';
+
     public const EVENT_PERMIT_REJECTED = 'permit.rejected';
+
     public const EVENT_PERMIT_CLOSED = 'permit.closed';
+
     public const EVENT_HAZARD_SUBMITTED = 'hazard_report.submitted';
+
     public const EVENT_HAZARD_STATUS_CHANGED = 'hazard_report.status_changed';
+
     public const EVENT_HAZARD_RESOLVED = 'hazard_report.resolved';
 
     protected $fillable = [

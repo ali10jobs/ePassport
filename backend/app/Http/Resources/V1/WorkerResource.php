@@ -2,11 +2,12 @@
 
 namespace App\Http\Resources\V1;
 
+use App\Models\Worker;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * @mixin \App\Models\Worker
+ * @mixin Worker
  */
 class WorkerResource extends JsonResource
 {

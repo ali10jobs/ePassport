@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\AddHazardNoteRequest;
 use App\Http\Requests\V1\UpdateHazardStatusRequest;
 use App\Models\HazardReport;
-use App\Models\HazardReportNote;
 use App\Models\WebhookSubscription;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

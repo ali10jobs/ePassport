@@ -15,12 +15,17 @@ class Engagement extends Model
     use HasUuids, LogsActivity, SoftDeletes;
 
     public const ROLE_MAIN_CONTRACTOR = 'main_contractor';
+
     public const ROLE_CONSULTANT = 'consultant';
+
     public const ROLE_SUBCONTRACTOR = 'subcontractor';
 
     public const STATUS_ACTIVE = 'active';
+
     public const STATUS_SUSPENDED = 'suspended';
+
     public const STATUS_COMPLETED = 'completed';
+
     public const STATUS_TERMINATED = 'terminated';
 
     protected $fillable = [

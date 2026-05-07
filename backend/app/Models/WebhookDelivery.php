@@ -11,8 +11,11 @@ class WebhookDelivery extends Model
     use HasUuids;
 
     public const STATUS_PENDING = 'pending';
+
     public const STATUS_SUCCEEDED = 'succeeded';
+
     public const STATUS_FAILED = 'failed';
+
     public const STATUS_DEAD_LETTERED = 'dead_lettered';
 
     protected $fillable = [

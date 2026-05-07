@@ -15,8 +15,11 @@ class Organization extends Model
     use HasUuids, LogsActivity, SoftDeletes;
 
     public const ROLE_CLIENT = 'client';
+
     public const ROLE_MAIN_CONTRACTOR = 'main_contractor';
+
     public const ROLE_CONSULTANT = 'consultant';
+
     public const ROLE_SUBCONTRACTOR = 'subcontractor';
 
     protected $fillable = [

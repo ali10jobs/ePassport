@@ -8,12 +8,19 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class UserOrganizationRole extends Model
 {
     public const ROLE_PLATFORM_ADMIN = 'platform_admin';
+
     public const ROLE_HSE_MANAGER = 'hse_manager';
+
     public const ROLE_SAFETY_ENGINEER = 'safety_engineer';
+
     public const ROLE_SUPERVISOR = 'supervisor';
+
     public const ROLE_CONSULTANT = 'consultant';
+
     public const ROLE_CLIENT_SAFETY_LEAD = 'client_safety_lead';
+
     public const ROLE_AUDITOR = 'auditor';
+
     public const ROLE_WORKER = 'worker';
 
     protected $fillable = [

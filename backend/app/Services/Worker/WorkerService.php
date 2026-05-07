@@ -7,9 +7,7 @@ use App\Services\QrCode\QrCodeService;
 
 class WorkerService
 {
-    public function __construct(private readonly QrCodeService $qrCodes)
-    {
-    }
+    public function __construct(private readonly QrCodeService $qrCodes) {}
 
     /**
      * Create a worker. Helmet and coverall QR tokens are auto-generated; the
@@ -17,7 +15,7 @@ class WorkerService
      * by the gate-scan flow. Tokens are unique because of the schema constraint;
      * we retry on the (extremely unlikely) collision.
      *
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function create(array $data): Worker
     {

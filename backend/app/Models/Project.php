@@ -15,9 +15,13 @@ class Project extends Model
     use HasUuids, LogsActivity, SoftDeletes;
 
     public const STATUS_PLANNING = 'planning';
+
     public const STATUS_ACTIVE = 'active';
+
     public const STATUS_ON_HOLD = 'on_hold';
+
     public const STATUS_COMPLETED = 'completed';
+
     public const STATUS_CANCELLED = 'cancelled';
 
     protected $fillable = [

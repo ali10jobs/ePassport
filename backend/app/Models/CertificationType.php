@@ -13,9 +13,13 @@ class CertificationType extends Model
     use HasUuids, SoftDeletes;
 
     public const CATEGORY_SAFETY_TRAINING = 'safety_training';
+
     public const CATEGORY_TRADE_COMPETENCY = 'trade_competency';
+
     public const CATEGORY_MEDICAL = 'medical';
+
     public const CATEGORY_SITE_INDUCTION = 'site_induction';
+
     public const CATEGORY_TPI = 'tpi';
 
     protected $fillable = [

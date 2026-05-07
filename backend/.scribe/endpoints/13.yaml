@@ -289,11 +289,11 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"f1da0845-bf9a-4d59-943d-9b7388e7063f"}}'
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"77249a37-45a5-4aeb-b617-24e9cf2e9173"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-request-id: f1da0845-bf9a-4d59-943d-9b7388e7063f
+          x-request-id: 77249a37-45a5-4aeb-b617-24e9cf2e9173
           access-control-allow-origin: '*'
         description: null
     responseFields: []

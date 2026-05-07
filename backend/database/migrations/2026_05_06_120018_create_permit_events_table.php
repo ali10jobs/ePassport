@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\Schema;
  * Permit lifecycle event log: created, submitted, validated, approved, rejected,
  * closed, expired. Append-only, immutable.
  */
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::create('permit_events', function (Blueprint $table) {

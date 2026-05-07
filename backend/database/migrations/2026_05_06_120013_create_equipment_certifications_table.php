@@ -10,7 +10,8 @@ use Illuminate\Support\Facades\Schema;
  *
  * Equipment is RED at scan time if the latest TPI cert is expired.
  */
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::create('equipment_certifications', function (Blueprint $table) {

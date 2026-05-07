@@ -4,6 +4,7 @@ use App\Models\Organization;
 use App\Models\Permit;
 use App\Models\PermitType;
 use App\Models\Project;
+use App\Models\User;
 use App\Models\Worker;
 use App\Models\WorkerCertification;
 
@@ -81,7 +82,7 @@ it('rejects submitting a permit not in draft status', function () {
         'permit_type_id' => $hotWork->id,
         'status' => Permit::STATUS_CLOSED,
         'scope_en' => 'Closed permit test',
-        'created_by_user_id' => \App\Models\User::first()->id,
+        'created_by_user_id' => User::first()->id,
     ]);
 
     $this->withHeader('Authorization', "Bearer {$token}")

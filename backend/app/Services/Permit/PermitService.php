@@ -10,12 +10,10 @@ use Illuminate\Support\Facades\DB;
 
 class PermitService
 {
-    public function __construct(private readonly PermitNumberGenerator $numbers)
-    {
-    }
+    public function __construct(private readonly PermitNumberGenerator $numbers) {}
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function createDraft(array $data, int $creatorUserId): Permit
     {
@@ -39,8 +37,8 @@ class PermitService
      * Attach workers by ID list and/or by helmet/coverall QR tokens. The same
      * worker may be supplied via both modes; we dedupe.
      *
-     * @param array<int, array{id: string, role_on_permit?: string}> $byIds
-     * @param array<int, string> $byTokens
+     * @param  array<int, array{id: string, role_on_permit?: string}>  $byIds
+     * @param  array<int, string>  $byTokens
      * @return array{attached: int, already_attached: int, unknown_tokens: array<int, string>}
      */
     public function attachWorkers(Permit $permit, array $byIds, array $byTokens, int $actorUserId): array
@@ -56,6 +54,7 @@ class PermitService
                 $existing = $permit->workers()->where('workers.id', $entry['id'])->exists();
                 if ($existing) {
                     $alreadyAttached++;
+
                     continue;
                 }
                 $permit->workers()->attach($entry['id'], ['role_on_permit' => $role]);
@@ -69,10 +68,12 @@ class PermitService
                     ->first();
                 if ($worker === null) {
                     $unknownTokens[] = substr($token, 0, 6).'…';
+
                     continue;
                 }
                 if ($permit->workers()->where('workers.id', $worker->id)->exists()) {
                     $alreadyAttached++;
+
                     continue;
                 }
                 $permit->workers()->attach($worker->id, ['role_on_permit' => 'worker']);
@@ -96,8 +97,8 @@ class PermitService
     }
 
     /**
-     * @param array<int, string> $byIds
-     * @param array<int, string> $byTokens
+     * @param  array<int, string>  $byIds
+     * @param  array<int, string>  $byTokens
      * @return array{attached: int, already_attached: int, unknown_tokens: array<int, string>}
      */
     public function attachEquipment(Permit $permit, array $byIds, array $byTokens, int $actorUserId): array
@@ -110,6 +111,7 @@ class PermitService
             foreach ($byIds as $id) {
                 if ($permit->equipment()->where('equipment.id', $id)->exists()) {
                     $alreadyAttached++;
+
                     continue;
                 }
                 $permit->equipment()->attach($id);
@@ -120,10 +122,12 @@ class PermitService
                 $eq = Equipment::where('qr_token', $token)->first();
                 if ($eq === null) {
                     $unknownTokens[] = substr($token, 0, 6).'…';
+
                     continue;
                 }
                 if ($permit->equipment()->where('equipment.id', $eq->id)->exists()) {
                     $alreadyAttached++;
+
                     continue;
                 }
                 $permit->equipment()->attach($eq->id);

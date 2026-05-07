@@ -98,6 +98,7 @@ class PermitValidationService
                             'role' => $role,
                         ],
                     ];
+
                     continue;
                 }
                 if ($held->expiry_date !== null && $held->expiry_date->lt($today)) {

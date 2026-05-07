@@ -27,6 +27,5 @@ final class DomainEvent
         public readonly string $eventName,
         public readonly array $payload,
         public readonly ?string $ownerOrganizationId = null,
-    ) {
-    }
+    ) {}
 }

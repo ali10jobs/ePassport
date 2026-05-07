@@ -20,24 +20,39 @@ class HazardReport extends Model implements HasMedia
     use HasUuids, InteractsWithMedia, SoftDeletes;
 
     public const SEVERITY_LOW = 'low';
+
     public const SEVERITY_MEDIUM = 'medium';
+
     public const SEVERITY_HIGH = 'high';
+
     public const SEVERITY_CRITICAL = 'critical';
 
     public const STATUS_SUBMITTED = 'submitted';
+
     public const STATUS_UNDER_REVIEW = 'under_review';
+
     public const STATUS_ACTION_ISSUED = 'action_issued';
+
     public const STATUS_RESOLVED = 'resolved';
+
     public const STATUS_DISMISSED = 'dismissed';
 
     public const CATEGORY_FALL = 'fall';
+
     public const CATEGORY_ELECTRICAL = 'electrical';
+
     public const CATEGORY_FIRE = 'fire';
+
     public const CATEGORY_WORKING_AT_HEIGHTS = 'working_at_heights';
+
     public const CATEGORY_LIFTING = 'lifting';
+
     public const CATEGORY_HOUSEKEEPING = 'housekeeping';
+
     public const CATEGORY_PPE = 'ppe';
+
     public const CATEGORY_ENVIRONMENTAL = 'environmental';
+
     public const CATEGORY_OTHER = 'other';
 
     protected $fillable = [

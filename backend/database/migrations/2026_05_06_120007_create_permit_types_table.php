@@ -10,7 +10,8 @@ use Illuminate\Support\Facades\Schema;
  *
  * Saudi-specific: Aramco SAEP-X permit categories where applicable.
  */
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::create('permit_types', function (Blueprint $table) {

@@ -43,11 +43,11 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"fea204b5-2136-4199-89b0-bf6c5543d510"}}'
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"c7180bac-fdf5-45a3-bcf5-e810e1b7b9a3"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-request-id: fea204b5-2136-4199-89b0-bf6c5543d510
+          x-request-id: c7180bac-fdf5-45a3-bcf5-e810e1b7b9a3
           access-control-allow-origin: '*'
         description: null
     responseFields: []
@@ -106,11 +106,11 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"f0ae8f9d-884f-4f89-ab1e-e231309a7c47"}}'
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"0bd96ede-80a5-4acd-aae6-6bd6dfdd0838"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-request-id: f0ae8f9d-884f-4f89-ab1e-e231309a7c47
+          x-request-id: 0bd96ede-80a5-4acd-aae6-6bd6dfdd0838
           access-control-allow-origin: '*'
         description: null
     responseFields: []
@@ -168,7 +168,7 @@ endpoints:
         name: status
         description: ''
         required: true
-        example: resolved
+        example: under_review
         type: string
         enumValues:
           - under_review
@@ -212,7 +212,7 @@ endpoints:
         nullable: true
         deprecated: false
     cleanBodyParameters:
-      status: resolved
+      status: under_review
       resolution_summary: b
       assigned_to_user_id: 16
       assigned_to_organization_id: a4855dc5-0acb-33c3-b921-f4291f719ca0
@@ -275,7 +275,7 @@ endpoints:
         name: note_type
         description: ''
         required: true
-        example: public
+        example: internal
         type: string
         enumValues:
           - internal
@@ -299,7 +299,7 @@ endpoints:
         name: body_lang
         description: ''
         required: false
-        example: ar
+        example: en
         type: string
         enumValues:
           - en
@@ -319,9 +319,9 @@ endpoints:
         nullable: true
         deprecated: false
     cleanBodyParameters:
-      note_type: public
+      note_type: internal
       body: b
-      body_lang: ar
+      body_lang: en
       author_organization_id: a4855dc5-0acb-33c3-b921-f4291f719ca0
     fileParameters: []
     responses: []

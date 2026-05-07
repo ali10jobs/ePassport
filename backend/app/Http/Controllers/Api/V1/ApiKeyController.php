@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Response;
+use Illuminate\Support\Carbon;
 use Laravel\Sanctum\PersonalAccessToken;
 
 /**
@@ -51,7 +52,7 @@ class ApiKeyController extends Controller
         $newToken = $request->user()->createToken(
             name: $request->validated('name'),
             abilities: $abilities,
-            expiresAt: $expiresAt ? \Illuminate\Support\Carbon::parse($expiresAt) : null,
+            expiresAt: $expiresAt ? Carbon::parse($expiresAt) : null,
         );
 
         return response()->json([

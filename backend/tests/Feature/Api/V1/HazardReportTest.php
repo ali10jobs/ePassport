@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\HazardReport;
-use Illuminate\Http\Testing\File;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
@@ -18,7 +18,7 @@ it('accepts an anonymous hazard report and strips EXIF', function () {
     imagejpeg($im, $tmpPath, 85);
     imagedestroy($im);
 
-    $upload = new \Illuminate\Http\UploadedFile($tmpPath, 'hazard.jpg', 'image/jpeg', null, true);
+    $upload = new UploadedFile($tmpPath, 'hazard.jpg', 'image/jpeg', null, true);
 
     $response = $this->postJson('/api/v1/hazard-reports/anonymous', [
         'photo' => $upload,
@@ -45,7 +45,7 @@ it('NEVER captures reporter PII on anonymous submission', function () {
     $im = imagecreatetruecolor(100, 100);
     imagejpeg($im, $tmpPath, 85);
     imagedestroy($im);
-    $upload = new \Illuminate\Http\UploadedFile($tmpPath, 'h.jpg', 'image/jpeg', null, true);
+    $upload = new UploadedFile($tmpPath, 'h.jpg', 'image/jpeg', null, true);
 
     $this->withHeaders([
         'X-Forwarded-For' => '203.0.113.42',
@@ -59,7 +59,7 @@ it('NEVER captures reporter PII on anonymous submission', function () {
     expect((bool) $report->is_anonymous)->toBeTrue();
 
     // No PII columns should exist or be populated
-    $row = \DB::table('hazard_reports')->where('id', $report->id)->first();
+    $row = DB::table('hazard_reports')->where('id', $report->id)->first();
     expect(property_exists($row, 'submitter_id'))->toBeFalse();
     expect(property_exists($row, 'submitter_ip'))->toBeFalse();
 
@@ -71,7 +71,7 @@ it('public status check exposes only public notes (never internal)', function ()
     $im = imagecreatetruecolor(100, 100);
     imagejpeg($im, $tmpPath, 85);
     imagedestroy($im);
-    $upload = new \Illuminate\Http\UploadedFile($tmpPath, 'h.jpg', 'image/jpeg', null, true);
+    $upload = new UploadedFile($tmpPath, 'h.jpg', 'image/jpeg', null, true);
 
     $resp = $this->postJson('/api/v1/hazard-reports/anonymous', [
         'photo' => $upload, 'category' => 'fall', 'severity' => 'low',

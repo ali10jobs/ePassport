@@ -16,7 +16,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
 
 /**
  * @group Permits — Lifecycle
@@ -29,8 +28,7 @@ class PermitLifecycleController extends Controller
     public function __construct(
         private readonly PermitService $permits,
         private readonly PermitValidationService $validator,
-    ) {
-    }
+    ) {}
 
     /**
      * Submit a draft permit. Re-runs all validation against named workers and
@@ -206,7 +204,7 @@ class PermitLifecycleController extends Controller
     }
 
     /**
-     * @param array<int, string> $allowedStatuses
+     * @param  array<int, string>  $allowedStatuses
      */
     private function ensureStatus(Permit $permit, array $allowedStatuses): void
     {

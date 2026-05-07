@@ -19,7 +19,9 @@ class Worker extends Model implements HasMedia
     use HasUuids, InteractsWithMedia, LogsActivity, SoftDeletes;
 
     public const INDUCTION_NOT_INDUCTED = 'not_inducted';
+
     public const INDUCTION_INDUCTED = 'inducted';
+
     public const INDUCTION_EXPIRED = 'expired';
 
     protected $fillable = [

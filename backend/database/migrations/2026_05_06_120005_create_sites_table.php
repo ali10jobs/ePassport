@@ -7,7 +7,8 @@ use Illuminate\Support\Facades\Schema;
 /**
  * A physical location within a project. Gate scans happen at sites.
  */
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::create('sites', function (Blueprint $table) {

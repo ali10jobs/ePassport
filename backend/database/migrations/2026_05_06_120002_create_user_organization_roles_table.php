@@ -11,7 +11,8 @@ use Illuminate\Support\Facades\Schema;
  * Spatie laravel-permission's teams feature uses the organization_id column to
  * scope role/permission assignments per organization.
  */
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::create('user_organization_roles', function (Blueprint $table) {

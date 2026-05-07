@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\DB;
  * Cast it to text so the column accepts both UUIDs (entity tables) and bigints
  * (User, pivot tables).
  */
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         DB::statement('ALTER TABLE activity_log ALTER COLUMN subject_id TYPE VARCHAR(64) USING subject_id::text');

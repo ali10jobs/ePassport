@@ -13,7 +13,7 @@ use App\Models\ScanEvent;
 final class ScanResult
 {
     /**
-     * @param array<int, array{code: string, details?: array<string, mixed>}> $reasons
+     * @param  array<int, array{code: string, details?: array<string, mixed>}>  $reasons
      */
     public function __construct(
         public readonly string $result,
@@ -21,8 +21,7 @@ final class ScanResult
         public readonly ?string $subjectId,
         public readonly array $reasons = [],
         public readonly ?string $tokenType = null,
-    ) {
-    }
+    ) {}
 
     public function isGreen(): bool
     {

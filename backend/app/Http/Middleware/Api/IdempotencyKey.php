@@ -27,7 +27,9 @@ use Symfony\Component\HttpFoundation\Response;
 class IdempotencyKey
 {
     private const TTL_SECONDS = 86400; // 24h per Doc 1
+
     private const HEADER = 'Idempotency-Key';
+
     private const WRITE_METHODS = ['POST', 'PUT', 'PATCH'];
 
     public function handle(Request $request, Closure $next): Response

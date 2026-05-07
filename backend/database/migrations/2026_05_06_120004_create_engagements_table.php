@@ -13,7 +13,8 @@ use Illuminate\Support\Facades\Schema;
  *  - Org C as consultant, parent_engagement_id NULL
  *  - Org D as subcontractor, parent_engagement_id = Org B's engagement id
  */
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::create('engagements', function (Blueprint $table) {

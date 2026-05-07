@@ -40,8 +40,7 @@ class DeliverWebhookJob implements ShouldQueue
     public function __construct(
         public readonly string $subscriptionId,
         public readonly array $envelope,
-    ) {
-    }
+    ) {}
 
     public function handle(): void
     {
@@ -86,6 +85,7 @@ class DeliverWebhookJob implements ShouldQueue
                     'delivered_at' => now(),
                 ]);
                 $sub->update(['failure_count' => 0]);
+
                 return;
             }
 
@@ -139,6 +139,7 @@ class DeliverWebhookJob implements ShouldQueue
     {
         $idx = max(0, $this->attempts() - 1);
         $seconds = $this->backoff[$idx] ?? end($this->backoff);
+
         return now()->addSeconds($seconds);
     }
 }

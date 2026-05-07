@@ -7,9 +7,7 @@ use App\Services\Webhook\WebhookDispatcher;
 
 class DispatchWebhooksForDomainEvent
 {
-    public function __construct(private readonly WebhookDispatcher $dispatcher)
-    {
-    }
+    public function __construct(private readonly WebhookDispatcher $dispatcher) {}
 
     public function handle(DomainEvent $event): void
     {

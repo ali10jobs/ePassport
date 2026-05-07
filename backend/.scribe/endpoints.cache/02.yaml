@@ -62,7 +62,7 @@ endpoints:
         name: category
         description: ''
         required: true
-        example: other
+        example: environmental
         type: string
         enumValues:
           - fall
@@ -161,7 +161,7 @@ endpoints:
         nullable: true
         deprecated: false
     cleanBodyParameters:
-      category: other
+      category: environmental
       severity: high
       description: 'Eius et animi quos velit et.'
       description_lang: ar
@@ -236,7 +236,7 @@ endpoints:
           content-type: application/json
           x-ratelimit-limit: '10'
           x-ratelimit-remaining: '9'
-          x-request-id: cc2306aa-ecb5-4026-b5a5-1d1cc5014e96
+          x-request-id: 1ad0bca8-bfa5-497c-8b26-2890f17d4544
           access-control-allow-origin: '*'
         description: null
     responseFields: []

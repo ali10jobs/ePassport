@@ -11,12 +11,19 @@ class PermitEvent extends Model
     use HasUuids;
 
     public const TYPE_CREATED = 'created';
+
     public const TYPE_SUBMITTED = 'submitted';
+
     public const TYPE_VALIDATED = 'validated';
+
     public const TYPE_VALIDATION_FAILED = 'validation_failed';
+
     public const TYPE_APPROVED = 'approved';
+
     public const TYPE_REJECTED = 'rejected';
+
     public const TYPE_CLOSED = 'closed';
+
     public const TYPE_EXPIRED = 'expired';
 
     protected $fillable = [

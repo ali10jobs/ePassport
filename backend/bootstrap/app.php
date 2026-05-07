@@ -4,8 +4,8 @@ use App\Exceptions\Api\ApiException;
 use App\Exceptions\Api\ErrorCodes;
 use App\Http\Middleware\Api\AssignRequestId;
 use App\Http\Middleware\Api\IdempotencyKey;
-use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -50,6 +50,7 @@ return Application::configure(basePath: dirname(__DIR__))
             if (! $request->expectsJson() && ! $request->is('api/*')) {
                 return null;
             }
+
             return $e->render($request);
         });
 
@@ -57,6 +58,7 @@ return Application::configure(basePath: dirname(__DIR__))
             if (! $request->expectsJson() && ! $request->is('api/*')) {
                 return null;
             }
+
             return response()->json([
                 'error' => [
                     'code' => ErrorCodes::VALIDATION_FAILED,
@@ -71,6 +73,7 @@ return Application::configure(basePath: dirname(__DIR__))
             if (! $request->expectsJson() && ! $request->is('api/*')) {
                 return null;
             }
+
             return response()->json([
                 'error' => [
                     'code' => ErrorCodes::UNAUTHENTICATED,
@@ -85,6 +88,7 @@ return Application::configure(basePath: dirname(__DIR__))
             if (! $request->expectsJson() && ! $request->is('api/*')) {
                 return null;
             }
+
             return response()->json([
                 'error' => [
                     'code' => ErrorCodes::FORBIDDEN,
@@ -99,6 +103,7 @@ return Application::configure(basePath: dirname(__DIR__))
             if (! $request->expectsJson() && ! $request->is('api/*')) {
                 return null;
             }
+
             return response()->json([
                 'error' => [
                     'code' => ErrorCodes::RESOURCE_NOT_FOUND,
@@ -113,6 +118,7 @@ return Application::configure(basePath: dirname(__DIR__))
             if (! $request->expectsJson() && ! $request->is('api/*')) {
                 return null;
             }
+
             return response()->json([
                 'error' => [
                     'code' => ErrorCodes::RESOURCE_NOT_FOUND,
@@ -127,6 +133,7 @@ return Application::configure(basePath: dirname(__DIR__))
             if (! $request->expectsJson() && ! $request->is('api/*')) {
                 return null;
             }
+
             return response()->json([
                 'error' => [
                     'code' => ErrorCodes::METHOD_NOT_ALLOWED,
@@ -141,6 +148,7 @@ return Application::configure(basePath: dirname(__DIR__))
             if (! $request->expectsJson() && ! $request->is('api/*')) {
                 return null;
             }
+
             return response()->json([
                 'error' => [
                     'code' => ErrorCodes::RATE_LIMIT_EXCEEDED,
@@ -156,6 +164,7 @@ return Application::configure(basePath: dirname(__DIR__))
             if (! $request->expectsJson() && ! $request->is('api/*')) {
                 return null;
             }
+
             return response()->json([
                 'error' => [
                     'code' => ErrorCodes::INTERNAL_ERROR,

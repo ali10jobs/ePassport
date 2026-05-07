@@ -39,11 +39,11 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"a3bcd12f-3b1f-4dc2-83fa-5d1e30eb6e83"}}'
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"982fb699-617c-4e57-9776-2e9b5c9467d1"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-request-id: a3bcd12f-3b1f-4dc2-83fa-5d1e30eb6e83
+          x-request-id: 982fb699-617c-4e57-9776-2e9b5c9467d1
           access-control-allow-origin: '*'
         description: null
     responseFields: []
@@ -130,7 +130,7 @@ endpoints:
         name: client_app
         description: ''
         required: false
-        example: api
+        example: web
         type: string
         enumValues:
           - web
@@ -145,7 +145,7 @@ endpoints:
       employee_id: 'n'
       project_id: 6b72fe4a-5b40-307c-bc24-f79acf9a1bb9
       site_id: 977e5426-8d13-3824-86aa-b092f8ae52c5
-      client_app: api
+      client_app: web
     fileParameters: []
     responses: []
     responseFields: []
@@ -234,7 +234,7 @@ endpoints:
         name: client_app
         description: ''
         required: false
-        example: mobile_ios
+        example: web
         type: string
         enumValues:
           - web
@@ -249,7 +249,7 @@ endpoints:
       coverall_token: 'n'
       project_id: 6b72fe4a-5b40-307c-bc24-f79acf9a1bb9
       site_id: 977e5426-8d13-3824-86aa-b092f8ae52c5
-      client_app: mobile_ios
+      client_app: web
     fileParameters: []
     responses: []
     responseFields: []

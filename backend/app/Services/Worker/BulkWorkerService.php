@@ -7,17 +7,15 @@ use Illuminate\Support\Facades\Validator;
 
 class BulkWorkerService
 {
-    public function __construct(private readonly WorkerService $workers)
-    {
-    }
+    public function __construct(private readonly WorkerService $workers) {}
 
     /**
-     * @param array<int, array<string, mixed>> $records
+     * @param  array<int, array<string, mixed>>  $records
      * @return array{summary: array<string, int>, results: array<int, array<string, mixed>>}
      */
     public function importMany(array $records): array
     {
-        $rules = (new StoreWorkerRequest())->rules();
+        $rules = (new StoreWorkerRequest)->rules();
 
         $results = [];
         $succeeded = 0;
@@ -32,6 +30,7 @@ class BulkWorkerService
                     'errors' => $validator->errors()->toArray(),
                 ];
                 $failed++;
+
                 continue;
             }
 

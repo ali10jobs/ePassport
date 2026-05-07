@@ -12,7 +12,8 @@ use Illuminate\Support\Facades\Schema;
  *         permit.{created,submitted,validated,approved,rejected,closed},
  *         hazard_report.{submitted,status_changed,resolved}
  */
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::create('webhook_subscriptions', function (Blueprint $table) {

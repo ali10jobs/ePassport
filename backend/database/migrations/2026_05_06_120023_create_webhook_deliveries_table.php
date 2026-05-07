@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\Schema;
  * Per-attempt log of webhook deliveries. Drives retry-with-exponential-backoff
  * logic and shows owners delivery history.
  */
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::create('webhook_deliveries', function (Blueprint $table) {

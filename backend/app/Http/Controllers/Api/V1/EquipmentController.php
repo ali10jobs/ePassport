@@ -32,8 +32,7 @@ class EquipmentController extends Controller
         private readonly EquipmentService $equipment,
         private readonly QrCodeService $qrCodes,
         private readonly BulkEquipmentService $bulk,
-    ) {
-    }
+    ) {}
 
     /**
      * List equipment.

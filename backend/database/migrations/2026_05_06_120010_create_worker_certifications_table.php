@@ -11,7 +11,8 @@ use Illuminate\Support\Facades\Schema;
  * Certificate documents are uploaded via Spatie medialibrary; document_media_id
  * holds the latest associated media record.
  */
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::create('worker_certifications', function (Blueprint $table) {

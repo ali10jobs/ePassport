@@ -14,7 +14,8 @@ use Illuminate\Support\Facades\Schema;
  * scanner_user_id may be null for kiosk/anonymous device scans (post-MVP).
  * scan_token: helmet_qr or coverall_qr or equipment_qr that was scanned.
  */
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::create('scan_events', function (Blueprint $table) {

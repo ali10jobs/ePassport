@@ -1,5 +1,7 @@
 <?php
 
+use Laravel\Sanctum\PersonalAccessToken;
+
 beforeEach(fn () => seedAll());
 
 it('returns the abilities catalog', function () {
@@ -41,7 +43,7 @@ it('issues a scoped API key and revokes it', function () {
     // Verify the token is gone from DB so any future request will 401.
     // (Asserting the 401 directly would race against Sanctum's per-request
     // user resolution cached in this test's kernel boot.)
-    expect(\Laravel\Sanctum\PersonalAccessToken::find($keyId))->toBeNull();
+    expect(PersonalAccessToken::find($keyId))->toBeNull();
 });
 
 it('rejects unknown abilities with VALIDATION_FAILED', function () {

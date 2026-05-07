@@ -41,11 +41,11 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"c8679851-6fbb-4493-b166-61f3a4a218b9"}}'
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"99435582-5e67-4a72-8923-96cb32cb0bd8"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-request-id: c8679851-6fbb-4493-b166-61f3a4a218b9
+          x-request-id: 99435582-5e67-4a72-8923-96cb32cb0bd8
           access-control-allow-origin: '*'
         description: null
     responseFields: []
@@ -125,7 +125,7 @@ endpoints:
         description: ''
         required: true
         example:
-          - scan.impersonation_flag
+          - permit.validated
         type: 'string[]'
         enumValues:
           - scan.green
@@ -160,7 +160,7 @@ endpoints:
         name: active
         description: ''
         required: false
-        example: false
+        example: true
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -171,10 +171,10 @@ endpoints:
       label: g
       url: 'http://www.okuneva.com/fugiat-sunt-nihil-accusantium-harum-mollitia.html'
       events:
-        - scan.impersonation_flag
+        - permit.validated
       headers:
         - k
-      active: false
+      active: true
     fileParameters: []
     responses: []
     responseFields: []
@@ -231,11 +231,11 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"e9ddce60-c4f3-48e6-8873-267ba215c776"}}'
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"832a0d68-e3fd-49de-a0e9-69f4b1727bdd"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-request-id: e9ddce60-c4f3-48e6-8873-267ba215c776
+          x-request-id: 832a0d68-e3fd-49de-a0e9-69f4b1727bdd
           access-control-allow-origin: '*'
         description: null
     responseFields: []
@@ -314,7 +314,7 @@ endpoints:
         description: ''
         required: true
         example:
-          - permit.submitted
+          - permit.created
         type: 'string[]'
         enumValues:
           - scan.green
@@ -348,7 +348,7 @@ endpoints:
         name: active
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -358,8 +358,8 @@ endpoints:
       label: b
       url: 'http://bailey.com/'
       events:
-        - permit.submitted
-      active: true
+        - permit.created
+      active: false
     fileParameters: []
     responses: []
     responseFields: []

@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\Schema;
  * Equipment is owned by an organization. Examples: cranes, scaffolding, lifting gear,
  * man-baskets, generators, welding rigs.
  */
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::create('equipment', function (Blueprint $table) {

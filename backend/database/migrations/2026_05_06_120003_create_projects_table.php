@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\Schema;
  * A project is owned by a client organization. Other parties (main contractors,
  * consultants, subcontractors) join via engagements.
  */
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::create('projects', function (Blueprint $table) {

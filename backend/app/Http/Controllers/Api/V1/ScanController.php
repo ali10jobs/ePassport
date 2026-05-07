@@ -28,8 +28,7 @@ class ScanController extends Controller
 {
     public function __construct(
         private readonly ScanVerificationService $scans,
-    ) {
-    }
+    ) {}
 
     /**
      * Verify a single scan (helmet, coverall, equipment, or manual employee_id).

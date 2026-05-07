@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Artisan;
+
 it('returns 200 with database + redis probes ok', function () {
     $response = $this->getJson('/api/v1/health');
 
@@ -11,7 +13,7 @@ it('returns 200 with database + redis probes ok', function () {
 });
 
 it('serves the OpenAPI spec at the canonical path', function () {
-    \Illuminate\Support\Facades\Artisan::call('scribe:generate', ['--quiet' => true]);
+    Artisan::call('scribe:generate', ['--quiet' => true]);
 
     $response = $this->getJson('/api/v1/openapi.json');
 

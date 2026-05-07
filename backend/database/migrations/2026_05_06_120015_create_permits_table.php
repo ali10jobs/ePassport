@@ -13,7 +13,8 @@ use Illuminate\Support\Facades\Schema;
  * required certs and ALL named equipment's TPI status. Any failure returns 422
  * with detailed reasons per worker/equipment.
  */
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::create('permits', function (Blueprint $table) {

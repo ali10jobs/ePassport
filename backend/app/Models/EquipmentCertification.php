@@ -16,7 +16,9 @@ class EquipmentCertification extends Model implements HasMedia
     use HasUuids, InteractsWithMedia, LogsActivity, SoftDeletes;
 
     public const RESULT_PASS = 'pass';
+
     public const RESULT_PASS_WITH_CONDITIONS = 'pass_with_conditions';
+
     public const RESULT_FAIL = 'fail';
 
     protected $fillable = [

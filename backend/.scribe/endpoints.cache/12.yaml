@@ -39,11 +39,11 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"41c05fdf-752a-4f3e-8a59-3eb089abc814"}}'
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"65181364-dabb-469e-a9ae-374e7f04f493"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-request-id: 41c05fdf-752a-4f3e-8a59-3eb089abc814
+          x-request-id: 65181364-dabb-469e-a9ae-374e7f04f493
           access-control-allow-origin: '*'
         description: null
     responseFields: []
@@ -174,7 +174,7 @@ endpoints:
         name: valid_from
         description: 'Must be a valid date.'
         required: false
-        example: '2026-05-07T08:43:01'
+        example: '2026-05-07T08:45:19'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -211,7 +211,7 @@ endpoints:
       scope_ar: l
       location_description_en: j
       location_description_ar: 'n'
-      valid_from: '2026-05-07T08:43:01'
+      valid_from: '2026-05-07T08:45:19'
       valid_until: '2052-05-30'
     fileParameters: []
     responses: []
@@ -268,11 +268,11 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"8bc69a5e-619c-4a1a-9fef-3def64961282"}}'
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"6c228ab8-2169-4a61-adde-f2d66e61dd1e"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-request-id: 8bc69a5e-619c-4a1a-9fef-3def64961282
+          x-request-id: 6c228ab8-2169-4a61-adde-f2d66e61dd1e
           access-control-allow-origin: '*'
         description: null
     responseFields: []
@@ -364,7 +364,7 @@ endpoints:
         name: 'workers[].role_on_permit'
         description: ''
         required: false
-        example: gas_tester
+        example: fire_watch
         type: string
         enumValues:
           - worker
@@ -380,7 +380,7 @@ endpoints:
       workers:
         -
           id: a4855dc5-0acb-33c3-b921-f4291f719ca0
-          role_on_permit: gas_tester
+          role_on_permit: fire_watch
     fileParameters: []
     responses: []
     responseFields: []

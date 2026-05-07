@@ -11,7 +11,8 @@ use Illuminate\Support\Facades\Schema;
  * History is preserved (multiple rows per worker) for audit; queries use the
  * latest by exam_date.
  */
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::create('worker_medical_records', function (Blueprint $table) {

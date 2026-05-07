@@ -3,6 +3,7 @@
 namespace App\Exceptions\Api;
 
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use RuntimeException;
 use Throwable;
 
@@ -52,7 +53,7 @@ class ApiException extends RuntimeException
         return $this->details;
     }
 
-    public function render(\Illuminate\Http\Request $request): JsonResponse
+    public function render(Request $request): JsonResponse
     {
         return response()->json([
             'error' => [
