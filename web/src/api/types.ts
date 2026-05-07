@@ -261,6 +261,77 @@ export interface PermitValidationDetails {
   project_failures: PermitProjectFailure[];
 }
 
+// Hazard reports — matches App\Models\HazardReport.
+export type HazardSeverity = 'low' | 'medium' | 'high' | 'critical';
+export type HazardStatus =
+  | 'submitted'
+  | 'under_review'
+  | 'action_issued'
+  | 'resolved'
+  | 'dismissed';
+export type HazardCategory =
+  | 'fall'
+  | 'electrical'
+  | 'fire'
+  | 'working_at_heights'
+  | 'lifting'
+  | 'housekeeping'
+  | 'ppe'
+  | 'environmental'
+  | 'other';
+
+export interface HazardListItem {
+  id: string;
+  anonymous_report_id: string;
+  is_anonymous: boolean;
+  category: HazardCategory | string;
+  severity: HazardSeverity | string;
+  status: HazardStatus | string;
+  description: string | null;
+  description_lang: string | null;
+  project_id: string | null;
+  site_id: string | null;
+  assigned_to_organization_id: string | null;
+  photo_path: string | null;
+  created_at: string | null;
+  resolved_at: string | null;
+}
+
+export interface HazardNote {
+  id: string;
+  note_type: 'internal' | 'public';
+  author_user_id: number | null;
+  author_organization_id: string | null;
+  body: string;
+  body_lang: string | null;
+  created_at: string;
+}
+
+export interface HazardReportDetail extends HazardListItem {
+  latitude: number | null;
+  longitude: number | null;
+  reporter_user_id: number | null;
+  assigned_to_user_id: number | null;
+  resolution_summary: string | null;
+  notes: HazardNote[];
+  updated_at: string | null;
+}
+
+export interface AnonymousHazardStatus {
+  anonymous_report_id: string;
+  status: HazardStatus | string;
+  category: HazardCategory | string;
+  severity: HazardSeverity | string;
+  submitted_at: string;
+  resolved_at: string | null;
+  resolution_summary: string | null;
+  public_updates: Array<{
+    body: string;
+    body_lang: string | null;
+    posted_at: string;
+  }>;
+}
+
 export interface PaginatedResponse<T> {
   data: T[];
   links: {

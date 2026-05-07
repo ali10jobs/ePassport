@@ -39,6 +39,64 @@ export function InductionStatusBadge({ status }: InductionStatusBadgeProps) {
   return <Badge variant="warning">{t('status.induction.not_inducted', 'Not inducted')}</Badge>;
 }
 
+interface SeverityBadgeProps {
+  severity: string;
+}
+
+/**
+ * Hazard severity badge — louder for critical/high, calmer for low/medium
+ * so a long list of hazards reads at a glance.
+ */
+export function SeverityBadge({ severity }: SeverityBadgeProps) {
+  const { t } = useTranslation();
+  const variant = (() => {
+    switch (severity) {
+      case 'critical':
+      case 'high':
+        return 'destructive' as const;
+      case 'medium':
+        return 'warning' as const;
+      case 'low':
+      default:
+        return 'neutral' as const;
+    }
+  })();
+  return <Badge variant={variant}>{t(`status.severity.${severity}`, severity)}</Badge>;
+}
+
+interface HazardStatusBadgeProps {
+  status: string;
+}
+
+/**
+ * Hazard lifecycle badge:
+ *   submitted     -> primary (awaiting triage)
+ *   under_review  -> warning (someone is on it)
+ *   action_issued -> primary
+ *   resolved      -> success
+ *   dismissed     -> neutral
+ */
+export function HazardStatusBadge({ status }: HazardStatusBadgeProps) {
+  const { t } = useTranslation();
+  const variant = (() => {
+    switch (status) {
+      case 'resolved':
+        return 'success' as const;
+      case 'submitted':
+      case 'action_issued':
+        return 'primary' as const;
+      case 'under_review':
+        return 'warning' as const;
+      case 'dismissed':
+      default:
+        return 'neutral' as const;
+    }
+  })();
+  return (
+    <Badge variant={variant}>{t(`status.hazard.${status}`, status.replace(/_/g, ' '))}</Badge>
+  );
+}
+
 interface PermitStatusBadgeProps {
   status: string;
 }

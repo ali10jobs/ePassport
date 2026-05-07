@@ -3,7 +3,11 @@ import { ofetch } from 'ofetch';
 import { authStorage } from './auth-storage';
 import {
   ApiError,
+  type AnonymousHazardStatus,
   type ApiErrorBody,
+  type HazardListItem,
+  type HazardNote,
+  type HazardReportDetail,
   type MeUser,
   type PaginatedResponse,
   type PermitEvent,
@@ -28,33 +32,54 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://127.0.0.1:8000';
  *   the deployed pair.
  * - Surfaces the platform's stable error codes via the ApiError class.
  */
+function jsonHeaders({ options }: { options: { headers?: HeadersInit; body?: unknown } }) {
+  options.headers = new Headers(options.headers ?? {});
+  options.headers.set('Accept', 'application/json');
+  if (!options.headers.has('Content-Type') && options.body) {
+    options.headers.set('Content-Type', 'application/json');
+  }
+}
+
+function unwrapApiError({ response }: { response: { _data?: unknown; status: number; statusText: string; headers: Headers } }) {
+  const body = response._data as ApiErrorBody | undefined;
+  if (body && typeof body === 'object' && 'error' in body) {
+    throw new ApiError(response.status, body.error);
+  }
+  throw new ApiError(response.status, {
+    code: 'UNKNOWN_ERROR',
+    message: response.statusText || 'Unknown error',
+    details: null,
+    request_id: response.headers.get('x-request-id'),
+  });
+}
+
 export const api = ofetch.create({
   baseURL: API_BASE,
   credentials: 'include',
   retry: 0,
   async onRequest({ options }) {
-    options.headers = new Headers(options.headers ?? {});
-    options.headers.set('Accept', 'application/json');
-    if (!options.headers.has('Content-Type') && options.body) {
-      options.headers.set('Content-Type', 'application/json');
-    }
+    jsonHeaders({ options });
     const token = authStorage.get();
-    if (token && !options.headers.has('Authorization')) {
-      options.headers.set('Authorization', `Bearer ${token}`);
+    if (token && !(options.headers as Headers).has('Authorization')) {
+      (options.headers as Headers).set('Authorization', `Bearer ${token}`);
     }
   },
-  async onResponseError({ response }) {
-    const body = response._data as ApiErrorBody | undefined;
-    if (body && typeof body === 'object' && 'error' in body) {
-      throw new ApiError(response.status, body.error);
-    }
-    throw new ApiError(response.status, {
-      code: 'UNKNOWN_ERROR',
-      message: response.statusText || 'Unknown error',
-      details: null,
-      request_id: response.headers.get('x-request-id'),
-    });
+  onResponseError: unwrapApiError,
+});
+
+/**
+ * Companion ofetch instance used for endpoints that must be reachable
+ * by logged-out browsers (the public anonymous-hazard status check).
+ * No token injection, no credentials cookie attached.
+ */
+const publicApi = ofetch.create({
+  baseURL: API_BASE,
+  credentials: 'omit',
+  retry: 0,
+  async onRequest({ options }) {
+    jsonHeaders({ options });
   },
+  onResponseError: unwrapApiError,
 });
 
 /**
@@ -236,6 +261,67 @@ export const endpoints = {
     },
     async permitTypes(): Promise<{ data: PermitTypeListItem[] }> {
       return api<{ data: PermitTypeListItem[] }>('/api/v1/permit-types');
+    },
+  },
+
+  hazards: {
+    async list(params: {
+      page?: number;
+      perPage?: number;
+      status?: string;
+      severity?: string;
+      category?: string;
+      search?: string;
+    }): Promise<PaginatedResponse<HazardListItem>> {
+      const query: Record<string, string | number> = {};
+      if (params.page) query.page = params.page;
+      if (params.perPage) query.per_page = params.perPage;
+      if (params.status) query['filter[status]'] = params.status;
+      if (params.severity) query['filter[severity]'] = params.severity;
+      if (params.category) query['filter[category]'] = params.category;
+      if (params.search) query['filter[search]'] = params.search;
+      return api<PaginatedResponse<HazardListItem>>('/api/v1/hazard-reports', {
+        method: 'GET',
+        query,
+      });
+    },
+    async get(id: string): Promise<{ data: HazardReportDetail }> {
+      return api<{ data: HazardReportDetail }>(`/api/v1/hazard-reports/${id}`);
+    },
+    async updateStatus(
+      id: string,
+      input: {
+        status: string;
+        resolution_summary?: string;
+      }
+    ): Promise<{ data: HazardReportDetail }> {
+      return api<{ data: HazardReportDetail }>(`/api/v1/hazard-reports/${id}`, {
+        method: 'PATCH',
+        body: input,
+      });
+    },
+    async addNote(
+      id: string,
+      input: {
+        note_type: 'internal' | 'public';
+        body: string;
+        body_lang?: string;
+      }
+    ): Promise<{ data: HazardNote }> {
+      return api<{ data: HazardNote }>(`/api/v1/hazard-reports/${id}/notes`, {
+        method: 'POST',
+        body: input,
+      });
+    },
+    /**
+     * Public anonymous status check. Uses publicApi so no bearer token is
+     * sent and no session cookie is attached — the call is callable by a
+     * fully logged-out browser.
+     */
+    async anonymousStatus(anonymousReportId: string): Promise<{ data: AnonymousHazardStatus }> {
+      return publicApi<{ data: AnonymousHazardStatus }>(
+        `/api/v1/hazard-reports/anonymous/${anonymousReportId}`
+      );
     },
   },
 };

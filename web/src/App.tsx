@@ -6,6 +6,9 @@ import { AppLayout } from '@/components/layout/AppLayout';
 import { AuthLayout } from '@/components/layout/AuthLayout';
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { LoginPage } from '@/features/auth/LoginPage';
+import { HazardDetailPage } from '@/features/hazards/HazardDetailPage';
+import { HazardsListPage } from '@/features/hazards/HazardsListPage';
+import { PublicHazardStatusPage } from '@/features/hazards/PublicHazardStatusPage';
 import { NewPermitPage } from '@/features/permits/NewPermitPage';
 import { PermitDetailPage } from '@/features/permits/PermitDetailPage';
 import { PermitsListPage } from '@/features/permits/PermitsListPage';
@@ -42,7 +45,10 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
-          {/* Public */}
+          {/* Public — no shell, no auth */}
+          <Route path="/hazard-status" element={<PublicHazardStatusPage />} />
+
+          {/* Public — auth card layout */}
           <Route element={<AuthLayout />}>
             <Route path="/login" element={<LoginPage />} />
           </Route>
@@ -67,10 +73,8 @@ export default function App() {
             <Route path="/permits" element={<PermitsListPage />} />
             <Route path="/permits/new" element={<NewPermitPage />} />
             <Route path="/permits/:id" element={<PermitDetailPage />} />
-            <Route
-              path="/hazards"
-              element={<PlaceholderPage titleKey="nav.hazards" fallback="Hazards" />}
-            />
+            <Route path="/hazards" element={<HazardsListPage />} />
+            <Route path="/hazards/:id" element={<HazardDetailPage />} />
             <Route
               path="/settings"
               element={<PlaceholderPage titleKey="nav.settings" fallback="Settings" />}
