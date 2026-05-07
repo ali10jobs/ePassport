@@ -25,14 +25,16 @@ use Illuminate\Support\Facades\Route;
 // Public endpoints (no auth)
 Route::get('/health', [HealthController::class, 'check'])->name('health');
 Route::get('/openapi.json', [OpenApiController::class, 'spec'])->name('openapi');
-Route::post('/auth/login', [AuthController::class, 'login'])->name('auth.login');
+Route::post('/auth/login', [AuthController::class, 'login'])->middleware('throttle:login')->name('auth.login');
 
 // Anonymous hazard reporting (public; NO auth, NO PII captured)
-Route::post('/hazard-reports/anonymous', [HazardReportAnonymousController::class, 'store'])->name('hazard.anonymous.store');
-Route::get('/hazard-reports/anonymous/{anonymousReportId}', [HazardReportAnonymousController::class, 'status'])->name('hazard.anonymous.status');
+Route::middleware('throttle:hazard-anonymous')->group(function () {
+    Route::post('/hazard-reports/anonymous', [HazardReportAnonymousController::class, 'store'])->name('hazard.anonymous.store');
+    Route::get('/hazard-reports/anonymous/{anonymousReportId}', [HazardReportAnonymousController::class, 'status'])->name('hazard.anonymous.status');
+});
 
 // Authenticated endpoints
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout'])->name('auth.logout');
     Route::get('/me', [HealthController::class, 'me'])->name('me');
 
