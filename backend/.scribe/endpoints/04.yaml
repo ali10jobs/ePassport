@@ -1,0 +1,913 @@
+name: Workers
+description: |-
+
+  CRUD plus the e-Passport read model and helmet/coverall QR PNG generation.
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/v1/workers/bulk
+    metadata:
+      custom: []
+      groupName: Workers
+      groupDescription: |-
+
+        CRUD plus the e-Passport read model and helmet/coverall QR PNG generation.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Bulk-import workers.'
+      description: |-
+        Accepts {"workers": [{...}, ...]}. Per-record success/failure: a single
+        record's validation failure does NOT fail the rest of the batch. Each
+        record is validated against the same rules as the single-record POST.
+
+        Idempotency-Key supported globally; replays return the same response.
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      workers:
+        custom: []
+        name: workers
+        description: ''
+        required: true
+        example:
+          - []
+        type: 'object[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      workers:
+        - []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/workers
+    metadata:
+      custom: []
+      groupName: Workers
+      groupDescription: |-
+
+        CRUD plus the e-Passport read model and helmet/coverall QR PNG generation.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'List workers.'
+      description: |-
+        Supports filter[employer_organization_id], filter[induction_status],
+        filter[search] (matches name + employee_id + national_id), and
+        filter[expiring_within] (days; matches workers with any cert expiring
+        within N days).
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"10736e18-1fc9-465b-b574-c5ece5337887"}}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          x-request-id: 10736e18-1fc9-465b-b574-c5ece5337887
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/v1/workers
+    metadata:
+      custom: []
+      groupName: Workers
+      groupDescription: |-
+
+        CRUD plus the e-Passport read model and helmet/coverall QR PNG generation.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Create a worker.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      employer_organization_id:
+        custom: []
+        name: employer_organization_id
+        description: 'Must be a valid UUID. The <code>id</code> of an existing record in the organizations table.'
+        required: true
+        example: 6ff8f7f6-1eb3-3525-be4a-3932c805afed
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      employee_id:
+        custom: []
+        name: employee_id
+        description: 'Must not be greater than 64 characters.'
+        required: true
+        example: g
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      national_id:
+        custom: []
+        name: national_id
+        description: 'Must not be greater than 32 characters.'
+        required: false
+        example: z
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      iqama_number:
+        custom: []
+        name: iqama_number
+        description: 'Must not be greater than 32 characters.'
+        required: false
+        example: m
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      passport_number:
+        custom: []
+        name: passport_number
+        description: 'Must not be greater than 32 characters.'
+        required: false
+        example: i
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      first_name_en:
+        custom: []
+        name: first_name_en
+        description: 'Must not be greater than 80 characters.'
+        required: true
+        example: 'y'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      last_name_en:
+        custom: []
+        name: last_name_en
+        description: 'Must not be greater than 80 characters.'
+        required: true
+        example: v
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      first_name_ar:
+        custom: []
+        name: first_name_ar
+        description: 'Must not be greater than 80 characters.'
+        required: false
+        example: d
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      last_name_ar:
+        custom: []
+        name: last_name_ar
+        description: 'Must not be greater than 80 characters.'
+        required: false
+        example: l
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      nationality:
+        custom: []
+        name: nationality
+        description: 'Must be 3 characters.'
+        required: false
+        example: jni
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      date_of_birth:
+        custom: []
+        name: date_of_birth
+        description: 'Must be a valid date. Must be a date before <code>today</code>.'
+        required: false
+        example: '2022-05-31'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      phone:
+        custom: []
+        name: phone
+        description: 'Must not be greater than 32 characters.'
+        required: false
+        example: 'n'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      email:
+        custom: []
+        name: email
+        description: 'Must be a valid email address. Must not be greater than 255 characters.'
+        required: false
+        example: ashly64@example.com
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      trade:
+        custom: []
+        name: trade
+        description: 'Must not be greater than 80 characters.'
+        required: false
+        example: v
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      induction_status:
+        custom: []
+        name: induction_status
+        description: ''
+        required: false
+        example: not_inducted
+        type: string
+        enumValues:
+          - not_inducted
+          - inducted
+          - expired
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      induction_date:
+        custom: []
+        name: induction_date
+        description: 'Must be a valid date.'
+        required: false
+        example: '2026-05-07T08:43:00'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      induction_valid_until:
+        custom: []
+        name: induction_valid_until
+        description: 'Must be a valid date. Must be a date after or equal to <code>induction_date</code>.'
+        required: false
+        example: '2052-05-30'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      metadata:
+        custom: []
+        name: metadata
+        description: ''
+        required: false
+        example: null
+        type: object
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      employer_organization_id: 6ff8f7f6-1eb3-3525-be4a-3932c805afed
+      employee_id: g
+      national_id: z
+      iqama_number: m
+      passport_number: i
+      first_name_en: 'y'
+      last_name_en: v
+      first_name_ar: d
+      last_name_ar: l
+      nationality: jni
+      date_of_birth: '2022-05-31'
+      phone: 'n'
+      email: ashly64@example.com
+      trade: v
+      induction_status: not_inducted
+      induction_date: '2026-05-07T08:43:00'
+      induction_valid_until: '2052-05-30'
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v1/workers/{id}'
+    metadata:
+      custom: []
+      groupName: Workers
+      groupDescription: |-
+
+        CRUD plus the e-Passport read model and helmet/coverall QR PNG generation.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Get a single worker.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the worker.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"061abbbd-c8b1-4a36-a194-bd81a08e7152"}}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          x-request-id: 061abbbd-c8b1-4a36-a194-bd81a08e7152
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PATCH
+    uri: 'api/v1/workers/{id}'
+    metadata:
+      custom: []
+      groupName: Workers
+      groupDescription: |-
+
+        CRUD plus the e-Passport read model and helmet/coverall QR PNG generation.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Update a worker.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the worker.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      employee_id:
+        custom: []
+        name: employee_id
+        description: 'Must not be greater than 64 characters.'
+        required: false
+        example: b
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      national_id:
+        custom: []
+        name: national_id
+        description: 'Must not be greater than 32 characters.'
+        required: false
+        example: 'n'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      iqama_number:
+        custom: []
+        name: iqama_number
+        description: 'Must not be greater than 32 characters.'
+        required: false
+        example: g
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      passport_number:
+        custom: []
+        name: passport_number
+        description: 'Must not be greater than 32 characters.'
+        required: false
+        example: z
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      first_name_en:
+        custom: []
+        name: first_name_en
+        description: 'Must not be greater than 80 characters.'
+        required: false
+        example: m
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      last_name_en:
+        custom: []
+        name: last_name_en
+        description: 'Must not be greater than 80 characters.'
+        required: false
+        example: i
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      first_name_ar:
+        custom: []
+        name: first_name_ar
+        description: 'Must not be greater than 80 characters.'
+        required: false
+        example: 'y'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      last_name_ar:
+        custom: []
+        name: last_name_ar
+        description: 'Must not be greater than 80 characters.'
+        required: false
+        example: v
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      nationality:
+        custom: []
+        name: nationality
+        description: 'Must be 3 characters.'
+        required: false
+        example: dlj
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      date_of_birth:
+        custom: []
+        name: date_of_birth
+        description: 'Must be a valid date. Must be a date before <code>today</code>.'
+        required: false
+        example: '2022-05-31'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      phone:
+        custom: []
+        name: phone
+        description: 'Must not be greater than 32 characters.'
+        required: false
+        example: 'n'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      email:
+        custom: []
+        name: email
+        description: 'Must be a valid email address. Must not be greater than 255 characters.'
+        required: false
+        example: ashly64@example.com
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      trade:
+        custom: []
+        name: trade
+        description: 'Must not be greater than 80 characters.'
+        required: false
+        example: v
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      induction_status:
+        custom: []
+        name: induction_status
+        description: ''
+        required: false
+        example: not_inducted
+        type: string
+        enumValues:
+          - not_inducted
+          - inducted
+          - expired
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      induction_date:
+        custom: []
+        name: induction_date
+        description: 'Must be a valid date.'
+        required: false
+        example: '2026-05-07T08:43:00'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      induction_valid_until:
+        custom: []
+        name: induction_valid_until
+        description: 'Must be a valid date.'
+        required: false
+        example: '2026-05-07T08:43:00'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      metadata:
+        custom: []
+        name: metadata
+        description: ''
+        required: false
+        example: null
+        type: object
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      employee_id: b
+      national_id: 'n'
+      iqama_number: g
+      passport_number: z
+      first_name_en: m
+      last_name_en: i
+      first_name_ar: 'y'
+      last_name_ar: v
+      nationality: dlj
+      date_of_birth: '2022-05-31'
+      phone: 'n'
+      email: ashly64@example.com
+      trade: v
+      induction_status: not_inducted
+      induction_date: '2026-05-07T08:43:00'
+      induction_valid_until: '2026-05-07T08:43:00'
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'api/v1/workers/{id}'
+    metadata:
+      custom: []
+      groupName: Workers
+      groupDescription: |-
+
+        CRUD plus the e-Passport read model and helmet/coverall QR PNG generation.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Soft-delete a worker.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the worker.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v1/workers/{worker_id}/passport'
+    metadata:
+      custom: []
+      groupName: Workers
+      groupDescription: |-
+
+        CRUD plus the e-Passport read model and helmet/coverall QR PNG generation.
+      subgroup: ''
+      subgroupDescription: ''
+      title: |-
+        Get the consolidated e-Passport view: identity, employer, all valid certs,
+        medical fitness, induction status. Drives the worker detail screen and
+        is the read model the gate-scan flow projects from.
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      worker_id:
+        custom: []
+        name: worker_id
+        description: 'The ID of the worker.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      worker_id: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"dc56a2e3-c400-4a63-a6d7-ab16f13438ba"}}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          x-request-id: dc56a2e3-c400-4a63-a6d7-ab16f13438ba
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v1/workers/{worker_id}/qr/helmet'
+    metadata:
+      custom: []
+      groupName: Workers
+      groupDescription: |-
+
+        CRUD plus the e-Passport read model and helmet/coverall QR PNG generation.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Generate the helmet QR PNG for a worker.'
+      description: |-
+        Returns image/png. Used by the print flow on the web admin and by mobile
+        if a worker needs a fresh sticker. Requires authenticated caller — token
+        never leaves the server in plain text.
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      worker_id:
+        custom: []
+        name: worker_id
+        description: 'The ID of the worker.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      worker_id: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"8bee01fe-4170-4bb6-9632-f3545a34d712"}}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          x-request-id: 8bee01fe-4170-4bb6-9632-f3545a34d712
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v1/workers/{worker_id}/qr/coverall'
+    metadata:
+      custom: []
+      groupName: Workers
+      groupDescription: |-
+
+        CRUD plus the e-Passport read model and helmet/coverall QR PNG generation.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Generate the coverall QR PNG for a worker.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      worker_id:
+        custom: []
+        name: worker_id
+        description: 'The ID of the worker.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      worker_id: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"a7adb651-4b2b-49b0-a5c3-ab1de4eef00c"}}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          x-request-id: a7adb651-4b2b-49b0-a5c3-ab1de4eef00c
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null

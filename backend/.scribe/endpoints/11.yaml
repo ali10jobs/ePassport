@@ -1,0 +1,335 @@
+name: 'Hazard Reports — Authenticated'
+description: |-
+
+  Authenticated views: list, single read, status updates, internal/public notes.
+
+  Authorization scoping is handled at the policy layer (added in Phase 3+).
+  For week-1 the controller is auth-only; per-user/per-org filtering will be
+  layered in via policy + query scope.
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/hazard-reports
+    metadata:
+      custom: []
+      groupName: 'Hazard Reports — Authenticated'
+      groupDescription: |-
+
+        Authenticated views: list, single read, status updates, internal/public notes.
+
+        Authorization scoping is handled at the policy layer (added in Phase 3+).
+        For week-1 the controller is auth-only; per-user/per-org filtering will be
+        layered in via policy + query scope.
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"fea204b5-2136-4199-89b0-bf6c5543d510"}}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          x-request-id: fea204b5-2136-4199-89b0-bf6c5543d510
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v1/hazard-reports/{hazardReport_id}'
+    metadata:
+      custom: []
+      groupName: 'Hazard Reports — Authenticated'
+      groupDescription: |-
+
+        Authenticated views: list, single read, status updates, internal/public notes.
+
+        Authorization scoping is handled at the policy layer (added in Phase 3+).
+        For week-1 the controller is auth-only; per-user/per-org filtering will be
+        layered in via policy + query scope.
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      hazardReport_id:
+        custom: []
+        name: hazardReport_id
+        description: 'The ID of the hazardReport.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      hazardReport_id: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"f0ae8f9d-884f-4f89-ab1e-e231309a7c47"}}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          x-request-id: f0ae8f9d-884f-4f89-ab1e-e231309a7c47
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PATCH
+    uri: 'api/v1/hazard-reports/{hazardReport_id}'
+    metadata:
+      custom: []
+      groupName: 'Hazard Reports — Authenticated'
+      groupDescription: |-
+
+        Authenticated views: list, single read, status updates, internal/public notes.
+
+        Authorization scoping is handled at the policy layer (added in Phase 3+).
+        For week-1 the controller is auth-only; per-user/per-org filtering will be
+        layered in via policy + query scope.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Update status / assignment / resolution of a hazard report.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      hazardReport_id:
+        custom: []
+        name: hazardReport_id
+        description: 'The ID of the hazardReport.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      hazardReport_id: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      status:
+        custom: []
+        name: status
+        description: ''
+        required: true
+        example: resolved
+        type: string
+        enumValues:
+          - under_review
+          - action_issued
+          - resolved
+          - dismissed
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      resolution_summary:
+        custom: []
+        name: resolution_summary
+        description: 'Must not be greater than 2000 characters.'
+        required: false
+        example: b
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      assigned_to_user_id:
+        custom: []
+        name: assigned_to_user_id
+        description: 'The <code>id</code> of an existing record in the users table.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      assigned_to_organization_id:
+        custom: []
+        name: assigned_to_organization_id
+        description: 'Must be a valid UUID. The <code>id</code> of an existing record in the organizations table.'
+        required: false
+        example: a4855dc5-0acb-33c3-b921-f4291f719ca0
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      status: resolved
+      resolution_summary: b
+      assigned_to_user_id: 16
+      assigned_to_organization_id: a4855dc5-0acb-33c3-b921-f4291f719ca0
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'api/v1/hazard-reports/{hazardReport_id}/notes'
+    metadata:
+      custom: []
+      groupName: 'Hazard Reports — Authenticated'
+      groupDescription: |-
+
+        Authenticated views: list, single read, status updates, internal/public notes.
+
+        Authorization scoping is handled at the policy layer (added in Phase 3+).
+        For week-1 the controller is auth-only; per-user/per-org filtering will be
+        layered in via policy + query scope.
+      subgroup: ''
+      subgroupDescription: ''
+      title: |-
+        Add an internal or public note. Internal notes are visible only via
+        authenticated GET; public notes appear on the anonymous status check.
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      hazardReport_id:
+        custom: []
+        name: hazardReport_id
+        description: 'The ID of the hazardReport.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      hazardReport_id: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      note_type:
+        custom: []
+        name: note_type
+        description: ''
+        required: true
+        example: public
+        type: string
+        enumValues:
+          - internal
+          - public
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      body:
+        custom: []
+        name: body
+        description: 'Must be at least 1 character. Must not be greater than 4000 characters.'
+        required: true
+        example: b
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      body_lang:
+        custom: []
+        name: body_lang
+        description: ''
+        required: false
+        example: ar
+        type: string
+        enumValues:
+          - en
+          - ar
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      author_organization_id:
+        custom: []
+        name: author_organization_id
+        description: 'Must be a valid UUID. The <code>id</code> of an existing record in the organizations table.'
+        required: false
+        example: a4855dc5-0acb-33c3-b921-f4291f719ca0
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      note_type: public
+      body: b
+      body_lang: ar
+      author_organization_id: a4855dc5-0acb-33c3-b921-f4291f719ca0
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null

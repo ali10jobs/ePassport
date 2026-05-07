@@ -1,0 +1,198 @@
+name: Dashboards
+description: |-
+
+  Role-based dashboard summaries. Each route picks the user's active org
+  (first matching the requested role) and computes the metrics.
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/dashboards/client/summary
+    metadata:
+      custom: []
+      groupName: Dashboards
+      groupDescription: |-
+
+        Role-based dashboard summaries. Each route picks the user's active org
+        (first matching the requested role) and computes the metrics.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Client dashboard: cross-project metrics across all owned projects.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"31d0429e-859c-4b6b-a3ba-df8cd2fd3127"}}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          x-request-id: 31d0429e-859c-4b6b-a3ba-df8cd2fd3127
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/dashboards/main-contractor/summary
+    metadata:
+      custom: []
+      groupName: Dashboards
+      groupDescription: |-
+
+        Role-based dashboard summaries. Each route picks the user's active org
+        (first matching the requested role) and computes the metrics.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Main contractor dashboard.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"f3f60749-f137-4c5c-a549-c6b0f3e7d6e4"}}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          x-request-id: f3f60749-f137-4c5c-a549-c6b0f3e7d6e4
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/dashboards/consultant/summary
+    metadata:
+      custom: []
+      groupName: Dashboards
+      groupDescription: |-
+
+        Role-based dashboard summaries. Each route picks the user's active org
+        (first matching the requested role) and computes the metrics.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Consultant dashboard.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"76e2c048-9c65-43b2-8db1-86b253c726f9"}}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          x-request-id: 76e2c048-9c65-43b2-8db1-86b253c726f9
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/dashboards/subcontractor/summary
+    metadata:
+      custom: []
+      groupName: Dashboards
+      groupDescription: |-
+
+        Role-based dashboard summaries. Each route picks the user's active org
+        (first matching the requested role) and computes the metrics.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Subcontractor dashboard.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"ca824e29-f085-4490-b06c-63030a26566f"}}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          x-request-id: ca824e29-f085-4490-b06c-63030a26566f
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null

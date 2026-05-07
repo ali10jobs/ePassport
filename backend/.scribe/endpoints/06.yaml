@@ -1,0 +1,214 @@
+name: 'Worker Medical Records'
+description: |-
+
+  Medical fitness history. The most recent record (by exam_date) drives the
+  MEDICAL_FAIL reason at gate scan. Historical records are retained for audit.
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v1/workers/{worker_id}/medical-records'
+    metadata:
+      custom: []
+      groupName: 'Worker Medical Records'
+      groupDescription: |-
+
+        Medical fitness history. The most recent record (by exam_date) drives the
+        MEDICAL_FAIL reason at gate scan. Historical records are retained for audit.
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      worker_id:
+        custom: []
+        name: worker_id
+        description: 'The ID of the worker.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      worker_id: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"cf3344cc-efcc-4d2d-a5c1-f1a3797d5800"}}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          x-request-id: cf3344cc-efcc-4d2d-a5c1-f1a3797d5800
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'api/v1/workers/{worker_id}/medical-records'
+    metadata:
+      custom: []
+      groupName: 'Worker Medical Records'
+      groupDescription: |-
+
+        Medical fitness history. The most recent record (by exam_date) drives the
+        MEDICAL_FAIL reason at gate scan. Historical records are retained for audit.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Add a new medical record. Most recent (by exam_date) becomes the active one.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      worker_id:
+        custom: []
+        name: worker_id
+        description: 'The ID of the worker.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      worker_id: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      exam_date:
+        custom: []
+        name: exam_date
+        description: 'Must be a valid date. Must be a date before or equal to <code>today</code>.'
+        required: true
+        example: '2022-05-31'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      valid_until:
+        custom: []
+        name: valid_until
+        description: 'Must be a valid date. Must be a date after <code>exam_date</code>.'
+        required: true
+        example: '2052-05-30'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      status:
+        custom: []
+        name: status
+        description: ''
+        required: true
+        example: fit_with_restrictions
+        type: string
+        enumValues:
+          - fit
+          - fit_with_restrictions
+          - unfit
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      examining_clinic_en:
+        custom: []
+        name: examining_clinic_en
+        description: 'Must not be greater than 128 characters.'
+        required: false
+        example: 'n'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      examining_clinic_ar:
+        custom: []
+        name: examining_clinic_ar
+        description: 'Must not be greater than 128 characters.'
+        required: false
+        example: g
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      restrictions_en:
+        custom: []
+        name: restrictions_en
+        description: 'Must not be greater than 1000 characters.'
+        required: false
+        example: z
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      restrictions_ar:
+        custom: []
+        name: restrictions_ar
+        description: 'Must not be greater than 1000 characters.'
+        required: false
+        example: m
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      metadata:
+        custom: []
+        name: metadata
+        description: ''
+        required: false
+        example: null
+        type: object
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      exam_date: '2022-05-31'
+      valid_until: '2052-05-30'
+      status: fit_with_restrictions
+      examining_clinic_en: 'n'
+      examining_clinic_ar: g
+      restrictions_en: z
+      restrictions_ar: m
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
