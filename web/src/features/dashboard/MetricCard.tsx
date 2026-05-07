@@ -43,7 +43,6 @@ export function MetricCard({
   const content = (
     <Card
       className={cn(
-        'h-full',
         href &&
           'hover:border-foreground/20 transition-colors duration-100 cursor-pointer'
       )}
