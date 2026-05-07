@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\EquipmentController;
 use App\Http\Controllers\Api\V1\HazardReportAnonymousController;
+use App\Http\Controllers\Api\V1\HazardReportController;
 use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\OpenApiController;
 use App\Http\Controllers\Api\V1\PermitController;
@@ -74,6 +75,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{equipment}/qr', [EquipmentController::class, 'qr'])->name('qr');
         Route::post('/{equipment}/certifications', [EquipmentController::class, 'attachCertification'])->name('certifications.store');
         Route::post('/{equipment}/operators', [EquipmentController::class, 'pairOperator'])->name('operators.pair');
+    });
+
+    // Hazard reports (authenticated)
+    Route::prefix('hazard-reports')->name('hazards.')->group(function () {
+        Route::get('/', [HazardReportController::class, 'index'])->name('index');
+        Route::get('/{hazardReport}', [HazardReportController::class, 'show'])->name('show');
+        Route::patch('/{hazardReport}', [HazardReportController::class, 'updateStatus'])->name('update');
+        Route::post('/{hazardReport}/notes', [HazardReportController::class, 'addNote'])->name('notes.add');
     });
 
     // Permits
