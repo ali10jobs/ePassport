@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\ApiKeyController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\EquipmentController;
@@ -37,6 +38,14 @@ Route::middleware('throttle:hazard-anonymous')->group(function () {
 Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout'])->name('auth.logout');
     Route::get('/me', [HealthController::class, 'me'])->name('me');
+
+    // API keys (Sanctum PATs with abilities) for ERP integrations
+    Route::prefix('auth/api-keys')->name('auth.api_keys.')->group(function () {
+        Route::get('/', [ApiKeyController::class, 'index'])->name('index');
+        Route::get('/abilities', [ApiKeyController::class, 'abilities'])->name('abilities');
+        Route::post('/', [ApiKeyController::class, 'store'])->name('store');
+        Route::delete('/{tokenId}', [ApiKeyController::class, 'destroy'])->name('destroy');
+    });
 
     // Workers
     Route::prefix('workers')->name('workers.')->group(function () {
