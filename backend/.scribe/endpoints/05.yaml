@@ -51,11 +51,11 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"bdb4da9f-f38c-4e37-ab01-2551650fdd9a"}}'
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"bdd39ced-04f2-413e-ac5c-28bc0a54a9ca"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-request-id: bdb4da9f-f38c-4e37-ab01-2551650fdd9a
+          x-request-id: bdd39ced-04f2-413e-ac5c-28bc0a54a9ca
           access-control-allow-origin: '*'
         description: null
     responseFields: []
@@ -177,7 +177,7 @@ endpoints:
         name: verified
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -201,7 +201,7 @@ endpoints:
       issuing_body_ar: m
       issue_date: '2022-05-31'
       expiry_date: '2052-05-30'
-      verified: true
+      verified: false
     fileParameters: []
     responses: []
     responseFields: []

@@ -82,7 +82,7 @@ endpoints:
         name: severity
         description: ''
         required: true
-        example: medium
+        example: high
         type: string
         enumValues:
           - low
@@ -162,7 +162,7 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       category: ppe
-      severity: medium
+      severity: high
       description: 'Eius et animi quos velit et.'
       description_lang: ar
       project_id: 21c4122b-d554-3723-966c-6d723ea5293f
@@ -236,7 +236,7 @@ endpoints:
           content-type: application/json
           x-ratelimit-limit: '10'
           x-ratelimit-remaining: '9'
-          x-request-id: 04f5608c-039f-4413-a485-6dc2217a66ee
+          x-request-id: 3442c201-79d9-4bef-9ec2-674078ba51fe
           access-control-allow-origin: '*'
         description: null
     responseFields: []

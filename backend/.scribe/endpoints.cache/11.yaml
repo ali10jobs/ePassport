@@ -45,11 +45,11 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"9b2ea795-b2f9-44a2-a23c-379f7ce216bc"}}'
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"28e42d5a-c9f2-4fb9-9d5b-3208dfa622aa"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-request-id: 9b2ea795-b2f9-44a2-a23c-379f7ce216bc
+          x-request-id: 28e42d5a-c9f2-4fb9-9d5b-3208dfa622aa
           access-control-allow-origin: '*'
         description: null
     responseFields: []
@@ -108,11 +108,11 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"5418b84c-a30b-4922-a92b-81fa56e5cbec"}}'
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"b8766fb3-ee17-455e-84d8-ba746131d871"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-request-id: 5418b84c-a30b-4922-a92b-81fa56e5cbec
+          x-request-id: b8766fb3-ee17-455e-84d8-ba746131d871
           access-control-allow-origin: '*'
         description: null
     responseFields: []
@@ -170,7 +170,7 @@ endpoints:
         name: status
         description: ''
         required: true
-        example: resolved
+        example: dismissed
         type: string
         enumValues:
           - under_review
@@ -214,7 +214,7 @@ endpoints:
         nullable: true
         deprecated: false
     cleanBodyParameters:
-      status: resolved
+      status: dismissed
       resolution_summary: b
       assigned_to_user_id: 16
       assigned_to_organization_id: a4855dc5-0acb-33c3-b921-f4291f719ca0
@@ -277,7 +277,7 @@ endpoints:
         name: note_type
         description: ''
         required: true
-        example: public
+        example: internal
         type: string
         enumValues:
           - internal
@@ -321,7 +321,7 @@ endpoints:
         nullable: true
         deprecated: false
     cleanBodyParameters:
-      note_type: public
+      note_type: internal
       body: b
       body_lang: ar
       author_organization_id: a4855dc5-0acb-33c3-b921-f4291f719ca0

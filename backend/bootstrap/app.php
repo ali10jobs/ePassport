@@ -12,6 +12,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Sentry\Laravel\Integration;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -46,6 +47,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectGuestsTo(fn () => null);
     })
     ->withExceptions(function (Exceptions $exceptions) {
+        // Sentry: forward unhandled exceptions to Sentry when SENTRY_LARAVEL_DSN is set.
+        // No-op locally where the env var is empty.
+        Integration::handles($exceptions);
+
         $exceptions->render(function (ApiException $e, Request $request) {
             if (! $request->expectsJson() && ! $request->is('api/*')) {
                 return null;

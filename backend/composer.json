@@ -16,6 +16,7 @@
         "laravel/tinker": "^2.9",
         "predis/predis": "^3.4",
         "ramsey/uuid": "^4.9",
+        "sentry/sentry-laravel": "^4.25",
         "spatie/laravel-activitylog": "^4.12",
         "spatie/laravel-medialibrary": "^11.22",
         "spatie/laravel-permission": "^6.25",

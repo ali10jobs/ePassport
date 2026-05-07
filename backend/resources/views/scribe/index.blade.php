@@ -451,7 +451,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-request-id: fe5fbd41-d400-4013-b85b-15b269c673be
+x-request-id: 171444a7-da78-4ec2-9ad4-0537f2e69b02
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -460,7 +460,7 @@ access-control-allow-origin: *
         &quot;code&quot;: &quot;UNAUTHENTICATED&quot;,
         &quot;message&quot;: &quot;Authentication required.&quot;,
         &quot;details&quot;: null,
-        &quot;request_id&quot;: &quot;fe5fbd41-d400-4013-b85b-15b269c673be&quot;
+        &quot;request_id&quot;: &quot;171444a7-da78-4ec2-9ad4-0537f2e69b02&quot;
     }
 }</code>
  </pre>
@@ -600,7 +600,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-request-id: 10b9a3fe-2d99-435b-a873-708f0d3c524f
+x-request-id: 890d1db7-4ff6-4cdb-9c62-23f06bdb04f1
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -609,7 +609,7 @@ access-control-allow-origin: *
         &quot;code&quot;: &quot;UNAUTHENTICATED&quot;,
         &quot;message&quot;: &quot;Authentication required.&quot;,
         &quot;details&quot;: null,
-        &quot;request_id&quot;: &quot;10b9a3fe-2d99-435b-a873-708f0d3c524f&quot;
+        &quot;request_id&quot;: &quot;890d1db7-4ff6-4cdb-9c62-23f06bdb04f1&quot;
     }
 }</code>
  </pre>
@@ -720,7 +720,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"name\": \"b\",
     \"abilities\": [
-        \"scans.read\"
+        \"webhooks.manage\"
     ],
     \"expires_at\": \"2052-05-30\"
 }"
@@ -741,7 +741,7 @@ const headers = {
 let body = {
     "name": "b",
     "abilities": [
-        "scans.read"
+        "webhooks.manage"
     ],
     "expires_at": "2052-05-30"
 };
@@ -1050,7 +1050,7 @@ sends it as Authorization: Bearer <token> on every request.</p>
     --data "{
     \"email\": \"gbailey@example.net\",
     \"password\": \"|]|{+-\",
-    \"mode\": \"token\",
+    \"mode\": \"cookie\",
     \"device_name\": \"v\"
 }"
 </code></pre></div>
@@ -1069,7 +1069,7 @@ const headers = {
 let body = {
     "email": "gbailey@example.net",
     "password": "|]|{+-",
-    "mode": "token",
+    "mode": "cookie",
     "device_name": "v"
 };
 
@@ -1186,10 +1186,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="mode"                data-endpoint="POSTapi-v1-auth-login"
-               value="token"
+               value="cookie"
                data-component="body">
     <br>
-<p>Example: <code>token</code></p>
+<p>Example: <code>cookie</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>cookie</code></li> <li><code>token</code></li></ul>
         </div>
@@ -1388,7 +1388,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-request-id: 4b2be33a-2afc-4610-bf9a-bba09fed04e8
+x-request-id: 253f2e4d-9cbc-4d57-ba83-cf7020f7a0e4
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -1397,7 +1397,7 @@ access-control-allow-origin: *
         &quot;code&quot;: &quot;UNAUTHENTICATED&quot;,
         &quot;message&quot;: &quot;Authentication required.&quot;,
         &quot;details&quot;: null,
-        &quot;request_id&quot;: &quot;4b2be33a-2afc-4610-bf9a-bba09fed04e8&quot;
+        &quot;request_id&quot;: &quot;253f2e4d-9cbc-4d57-ba83-cf7020f7a0e4&quot;
     }
 }</code>
  </pre>
@@ -1536,7 +1536,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-request-id: 65f548c3-3b25-4d8f-b716-a7fbd1b2d7ea
+x-request-id: aa7be5ed-ecb2-4ff6-911a-70798488b570
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -1545,7 +1545,7 @@ access-control-allow-origin: *
         &quot;code&quot;: &quot;UNAUTHENTICATED&quot;,
         &quot;message&quot;: &quot;Authentication required.&quot;,
         &quot;details&quot;: null,
-        &quot;request_id&quot;: &quot;65f548c3-3b25-4d8f-b716-a7fbd1b2d7ea&quot;
+        &quot;request_id&quot;: &quot;aa7be5ed-ecb2-4ff6-911a-70798488b570&quot;
     }
 }</code>
  </pre>
@@ -1684,7 +1684,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-request-id: 29e9045b-0e14-4fc3-85c2-510011f70c63
+x-request-id: 09c888a1-c2a9-4fc2-afb9-4143aff7d483
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -1693,7 +1693,7 @@ access-control-allow-origin: *
         &quot;code&quot;: &quot;UNAUTHENTICATED&quot;,
         &quot;message&quot;: &quot;Authentication required.&quot;,
         &quot;details&quot;: null,
-        &quot;request_id&quot;: &quot;29e9045b-0e14-4fc3-85c2-510011f70c63&quot;
+        &quot;request_id&quot;: &quot;09c888a1-c2a9-4fc2-afb9-4143aff7d483&quot;
     }
 }</code>
  </pre>
@@ -1832,7 +1832,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-request-id: fd509a55-cc3d-471f-b7c8-591a92fc0acb
+x-request-id: f5e235a9-2e72-4fa2-b60f-28d811dc0fa7
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -1841,7 +1841,7 @@ access-control-allow-origin: *
         &quot;code&quot;: &quot;UNAUTHENTICATED&quot;,
         &quot;message&quot;: &quot;Authentication required.&quot;,
         &quot;details&quot;: null,
-        &quot;request_id&quot;: &quot;fd509a55-cc3d-471f-b7c8-591a92fc0acb&quot;
+        &quot;request_id&quot;: &quot;f5e235a9-2e72-4fa2-b60f-28d811dc0fa7&quot;
     }
 }</code>
  </pre>
@@ -2138,7 +2138,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-request-id: 673aec4c-8100-4b75-9eb3-d51b28ea39e6
+x-request-id: 6254d189-6acb-417f-8e81-e7b37fab23ea
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -2147,7 +2147,7 @@ access-control-allow-origin: *
         &quot;code&quot;: &quot;UNAUTHENTICATED&quot;,
         &quot;message&quot;: &quot;Authentication required.&quot;,
         &quot;details&quot;: null,
-        &quot;request_id&quot;: &quot;673aec4c-8100-4b75-9eb3-d51b28ea39e6&quot;
+        &quot;request_id&quot;: &quot;6254d189-6acb-417f-8e81-e7b37fab23ea&quot;
     }
 }</code>
  </pre>
@@ -2569,7 +2569,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-request-id: a41592cf-e8f9-4d87-8a46-d90b69d815ed
+x-request-id: 3dd90e70-60c7-4fb6-bda0-e17d903af083
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -2578,7 +2578,7 @@ access-control-allow-origin: *
         &quot;code&quot;: &quot;UNAUTHENTICATED&quot;,
         &quot;message&quot;: &quot;Authentication required.&quot;,
         &quot;details&quot;: null,
-        &quot;request_id&quot;: &quot;a41592cf-e8f9-4d87-8a46-d90b69d815ed&quot;
+        &quot;request_id&quot;: &quot;3dd90e70-60c7-4fb6-bda0-e17d903af083&quot;
     }
 }</code>
  </pre>
@@ -2706,7 +2706,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"model\": \"z\",
     \"type\": \"m\",
     \"category\": \"i\",
-    \"manufacture_date\": \"2026-05-07T09:04:21\",
+    \"manufacture_date\": \"2026-05-07T09:11:47\",
     \"safe_working_load_kg\": 76
 }"
 </code></pre></div>
@@ -2730,7 +2730,7 @@ let body = {
     "model": "z",
     "type": "m",
     "category": "i",
-    "manufacture_date": "2026-05-07T09:04:21",
+    "manufacture_date": "2026-05-07T09:11:47",
     "safe_working_load_kg": 76
 };
 
@@ -2920,10 +2920,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="manufacture_date"                data-endpoint="PATCHapi-v1-equipment--id-"
-               value="2026-05-07T09:04:21"
+               value="2026-05-07T09:11:47"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-05-07T09:04:21</code></p>
+<p>Must be a valid date. Example: <code>2026-05-07T09:11:47</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>safe_working_load_kg</code></b>&nbsp;&nbsp;
@@ -3151,7 +3151,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-request-id: 5b268c8b-7818-4297-962d-09949690eb00
+x-request-id: 0276c839-6a04-4788-be4e-a356067ed94c
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -3160,7 +3160,7 @@ access-control-allow-origin: *
         &quot;code&quot;: &quot;UNAUTHENTICATED&quot;,
         &quot;message&quot;: &quot;Authentication required.&quot;,
         &quot;details&quot;: null,
-        &quot;request_id&quot;: &quot;5b268c8b-7818-4297-962d-09949690eb00&quot;
+        &quot;request_id&quot;: &quot;0276c839-6a04-4788-be4e-a356067ed94c&quot;
     }
 }</code>
  </pre>
@@ -3588,7 +3588,7 @@ required certs come later when we wire the equipment-type catalog.)</h2>
     --header "Accept: application/json" \
     --data "{
     \"worker_id\": \"6ff8f7f6-1eb3-3525-be4a-3932c805afed\",
-    \"valid_from\": \"2026-05-07T09:04:21\",
+    \"valid_from\": \"2026-05-07T09:11:47\",
     \"valid_until\": \"2052-05-30\"
 }"
 </code></pre></div>
@@ -3607,7 +3607,7 @@ const headers = {
 
 let body = {
     "worker_id": "6ff8f7f6-1eb3-3525-be4a-3932c805afed",
-    "valid_from": "2026-05-07T09:04:21",
+    "valid_from": "2026-05-07T09:11:47",
     "valid_until": "2052-05-30"
 };
 
@@ -3737,10 +3737,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="valid_from"                data-endpoint="POSTapi-v1-equipment--equipment_id--operators"
-               value="2026-05-07T09:04:21"
+               value="2026-05-07T09:11:47"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-05-07T09:04:21</code></p>
+<p>Must be a valid date. Example: <code>2026-05-07T09:11:47</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>valid_until</code></b>&nbsp;&nbsp;
@@ -3786,14 +3786,14 @@ before storage.</h2>
     --header "Content-Type: multipart/form-data" \
     --header "Accept: application/json" \
     --form "category=ppe"\
-    --form "severity=medium"\
+    --form "severity=high"\
     --form "description=Eius et animi quos velit et."\
     --form "description_lang=ar"\
     --form "project_id=21c4122b-d554-3723-966c-6d723ea5293f"\
     --form "site_id=add3503c-ebff-3875-93af-b8c6a695762b"\
     --form "latitude=-89"\
     --form "longitude=-180"\
-    --form "photo=@/tmp/phpgh6c4trim8dr7OjdGpc" </code></pre></div>
+    --form "photo=@/tmp/phpt41hpammoku61J0ahS9" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -3808,7 +3808,7 @@ const headers = {
 
 const body = new FormData();
 body.append('category', 'ppe');
-body.append('severity', 'medium');
+body.append('severity', 'high');
 body.append('description', 'Eius et animi quos velit et.');
 body.append('description_lang', 'ar');
 body.append('project_id', '21c4122b-d554-3723-966c-6d723ea5293f');
@@ -3909,7 +3909,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
                value=""
                data-component="body">
     <br>
-<p>Must be a file. Must be an image. Must not be greater than 10240 kilobytes. Example: <code>/tmp/phpgh6c4trim8dr7OjdGpc</code></p>
+<p>Must be a file. Must be an image. Must not be greater than 10240 kilobytes. Example: <code>/tmp/phpt41hpammoku61J0ahS9</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>category</code></b>&nbsp;&nbsp;
@@ -3932,10 +3932,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="severity"                data-endpoint="POSTapi-v1-hazard-reports-anonymous"
-               value="medium"
+               value="high"
                data-component="body">
     <br>
-<p>Example: <code>medium</code></p>
+<p>Example: <code>high</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>low</code></li> <li><code>medium</code></li> <li><code>high</code></li> <li><code>critical</code></li></ul>
         </div>
@@ -4063,7 +4063,7 @@ fetch(url, {
 content-type: application/json
 x-ratelimit-limit: 10
 x-ratelimit-remaining: 9
-x-request-id: 04f5608c-039f-4413-a485-6dc2217a66ee
+x-request-id: 3442c201-79d9-4bef-9ec2-674078ba51fe
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -4214,7 +4214,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-request-id: 9b2ea795-b2f9-44a2-a23c-379f7ce216bc
+x-request-id: 28e42d5a-c9f2-4fb9-9d5b-3208dfa622aa
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -4223,7 +4223,7 @@ access-control-allow-origin: *
         &quot;code&quot;: &quot;UNAUTHENTICATED&quot;,
         &quot;message&quot;: &quot;Authentication required.&quot;,
         &quot;details&quot;: null,
-        &quot;request_id&quot;: &quot;9b2ea795-b2f9-44a2-a23c-379f7ce216bc&quot;
+        &quot;request_id&quot;: &quot;28e42d5a-c9f2-4fb9-9d5b-3208dfa622aa&quot;
     }
 }</code>
  </pre>
@@ -4362,7 +4362,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-request-id: 5418b84c-a30b-4922-a92b-81fa56e5cbec
+x-request-id: b8766fb3-ee17-455e-84d8-ba746131d871
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -4371,7 +4371,7 @@ access-control-allow-origin: *
         &quot;code&quot;: &quot;UNAUTHENTICATED&quot;,
         &quot;message&quot;: &quot;Authentication required.&quot;,
         &quot;details&quot;: null,
-        &quot;request_id&quot;: &quot;5418b84c-a30b-4922-a92b-81fa56e5cbec&quot;
+        &quot;request_id&quot;: &quot;b8766fb3-ee17-455e-84d8-ba746131d871&quot;
     }
 }</code>
  </pre>
@@ -4493,7 +4493,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"status\": \"resolved\",
+    \"status\": \"dismissed\",
     \"resolution_summary\": \"b\",
     \"assigned_to_user_id\": 16,
     \"assigned_to_organization_id\": \"a4855dc5-0acb-33c3-b921-f4291f719ca0\"
@@ -4513,7 +4513,7 @@ const headers = {
 };
 
 let body = {
-    "status": "resolved",
+    "status": "dismissed",
     "resolution_summary": "b",
     "assigned_to_user_id": 16,
     "assigned_to_organization_id": "a4855dc5-0acb-33c3-b921-f4291f719ca0"
@@ -4633,10 +4633,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="status"                data-endpoint="PATCHapi-v1-hazard-reports--hazardReport_id-"
-               value="resolved"
+               value="dismissed"
                data-component="body">
     <br>
-<p>Example: <code>resolved</code></p>
+<p>Example: <code>dismissed</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>under_review</code></li> <li><code>action_issued</code></li> <li><code>resolved</code></li> <li><code>dismissed</code></li></ul>
         </div>
@@ -4698,7 +4698,7 @@ authenticated GET; public notes appear on the anonymous status check.</h2>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"note_type\": \"public\",
+    \"note_type\": \"internal\",
     \"body\": \"b\",
     \"body_lang\": \"ar\",
     \"author_organization_id\": \"a4855dc5-0acb-33c3-b921-f4291f719ca0\"
@@ -4718,7 +4718,7 @@ const headers = {
 };
 
 let body = {
-    "note_type": "public",
+    "note_type": "internal",
     "body": "b",
     "body_lang": "ar",
     "author_organization_id": "a4855dc5-0acb-33c3-b921-f4291f719ca0"
@@ -4838,10 +4838,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="note_type"                data-endpoint="POSTapi-v1-hazard-reports--hazardReport_id--notes"
-               value="public"
+               value="internal"
                data-component="body">
     <br>
-<p>Example: <code>public</code></p>
+<p>Example: <code>internal</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>internal</code></li> <li><code>public</code></li></ul>
         </div>
@@ -4937,7 +4937,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-request-id: d984117b-e1d7-47a7-8b68-7d0ac6e3403e
+x-request-id: 070674d5-98e0-440d-a833-f74f2995d090
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -4945,7 +4945,7 @@ access-control-allow-origin: *
     &quot;status&quot;: &quot;ok&quot;,
     &quot;service&quot;: &quot;ePassport API&quot;,
     &quot;version&quot;: &quot;v1&quot;,
-    &quot;time&quot;: &quot;2026-05-07T09:04:20+00:00&quot;,
+    &quot;time&quot;: &quot;2026-05-07T09:11:47+00:00&quot;,
     &quot;checks&quot;: {
         &quot;database&quot;: {
             &quot;ok&quot;: true
@@ -5081,7 +5081,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-request-id: 3898a166-c224-4741-be77-6efda35c3191
+x-request-id: 23da5a2a-e11e-4fb3-92c2-c5bdfeab2f67
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -5090,7 +5090,7 @@ access-control-allow-origin: *
         &quot;code&quot;: &quot;UNAUTHENTICATED&quot;,
         &quot;message&quot;: &quot;Authentication required.&quot;,
         &quot;details&quot;: null,
-        &quot;request_id&quot;: &quot;3898a166-c224-4741-be77-6efda35c3191&quot;
+        &quot;request_id&quot;: &quot;23da5a2a-e11e-4fb3-92c2-c5bdfeab2f67&quot;
     }
 }</code>
  </pre>
@@ -5234,7 +5234,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-request-id: b28355f7-baa9-4bbd-8df2-a6673ef578a8
+x-request-id: aed91300-77fe-4d44-836a-6e9a2e7872fb
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -5243,7 +5243,7 @@ access-control-allow-origin: *
         &quot;code&quot;: &quot;UNAUTHENTICATED&quot;,
         &quot;message&quot;: &quot;Authentication required.&quot;,
         &quot;details&quot;: null,
-        &quot;request_id&quot;: &quot;b28355f7-baa9-4bbd-8df2-a6673ef578a8&quot;
+        &quot;request_id&quot;: &quot;aed91300-77fe-4d44-836a-6e9a2e7872fb&quot;
     }
 }</code>
  </pre>
@@ -5360,7 +5360,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"scope_ar\": \"l\",
     \"location_description_en\": \"j\",
     \"location_description_ar\": \"n\",
-    \"valid_from\": \"2026-05-07T09:04:21\",
+    \"valid_from\": \"2026-05-07T09:11:47\",
     \"valid_until\": \"2052-05-30\"
 }"
 </code></pre></div>
@@ -5386,7 +5386,7 @@ let body = {
     "scope_ar": "l",
     "location_description_en": "j",
     "location_description_ar": "n",
-    "valid_from": "2026-05-07T09:04:21",
+    "valid_from": "2026-05-07T09:11:47",
     "valid_until": "2052-05-30"
 };
 
@@ -5587,10 +5587,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="valid_from"                data-endpoint="POSTapi-v1-permits"
-               value="2026-05-07T09:04:21"
+               value="2026-05-07T09:11:47"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-05-07T09:04:21</code></p>
+<p>Must be a valid date. Example: <code>2026-05-07T09:11:47</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>valid_until</code></b>&nbsp;&nbsp;
@@ -5667,7 +5667,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-request-id: a70a88ac-c094-434d-910b-08785541d3ff
+x-request-id: 0c0faf58-7e5a-475e-ba18-8426f4f188ad
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -5676,7 +5676,7 @@ access-control-allow-origin: *
         &quot;code&quot;: &quot;UNAUTHENTICATED&quot;,
         &quot;message&quot;: &quot;Authentication required.&quot;,
         &quot;details&quot;: null,
-        &quot;request_id&quot;: &quot;a70a88ac-c094-434d-910b-08785541d3ff&quot;
+        &quot;request_id&quot;: &quot;0c0faf58-7e5a-475e-ba18-8426f4f188ad&quot;
     }
 }</code>
  </pre>
@@ -5806,7 +5806,7 @@ in draft state.</h2>
     \"workers\": [
         {
             \"id\": \"a4855dc5-0acb-33c3-b921-f4291f719ca0\",
-            \"role_on_permit\": \"worker\"
+            \"role_on_permit\": \"fire_watch\"
         }
     ]
 }"
@@ -5831,7 +5831,7 @@ let body = {
     "workers": [
         {
             "id": "a4855dc5-0acb-33c3-b921-f4291f719ca0",
-            "role_on_permit": "worker"
+            "role_on_permit": "fire_watch"
         }
     ]
 };
@@ -5972,10 +5972,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="workers.0.role_on_permit"                data-endpoint="POSTapi-v1-permits--permit_id--workers"
-               value="worker"
+               value="fire_watch"
                data-component="body">
     <br>
-<p>Example: <code>worker</code></p>
+<p>Example: <code>fire_watch</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>worker</code></li> <li><code>supervisor</code></li> <li><code>gas_tester</code></li> <li><code>fire_watch</code></li></ul>
                     </div>
@@ -6859,7 +6859,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-request-id: c4181818-620f-4d23-87ae-35e341588fa4
+x-request-id: a0acdcc6-6bed-49ed-b918-d5f2fb23f740
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -6868,7 +6868,7 @@ access-control-allow-origin: *
         &quot;code&quot;: &quot;UNAUTHENTICATED&quot;,
         &quot;message&quot;: &quot;Authentication required.&quot;,
         &quot;details&quot;: null,
-        &quot;request_id&quot;: &quot;c4181818-620f-4d23-87ae-35e341588fa4&quot;
+        &quot;request_id&quot;: &quot;a0acdcc6-6bed-49ed-b918-d5f2fb23f740&quot;
     }
 }</code>
  </pre>
@@ -7025,7 +7025,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-request-id: a958e0c0-2898-4661-b5a9-4839010ad6d9
+x-request-id: 47687077-658f-4992-bcea-d66383b74379
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -7034,7 +7034,7 @@ access-control-allow-origin: *
         &quot;code&quot;: &quot;UNAUTHENTICATED&quot;,
         &quot;message&quot;: &quot;Authentication required.&quot;,
         &quot;details&quot;: null,
-        &quot;request_id&quot;: &quot;a958e0c0-2898-4661-b5a9-4839010ad6d9&quot;
+        &quot;request_id&quot;: &quot;47687077-658f-4992-bcea-d66383b74379&quot;
     }
 }</code>
  </pre>
@@ -7147,7 +7147,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"employee_id\": \"n\",
     \"project_id\": \"6b72fe4a-5b40-307c-bc24-f79acf9a1bb9\",
     \"site_id\": \"977e5426-8d13-3824-86aa-b092f8ae52c5\",
-    \"client_app\": \"api\"
+    \"client_app\": \"web\"
 }"
 </code></pre></div>
 
@@ -7168,7 +7168,7 @@ let body = {
     "employee_id": "n",
     "project_id": "6b72fe4a-5b40-307c-bc24-f79acf9a1bb9",
     "site_id": "977e5426-8d13-3824-86aa-b092f8ae52c5",
-    "client_app": "api"
+    "client_app": "web"
 };
 
 fetch(url, {
@@ -7320,10 +7320,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="client_app"                data-endpoint="POSTapi-v1-scans-verify"
-               value="api"
+               value="web"
                data-component="body">
     <br>
-<p>Example: <code>api</code></p>
+<p>Example: <code>web</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>web</code></li> <li><code>mobile_ios</code></li> <li><code>mobile_android</code></li> <li><code>api</code></li></ul>
         </div>
@@ -7353,7 +7353,7 @@ resolve to the same worker the result is IMPERSONATION_FLAG.</h2>
     \"coverall_token\": \"n\",
     \"project_id\": \"6b72fe4a-5b40-307c-bc24-f79acf9a1bb9\",
     \"site_id\": \"977e5426-8d13-3824-86aa-b092f8ae52c5\",
-    \"client_app\": \"web\"
+    \"client_app\": \"mobile_android\"
 }"
 </code></pre></div>
 
@@ -7374,7 +7374,7 @@ let body = {
     "coverall_token": "n",
     "project_id": "6b72fe4a-5b40-307c-bc24-f79acf9a1bb9",
     "site_id": "977e5426-8d13-3824-86aa-b092f8ae52c5",
-    "client_app": "web"
+    "client_app": "mobile_android"
 };
 
 fetch(url, {
@@ -7526,10 +7526,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="client_app"                data-endpoint="POSTapi-v1-scans-verify-pair"
-               value="web"
+               value="mobile_android"
                data-component="body">
     <br>
-<p>Example: <code>web</code></p>
+<p>Example: <code>mobile_android</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>web</code></li> <li><code>mobile_ios</code></li> <li><code>mobile_android</code></li> <li><code>api</code></li></ul>
         </div>
@@ -7796,7 +7796,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-request-id: 0d14356a-2369-4c1c-b41c-03a2fb09ffb1
+x-request-id: fd7f5099-459c-4e9e-91a0-9492a7d388d7
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -7805,7 +7805,7 @@ access-control-allow-origin: *
         &quot;code&quot;: &quot;UNAUTHENTICATED&quot;,
         &quot;message&quot;: &quot;Authentication required.&quot;,
         &quot;details&quot;: null,
-        &quot;request_id&quot;: &quot;0d14356a-2369-4c1c-b41c-03a2fb09ffb1&quot;
+        &quot;request_id&quot;: &quot;fd7f5099-459c-4e9e-91a0-9492a7d388d7&quot;
     }
 }</code>
  </pre>
@@ -7924,7 +7924,7 @@ it client-side immediately, the secret is never returned again.</h2>
     \"headers\": [
         \"k\"
     ],
-    \"active\": true
+    \"active\": false
 }"
 </code></pre></div>
 
@@ -7950,7 +7950,7 @@ let body = {
     "headers": [
         "k"
     ],
-    "active": true
+    "active": false
 };
 
 fetch(url, {
@@ -8133,7 +8133,7 @@ Must be one of:
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>true</code></p>
+<p>Example: <code>false</code></p>
         </div>
         </form>
 
@@ -8186,7 +8186,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-request-id: 3d12b39d-c7b8-42c5-a0d4-4096a915002b
+x-request-id: d662185c-0dd8-4675-b201-94b90ecc3e3e
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -8195,7 +8195,7 @@ access-control-allow-origin: *
         &quot;code&quot;: &quot;UNAUTHENTICATED&quot;,
         &quot;message&quot;: &quot;Authentication required.&quot;,
         &quot;details&quot;: null,
-        &quot;request_id&quot;: &quot;3d12b39d-c7b8-42c5-a0d4-4096a915002b&quot;
+        &quot;request_id&quot;: &quot;d662185c-0dd8-4675-b201-94b90ecc3e3e&quot;
     }
 }</code>
  </pre>
@@ -8320,7 +8320,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"label\": \"b\",
     \"url\": \"http:\\/\\/bailey.com\\/\",
     \"events\": [
-        \"permit.submitted\"
+        \"scan.green\"
     ],
     \"active\": true
 }"
@@ -8342,7 +8342,7 @@ let body = {
     "label": "b",
     "url": "http:\/\/bailey.com\/",
     "events": [
-        "permit.submitted"
+        "scan.green"
     ],
     "active": true
 };
@@ -8863,7 +8863,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-request-id: bdb4da9f-f38c-4e37-ab01-2551650fdd9a
+x-request-id: bdd39ced-04f2-413e-ac5c-28bc0a54a9ca
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -8872,7 +8872,7 @@ access-control-allow-origin: *
         &quot;code&quot;: &quot;UNAUTHENTICATED&quot;,
         &quot;message&quot;: &quot;Authentication required.&quot;,
         &quot;details&quot;: null,
-        &quot;request_id&quot;: &quot;bdb4da9f-f38c-4e37-ab01-2551650fdd9a&quot;
+        &quot;request_id&quot;: &quot;bdd39ced-04f2-413e-ac5c-28bc0a54a9ca&quot;
     }
 }</code>
  </pre>
@@ -9000,7 +9000,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"issuing_body_ar\": \"m\",
     \"issue_date\": \"2022-05-31\",
     \"expiry_date\": \"2052-05-30\",
-    \"verified\": true
+    \"verified\": false
 }"
 </code></pre></div>
 
@@ -9023,7 +9023,7 @@ let body = {
     "issuing_body_ar": "m",
     "issue_date": "2022-05-31",
     "expiry_date": "2052-05-30",
-    "verified": true
+    "verified": false
 };
 
 fetch(url, {
@@ -9225,7 +9225,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>true</code></p>
+<p>Example: <code>false</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>metadata</code></b>&nbsp;&nbsp;
@@ -9446,7 +9446,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-request-id: b079f927-509c-4e14-aead-8892b5abe9e4
+x-request-id: 6e02e727-9c87-4cf1-bf8e-e7ce5057177f
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -9455,7 +9455,7 @@ access-control-allow-origin: *
         &quot;code&quot;: &quot;UNAUTHENTICATED&quot;,
         &quot;message&quot;: &quot;Authentication required.&quot;,
         &quot;details&quot;: null,
-        &quot;request_id&quot;: &quot;b079f927-509c-4e14-aead-8892b5abe9e4&quot;
+        &quot;request_id&quot;: &quot;6e02e727-9c87-4cf1-bf8e-e7ce5057177f&quot;
     }
 }</code>
  </pre>
@@ -9579,7 +9579,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"exam_date\": \"2022-05-31\",
     \"valid_until\": \"2052-05-30\",
-    \"status\": \"unfit\",
+    \"status\": \"fit\",
     \"examining_clinic_en\": \"n\",
     \"examining_clinic_ar\": \"g\",
     \"restrictions_en\": \"z\",
@@ -9602,7 +9602,7 @@ const headers = {
 let body = {
     "exam_date": "2022-05-31",
     "valid_until": "2052-05-30",
-    "status": "unfit",
+    "status": "fit",
     "examining_clinic_en": "n",
     "examining_clinic_ar": "g",
     "restrictions_en": "z",
@@ -9747,10 +9747,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="status"                data-endpoint="POSTapi-v1-workers--worker_id--medical-records"
-               value="unfit"
+               value="fit"
                data-component="body">
     <br>
-<p>Example: <code>unfit</code></p>
+<p>Example: <code>fit</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>fit</code></li> <li><code>fit_with_restrictions</code></li> <li><code>unfit</code></li></ul>
         </div>
@@ -10028,7 +10028,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-request-id: 653d49e2-85cc-4f10-aea8-404c37e5cf02
+x-request-id: 47184859-2a00-4139-9aae-302c5e4b3a2a
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -10037,7 +10037,7 @@ access-control-allow-origin: *
         &quot;code&quot;: &quot;UNAUTHENTICATED&quot;,
         &quot;message&quot;: &quot;Authentication required.&quot;,
         &quot;details&quot;: null,
-        &quot;request_id&quot;: &quot;653d49e2-85cc-4f10-aea8-404c37e5cf02&quot;
+        &quot;request_id&quot;: &quot;47184859-2a00-4139-9aae-302c5e4b3a2a&quot;
     }
 }</code>
  </pre>
@@ -10160,8 +10160,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"phone\": \"n\",
     \"email\": \"ashly64@example.com\",
     \"trade\": \"v\",
-    \"induction_status\": \"expired\",
-    \"induction_date\": \"2026-05-07T09:04:20\",
+    \"induction_status\": \"not_inducted\",
+    \"induction_date\": \"2026-05-07T09:11:47\",
     \"induction_valid_until\": \"2052-05-30\"
 }"
 </code></pre></div>
@@ -10193,8 +10193,8 @@ let body = {
     "phone": "n",
     "email": "ashly64@example.com",
     "trade": "v",
-    "induction_status": "expired",
-    "induction_date": "2026-05-07T09:04:20",
+    "induction_status": "not_inducted",
+    "induction_date": "2026-05-07T09:11:47",
     "induction_valid_until": "2052-05-30"
 };
 
@@ -10467,10 +10467,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="induction_status"                data-endpoint="POSTapi-v1-workers"
-               value="expired"
+               value="not_inducted"
                data-component="body">
     <br>
-<p>Example: <code>expired</code></p>
+<p>Example: <code>not_inducted</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>not_inducted</code></li> <li><code>inducted</code></li> <li><code>expired</code></li></ul>
         </div>
@@ -10481,10 +10481,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="induction_date"                data-endpoint="POSTapi-v1-workers"
-               value="2026-05-07T09:04:20"
+               value="2026-05-07T09:11:47"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-05-07T09:04:20</code></p>
+<p>Must be a valid date. Example: <code>2026-05-07T09:11:47</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>induction_valid_until</code></b>&nbsp;&nbsp;
@@ -10561,7 +10561,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-request-id: 0d1b1b64-2ff5-41b5-a8d7-14112ba40f0b
+x-request-id: 884357b8-15f8-4471-964e-277855301857
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -10570,7 +10570,7 @@ access-control-allow-origin: *
         &quot;code&quot;: &quot;UNAUTHENTICATED&quot;,
         &quot;message&quot;: &quot;Authentication required.&quot;,
         &quot;details&quot;: null,
-        &quot;request_id&quot;: &quot;0d1b1b64-2ff5-41b5-a8d7-14112ba40f0b&quot;
+        &quot;request_id&quot;: &quot;884357b8-15f8-4471-964e-277855301857&quot;
     }
 }</code>
  </pre>
@@ -10706,8 +10706,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"email\": \"ashly64@example.com\",
     \"trade\": \"v\",
     \"induction_status\": \"inducted\",
-    \"induction_date\": \"2026-05-07T09:04:20\",
-    \"induction_valid_until\": \"2026-05-07T09:04:20\"
+    \"induction_date\": \"2026-05-07T09:11:47\",
+    \"induction_valid_until\": \"2026-05-07T09:11:47\"
 }"
 </code></pre></div>
 
@@ -10738,8 +10738,8 @@ let body = {
     "email": "ashly64@example.com",
     "trade": "v",
     "induction_status": "inducted",
-    "induction_date": "2026-05-07T09:04:20",
-    "induction_valid_until": "2026-05-07T09:04:20"
+    "induction_date": "2026-05-07T09:11:47",
+    "induction_valid_until": "2026-05-07T09:11:47"
 };
 
 fetch(url, {
@@ -11026,10 +11026,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="induction_date"                data-endpoint="PATCHapi-v1-workers--id-"
-               value="2026-05-07T09:04:20"
+               value="2026-05-07T09:11:47"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-05-07T09:04:20</code></p>
+<p>Must be a valid date. Example: <code>2026-05-07T09:11:47</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>induction_valid_until</code></b>&nbsp;&nbsp;
@@ -11038,10 +11038,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="induction_valid_until"                data-endpoint="PATCHapi-v1-workers--id-"
-               value="2026-05-07T09:04:20"
+               value="2026-05-07T09:11:47"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-05-07T09:04:20</code></p>
+<p>Must be a valid date. Example: <code>2026-05-07T09:11:47</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>metadata</code></b>&nbsp;&nbsp;
@@ -11247,7 +11247,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-request-id: 53101593-f992-497f-a54e-6629496d30c4
+x-request-id: f37d4601-6525-414a-8d57-d69e596b046b
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -11256,7 +11256,7 @@ access-control-allow-origin: *
         &quot;code&quot;: &quot;UNAUTHENTICATED&quot;,
         &quot;message&quot;: &quot;Authentication required.&quot;,
         &quot;details&quot;: null,
-        &quot;request_id&quot;: &quot;53101593-f992-497f-a54e-6629496d30c4&quot;
+        &quot;request_id&quot;: &quot;f37d4601-6525-414a-8d57-d69e596b046b&quot;
     }
 }</code>
  </pre>
@@ -11410,7 +11410,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-request-id: 84f06844-2c20-4d17-997f-c7f133900d35
+x-request-id: 253b1fe7-0e00-41af-a484-39b2cd29ed0e
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -11419,7 +11419,7 @@ access-control-allow-origin: *
         &quot;code&quot;: &quot;UNAUTHENTICATED&quot;,
         &quot;message&quot;: &quot;Authentication required.&quot;,
         &quot;details&quot;: null,
-        &quot;request_id&quot;: &quot;84f06844-2c20-4d17-997f-c7f133900d35&quot;
+        &quot;request_id&quot;: &quot;253b1fe7-0e00-41af-a484-39b2cd29ed0e&quot;
     }
 }</code>
  </pre>
@@ -11571,7 +11571,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-request-id: 68bef5a9-85b3-4685-85c4-673d1d7d90ad
+x-request-id: 1e2d49b3-5e6d-40fe-b339-643b049f59bf
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
@@ -11580,7 +11580,7 @@ access-control-allow-origin: *
         &quot;code&quot;: &quot;UNAUTHENTICATED&quot;,
         &quot;message&quot;: &quot;Authentication required.&quot;,
         &quot;details&quot;: null,
-        &quot;request_id&quot;: &quot;68bef5a9-85b3-4685-85c4-673d1d7d90ad&quot;
+        &quot;request_id&quot;: &quot;1e2d49b3-5e6d-40fe-b339-643b049f59bf&quot;
     }
 }</code>
  </pre>
