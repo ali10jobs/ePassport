@@ -16,6 +16,8 @@ import { ScanPage } from '@/features/scans/ScanPage';
 import { WorkerDetailPage } from '@/features/workers/WorkerDetailPage';
 import { WorkersListPage } from '@/features/workers/WorkersListPage';
 import { DashboardPage } from '@/features/dashboard/DashboardPage';
+import { EquipmentDetailPage } from '@/features/equipment/EquipmentDetailPage';
+import { EquipmentListPage } from '@/features/equipment/EquipmentListPage';
 import { PlaceholderPage } from '@/pages/PlaceholderPage';
 
 import '@/i18n';
@@ -65,10 +67,8 @@ export default function App() {
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/workers" element={<WorkersListPage />} />
             <Route path="/workers/:id" element={<WorkerDetailPage />} />
-            <Route
-              path="/equipment"
-              element={<PlaceholderPage titleKey="nav.equipment" fallback="Equipment" />}
-            />
+            <Route path="/equipment" element={<EquipmentListPage />} />
+            <Route path="/equipment/:id" element={<EquipmentDetailPage />} />
             <Route path="/scans" element={<ScanPage />} />
             <Route path="/permits" element={<PermitsListPage />} />
             <Route path="/permits/new" element={<NewPermitPage />} />

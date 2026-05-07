@@ -7,6 +7,7 @@ import {
   type ApiErrorBody,
   type ClientDashboard,
   type ConsultantDashboard,
+  type EquipmentListItem,
   type HazardListItem,
   type HazardNote,
   type HazardReportDetail,
@@ -256,6 +257,55 @@ export const endpoints = {
     },
     async events(permitId: string): Promise<{ data: PermitEvent[] }> {
       return api<{ data: PermitEvent[] }>(`/api/v1/permits/${permitId}/events`);
+    },
+  },
+
+  equipment: {
+    async list(params: {
+      page?: number;
+      perPage?: number;
+      search?: string;
+      type?: string;
+      tpiStatus?: 'valid' | 'expired';
+      ownerOrganizationId?: string;
+      include?: string;
+    }): Promise<PaginatedResponse<EquipmentListItem>> {
+      const query: Record<string, string | number> = {};
+      if (params.page) query.page = params.page;
+      if (params.perPage) query.per_page = params.perPage;
+      if (params.search) query['filter[search]'] = params.search;
+      if (params.type) query['filter[type]'] = params.type;
+      if (params.tpiStatus) query['filter[tpi_status]'] = params.tpiStatus;
+      if (params.ownerOrganizationId)
+        query['filter[owner_organization_id]'] = params.ownerOrganizationId;
+      query.include = params.include ?? 'ownerOrganization,latestCertification';
+
+      return api<PaginatedResponse<EquipmentListItem>>('/api/v1/equipment', {
+        method: 'GET',
+        query,
+      });
+    },
+    async get(id: string): Promise<{ data: EquipmentListItem }> {
+      return api<{ data: EquipmentListItem }>(`/api/v1/equipment/${id}`, {
+        query: { include: 'ownerOrganization,latestCertification' },
+      });
+    },
+    async attachCertification(
+      id: string,
+      input: {
+        tpi_body_en: string;
+        tpi_body_ar?: string;
+        inspection_date: string;
+        expiry_date: string;
+        result: 'pass' | 'pass_with_conditions' | 'fail';
+        certificate_number?: string;
+        notes?: string;
+      }
+    ): Promise<{ data: { id: string; result: string; is_valid: boolean } }> {
+      return api(`/api/v1/equipment/${id}/certifications`, {
+        method: 'POST',
+        body: input,
+      });
     },
   },
 

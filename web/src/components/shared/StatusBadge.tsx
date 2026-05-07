@@ -97,6 +97,31 @@ export function HazardStatusBadge({ status }: HazardStatusBadgeProps) {
   );
 }
 
+interface TpiStatusBadgeProps {
+  /** Backed by latest_certification.is_valid + result. */
+  cert: { is_valid: boolean; result: string } | null | undefined;
+}
+
+/**
+ * Equipment TPI status:
+ *   no cert       -> destructive ("No TPI")
+ *   is_valid=true -> success or warning if pass_with_conditions
+ *   else          -> destructive ("Expired")
+ */
+export function TpiStatusBadge({ cert }: TpiStatusBadgeProps) {
+  const { t } = useTranslation();
+  if (!cert) {
+    return <Badge variant="destructive">{t('status.tpi.missing', 'No TPI')}</Badge>;
+  }
+  if (!cert.is_valid) {
+    return <Badge variant="destructive">{t('status.tpi.expired', 'TPI expired')}</Badge>;
+  }
+  if (cert.result === 'pass_with_conditions') {
+    return <Badge variant="warning">{t('status.tpi.conditions', 'TPI w/ conditions')}</Badge>;
+  }
+  return <Badge variant="success">{t('status.tpi.valid', 'TPI valid')}</Badge>;
+}
+
 interface PermitStatusBadgeProps {
   status: string;
 }

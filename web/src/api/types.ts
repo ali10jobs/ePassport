@@ -180,6 +180,42 @@ export interface PermitTypeListItem {
   default_validity_hours: number;
 }
 
+// Equipment — matches App\Models\Equipment + EquipmentResource.
+export type EquipmentTpiResult = 'pass' | 'pass_with_conditions' | 'fail' | string;
+
+export interface EquipmentLatestCertification {
+  id: string;
+  tpi_body_en: string | null;
+  inspection_date: string | null;
+  expiry_date: string | null;
+  result: EquipmentTpiResult;
+  is_valid: boolean;
+}
+
+export interface EquipmentListItem {
+  id: string;
+  owner_organization_id: string;
+  owner_organization?: {
+    id: string;
+    name_en: string;
+    name_ar: string;
+  };
+  asset_tag: string;
+  serial_number: string | null;
+  manufacturer: string | null;
+  model: string | null;
+  type: string;
+  category: string | null;
+  manufacture_date: string | null;
+  safe_working_load_kg: number | null;
+  specs: Record<string, unknown> | null;
+  metadata: Record<string, unknown> | null;
+  latest_certification?: EquipmentLatestCertification | null;
+  created_at: string | null;
+  updated_at: string | null;
+  deleted_at: string | null;
+}
+
 // Permits — matches App\Models\Permit + PermitResource.
 export type PermitStatus =
   | 'draft'
