@@ -1,0 +1,33 @@
+{
+  "nav": {
+    "dashboard": "لوحة التحكم",
+    "workers": "العمال",
+    "equipment": "المعدات",
+    "scans": "عمليات المسح",
+    "permits": "تصاريح العمل",
+    "hazards": "بلاغات السلامة",
+    "settings": "الإعدادات"
+  },
+  "shell": {
+    "search_placeholder": "بحث…",
+    "toggle_language": "تبديل اللغة",
+    "support": "الدعم",
+    "org_switcher_label": "شركة العرض"
+  },
+  "auth": {
+    "login_title": "تسجيل الدخول",
+    "login_subtitle": "استخدم بيانات الاعتماد الخاصة بـ ePassport.",
+    "email_label": "البريد الإلكتروني",
+    "password_label": "كلمة المرور",
+    "submit": "تسجيل الدخول",
+    "submitting": "جارٍ تسجيل الدخول…",
+    "error_invalid_credentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+    "error_generic": "تعذر تسجيل الدخول. حاول مرة أخرى."
+  },
+  "common": {
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "loading": "جارٍ التحميل…",
+    "language": "اللغة"
+  }
+}

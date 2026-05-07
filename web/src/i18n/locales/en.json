@@ -1,0 +1,33 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "workers": "Workers",
+    "equipment": "Equipment",
+    "scans": "Scans",
+    "permits": "Permits",
+    "hazards": "Hazards",
+    "settings": "Settings"
+  },
+  "shell": {
+    "search_placeholder": "Search…",
+    "toggle_language": "Toggle language",
+    "support": "Support",
+    "org_switcher_label": "Demo MainCo"
+  },
+  "auth": {
+    "login_title": "Sign in",
+    "login_subtitle": "Use your ePassport credentials.",
+    "email_label": "Email",
+    "password_label": "Password",
+    "submit": "Sign in",
+    "submitting": "Signing in…",
+    "error_invalid_credentials": "Invalid email or password.",
+    "error_generic": "Could not sign in. Please try again."
+  },
+  "common": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "loading": "Loading…",
+    "language": "Language"
+  }
+}

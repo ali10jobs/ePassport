@@ -1,6 +1,7 @@
 # Archives / local-only
 files.zip
 plan-files/
+design-reference.png
 
 # Repo-root composer artifacts should never be tracked. Each codebase has
 # its own composer.json under backend/, web/, etc. (commit blocked here so a
