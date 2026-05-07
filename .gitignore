@@ -76,3 +76,13 @@ Thumbs.db
 *.swp
 *.swo
 *~
+
+# Mobile app
+mobile/build/
+mobile/.dart_tool/
+mobile/.flutter-plugins
+mobile/.flutter-plugins-dependencies
+mobile/android/.gradle/
+mobile/android/app/.gradle/
+mobile/android/local.properties
+mobile/.metadata
