@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\V1\OpenApiController;
 use App\Http\Controllers\Api\V1\PermitController;
 use App\Http\Controllers\Api\V1\PermitLifecycleController;
 use App\Http\Controllers\Api\V1\ScanController;
+use App\Http\Controllers\Api\V1\WebhookSubscriptionController;
 use App\Http\Controllers\Api\V1\WorkerCertificationController;
 use App\Http\Controllers\Api\V1\WorkerController;
 use App\Http\Controllers\Api\V1\WorkerMedicalRecordController;
@@ -84,6 +85,16 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/main-contractor/summary', [DashboardController::class, 'mainContractor'])->name('main_contractor');
         Route::get('/consultant/summary', [DashboardController::class, 'consultant'])->name('consultant');
         Route::get('/subcontractor/summary', [DashboardController::class, 'subcontractor'])->name('subcontractor');
+    });
+
+    // Webhook subscriptions
+    Route::prefix('webhooks')->name('webhooks.')->group(function () {
+        Route::get('/', [WebhookSubscriptionController::class, 'index'])->name('index');
+        Route::post('/', [WebhookSubscriptionController::class, 'store'])->name('store');
+        Route::get('/{webhookSubscription}', [WebhookSubscriptionController::class, 'show'])->name('show');
+        Route::patch('/{webhookSubscription}', [WebhookSubscriptionController::class, 'update'])->name('update');
+        Route::delete('/{webhookSubscription}', [WebhookSubscriptionController::class, 'destroy'])->name('destroy');
+        Route::post('/{webhookSubscription}/rotate-secret', [WebhookSubscriptionController::class, 'rotateSecret'])->name('rotate');
     });
 
     // Hazard reports (authenticated)
