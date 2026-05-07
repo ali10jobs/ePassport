@@ -13,12 +13,12 @@ import { NewPermitPage } from '@/features/permits/NewPermitPage';
 import { PermitDetailPage } from '@/features/permits/PermitDetailPage';
 import { PermitsListPage } from '@/features/permits/PermitsListPage';
 import { ScanPage } from '@/features/scans/ScanPage';
+import { SettingsPage } from '@/features/settings/SettingsPage';
 import { WorkerDetailPage } from '@/features/workers/WorkerDetailPage';
 import { WorkersListPage } from '@/features/workers/WorkersListPage';
 import { DashboardPage } from '@/features/dashboard/DashboardPage';
 import { EquipmentDetailPage } from '@/features/equipment/EquipmentDetailPage';
 import { EquipmentListPage } from '@/features/equipment/EquipmentListPage';
-import { PlaceholderPage } from '@/pages/PlaceholderPage';
 
 import '@/i18n';
 
@@ -75,10 +75,7 @@ export default function App() {
             <Route path="/permits/:id" element={<PermitDetailPage />} />
             <Route path="/hazards" element={<HazardsListPage />} />
             <Route path="/hazards/:id" element={<HazardDetailPage />} />
-            <Route
-              path="/settings"
-              element={<PlaceholderPage titleKey="nav.settings" fallback="Settings" />}
-            />
+            <Route path="/settings" element={<SettingsPage />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />
