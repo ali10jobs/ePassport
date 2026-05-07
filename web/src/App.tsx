@@ -6,6 +6,7 @@ import { AppLayout } from '@/components/layout/AppLayout';
 import { AuthLayout } from '@/components/layout/AuthLayout';
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { LoginPage } from '@/features/auth/LoginPage';
+import { ScanPage } from '@/features/scans/ScanPage';
 import { WorkerDetailPage } from '@/features/workers/WorkerDetailPage';
 import { WorkersListPage } from '@/features/workers/WorkersListPage';
 import { DashboardPage } from '@/pages/DashboardPage';
@@ -59,10 +60,7 @@ export default function App() {
               path="/equipment"
               element={<PlaceholderPage titleKey="nav.equipment" fallback="Equipment" />}
             />
-            <Route
-              path="/scans"
-              element={<PlaceholderPage titleKey="nav.scans" fallback="Scans" />}
-            />
+            <Route path="/scans" element={<ScanPage />} />
             <Route
               path="/permits"
               element={<PlaceholderPage titleKey="nav.permits" fallback="Permits" />}

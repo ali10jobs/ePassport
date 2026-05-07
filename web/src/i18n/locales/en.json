@@ -112,5 +112,50 @@
       "not_inducted": "Not inducted",
       "expired": "Expired"
     }
+  },
+  "scan": {
+    "subtitle": "Verify a worker or piece of equipment at the gate.",
+    "mode_qr": "Scan QR",
+    "mode_manual": "Manual entry",
+    "qr_title": "Camera scanner",
+    "manual_title": "Manual entry",
+    "manual_placeholder": "Employee ID (e.g. EMP-001)",
+    "verify": "Verify",
+    "verifying": "Verifying…",
+    "hint": "Centre the QR code in the frame",
+    "subject_worker": "Worker",
+    "subject_equipment": "Equipment",
+    "reasons": "Reasons",
+    "scan_another": "Scan another",
+    "event_id": "event_id",
+    "result": {
+      "green": "GO",
+      "green_subtitle": "Authorised — proceed.",
+      "red": "STOP",
+      "red_subtitle": "Not authorised. See reasons below.",
+      "impersonation": "IMPERSONATION",
+      "impersonation_subtitle": "Helmet and coverall belong to different workers."
+    },
+    "green": {
+      "cert_summary": "Certifications on file"
+    },
+    "reason": {
+      "cert_expired": "Certification {{cert}} expired on {{expired_on}}",
+      "cert_missing": "Required certification missing: {{cert}}",
+      "induction_missing": "Site induction is missing or expired (status: {{status}})",
+      "medical_fail": "Medical fitness not on file or expired",
+      "org_not_engaged": "Worker's employer is not engaged on this project",
+      "impersonation_flag": "Helmet and coverall belong to different workers",
+      "equipment_tpi_expired": "Equipment TPI inspection expired on {{expiry_date}}",
+      "operator_not_authorized": "Operator is not authorised for this equipment",
+      "unknown_qr": "QR code is not registered"
+    },
+    "error": {
+      "generic": "Could not verify the scan.",
+      "permission_title": "Camera permission denied",
+      "permission_body": "Allow camera access in your browser to scan QR codes, or use manual entry.",
+      "unavailable_title": "Camera unavailable",
+      "unavailable_body": "No camera is available on this device. Use manual entry instead."
+    }
   }
 }

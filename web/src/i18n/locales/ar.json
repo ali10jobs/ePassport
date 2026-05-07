@@ -112,5 +112,50 @@
       "not_inducted": "غير مؤهل",
       "expired": "منتهي"
     }
+  },
+  "scan": {
+    "subtitle": "تحقق من العامل أو المعدة عند بوابة الموقع.",
+    "mode_qr": "مسح رمز QR",
+    "mode_manual": "إدخال يدوي",
+    "qr_title": "ماسح الكاميرا",
+    "manual_title": "إدخال يدوي",
+    "manual_placeholder": "رقم الموظف (مثال: EMP-001)",
+    "verify": "تحقق",
+    "verifying": "جاري التحقق…",
+    "hint": "قم بمحاذاة رمز QR داخل الإطار",
+    "subject_worker": "العامل",
+    "subject_equipment": "المعدة",
+    "reasons": "الأسباب",
+    "scan_another": "مسح آخر",
+    "event_id": "معرف الحدث",
+    "result": {
+      "green": "السماح بالدخول",
+      "green_subtitle": "مصرح بالدخول — تابع.",
+      "red": "إيقاف",
+      "red_subtitle": "غير مصرح. اطلع على الأسباب أدناه.",
+      "impersonation": "انتحال هوية",
+      "impersonation_subtitle": "الخوذة والبدلة تنتميان لعاملَين مختلفَين."
+    },
+    "green": {
+      "cert_summary": "الشهادات المسجلة"
+    },
+    "reason": {
+      "cert_expired": "الشهادة {{cert}} انتهت في {{expired_on}}",
+      "cert_missing": "شهادة مطلوبة مفقودة: {{cert}}",
+      "induction_missing": "تأهيل الموقع مفقود أو منتهي (الحالة: {{status}})",
+      "medical_fail": "اللياقة الطبية غير مسجلة أو منتهية",
+      "org_not_engaged": "صاحب عمل العامل غير مشارك في هذا المشروع",
+      "impersonation_flag": "الخوذة والبدلة تنتميان لعاملَين مختلفَين",
+      "equipment_tpi_expired": "فحص TPI للمعدة انتهى في {{expiry_date}}",
+      "operator_not_authorized": "المشغل غير مصرح له بتشغيل هذه المعدة",
+      "unknown_qr": "رمز QR غير مسجل"
+    },
+    "error": {
+      "generic": "تعذر التحقق من المسح.",
+      "permission_title": "تم رفض إذن الكاميرا",
+      "permission_body": "اسمح بالوصول للكاميرا في المتصفح لمسح رموز QR، أو استخدم الإدخال اليدوي.",
+      "unavailable_title": "الكاميرا غير متاحة",
+      "unavailable_body": "لا توجد كاميرا متاحة على هذا الجهاز. استخدم الإدخال اليدوي بدلاً من ذلك."
+    }
   }
 }

@@ -6,6 +6,7 @@ import {
   type ApiErrorBody,
   type MeUser,
   type PaginatedResponse,
+  type ScanResult,
   type WorkerListItem,
   type WorkerPassport,
 } from './types';
@@ -113,6 +114,32 @@ export const endpoints = {
     },
     async passport(workerId: string): Promise<{ data: WorkerPassport }> {
       return api<{ data: WorkerPassport }>(`/api/v1/workers/${workerId}/passport`);
+    },
+  },
+
+  scans: {
+    async verify(input: {
+      token?: string;
+      employee_id?: string;
+      project_id?: string;
+      site_id?: string;
+      client_app?: 'web' | 'mobile_ios' | 'mobile_android' | 'api';
+    }): Promise<{ data: ScanResult }> {
+      return api<{ data: ScanResult }>('/api/v1/scans/verify', {
+        method: 'POST',
+        body: { client_app: 'web', ...input },
+      });
+    },
+    async verifyPair(input: {
+      helmet_token: string;
+      coverall_token: string;
+      project_id?: string;
+      site_id?: string;
+    }): Promise<{ data: ScanResult }> {
+      return api<{ data: ScanResult }>('/api/v1/scans/verify-pair', {
+        method: 'POST',
+        body: { client_app: 'web', ...input },
+      });
     },
   },
 };

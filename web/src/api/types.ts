@@ -128,6 +128,35 @@ export interface WorkerPassport {
   photo_path: string | null;
 }
 
+// Scan verification — matches App\Models\ScanEvent + ScanResult.
+export type ScanResultStatus = 'green' | 'red' | 'impersonation_flag';
+export type ScanSubjectType = 'worker' | 'equipment' | null;
+
+export type ScanReasonCode =
+  | 'CERT_EXPIRED'
+  | 'INDUCTION_MISSING'
+  | 'MEDICAL_FAIL'
+  | 'ORG_NOT_ENGAGED'
+  | 'IMPERSONATION_FLAG'
+  | 'EQUIPMENT_TPI_EXPIRED'
+  | 'OPERATOR_NOT_AUTHORIZED'
+  | 'UNKNOWN_QR';
+
+export interface ScanReason {
+  code: ScanReasonCode | string;
+  details?: Record<string, unknown> | null;
+}
+
+export interface ScanResult {
+  result: ScanResultStatus;
+  subject_type: ScanSubjectType;
+  subject_id: string | null;
+  token_type: string | null;
+  reasons: ScanReason[];
+  event_id: string;
+  scanned_at: string;
+}
+
 export interface PaginatedResponse<T> {
   data: T[];
   links: {
