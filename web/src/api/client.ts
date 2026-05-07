@@ -60,7 +60,11 @@ function unwrapApiError({ response }: { response: { _data?: unknown; status: num
 
 export const api = ofetch.create({
   baseURL: API_BASE,
-  credentials: 'include',
+  // Token auth (Authorization: Bearer …) doesn't need cookies. credentials:'omit'
+  // lets the browser accept the backend's wildcard CORS header during local dev.
+  // Switch to 'include' once cookie-mode (SESSION_DOMAIN + exact-origin CORS) is
+  // wired in production.
+  credentials: 'omit',
   retry: 0,
   async onRequest({ options }) {
     jsonHeaders({ options });
