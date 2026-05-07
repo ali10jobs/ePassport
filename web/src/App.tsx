@@ -15,7 +15,7 @@ import { PermitsListPage } from '@/features/permits/PermitsListPage';
 import { ScanPage } from '@/features/scans/ScanPage';
 import { WorkerDetailPage } from '@/features/workers/WorkerDetailPage';
 import { WorkersListPage } from '@/features/workers/WorkersListPage';
-import { DashboardPage } from '@/pages/DashboardPage';
+import { DashboardPage } from '@/features/dashboard/DashboardPage';
 import { PlaceholderPage } from '@/pages/PlaceholderPage';
 
 import '@/i18n';

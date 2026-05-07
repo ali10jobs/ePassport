@@ -332,6 +332,103 @@ export interface AnonymousHazardStatus {
   }>;
 }
 
+// Dashboards — matches App\Services\Dashboard\DashboardService payloads.
+export interface CertExpiryCounts {
+  expired: number;
+  expiring_30_days: number;
+  expiring_60_days: number;
+  expiring_90_days: number;
+}
+
+export interface ScanCountsLast24h {
+  total_24h: number;
+  green_24h: number;
+  red_24h: number;
+  impersonation_24h: number;
+}
+
+export interface ClientDashboard {
+  role: 'client';
+  project_ids: string[];
+  workers: {
+    total: number;
+    by_organization: Record<string, number>;
+  };
+  certifications: CertExpiryCounts;
+  permits: {
+    active_approved: number;
+    awaiting_review: number;
+    closed_this_week: number;
+  };
+  hazards: {
+    submitted_mtd: number;
+    open_critical: number;
+    resolved_mtd: number;
+  };
+  scans: ScanCountsLast24h;
+  incident_indicators: {
+    red_scans_today: number;
+    impersonation_flags_today: number;
+    critical_hazards_open: number;
+  };
+}
+
+export interface MainContractorDashboard {
+  role: 'main_contractor';
+  organization_id: string;
+  subcontractors: string[];
+  workers: { mine: number; subs: number };
+  equipment: { mine: number; tpi_expired: number };
+  certifications: CertExpiryCounts;
+  permits: {
+    active_approved: number;
+    drafts: number;
+    awaiting_review: number;
+    recently_rejected: number;
+  };
+  hazards: {
+    assigned_to_us: number;
+    open_assigned_to_us: number;
+  };
+}
+
+export interface ConsultantDashboard {
+  role: 'consultant';
+  organization_id: string;
+  project_ids: string[];
+  permits: {
+    awaiting_review: number;
+    approved_today: number;
+    rejected_today: number;
+    top_awaiting: Array<{
+      id: string;
+      permit_number: string;
+      submitted_at: string | null;
+      permit_type_id: string;
+    }>;
+  };
+  hazards: {
+    submitted_mtd: number;
+    open_critical: number;
+    resolved_mtd: number;
+  };
+  scans: ScanCountsLast24h & { red_scans_today: number };
+}
+
+export interface SubcontractorDashboard {
+  role: 'subcontractor';
+  organization_id: string;
+  workers: { total: number; inducted: number; not_inducted: number };
+  equipment: { mine: number };
+  certifications: CertExpiryCounts;
+}
+
+export type DashboardPayload =
+  | ClientDashboard
+  | MainContractorDashboard
+  | ConsultantDashboard
+  | SubcontractorDashboard;
+
 export interface PaginatedResponse<T> {
   data: T[];
   links: {

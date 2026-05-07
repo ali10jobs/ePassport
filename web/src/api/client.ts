@@ -5,9 +5,12 @@ import {
   ApiError,
   type AnonymousHazardStatus,
   type ApiErrorBody,
+  type ClientDashboard,
+  type ConsultantDashboard,
   type HazardListItem,
   type HazardNote,
   type HazardReportDetail,
+  type MainContractorDashboard,
   type MeUser,
   type PaginatedResponse,
   type PermitEvent,
@@ -15,6 +18,7 @@ import {
   type PermitTypeListItem,
   type ProjectListItem,
   type ScanResult,
+  type SubcontractorDashboard,
   type WorkerListItem,
   type WorkerPassport,
 } from './types';
@@ -322,6 +326,21 @@ export const endpoints = {
       return publicApi<{ data: AnonymousHazardStatus }>(
         `/api/v1/hazard-reports/anonymous/${anonymousReportId}`
       );
+    },
+  },
+
+  dashboards: {
+    async client(): Promise<{ data: ClientDashboard }> {
+      return api<{ data: ClientDashboard }>('/api/v1/dashboards/client/summary');
+    },
+    async mainContractor(): Promise<{ data: MainContractorDashboard }> {
+      return api<{ data: MainContractorDashboard }>('/api/v1/dashboards/main-contractor/summary');
+    },
+    async consultant(): Promise<{ data: ConsultantDashboard }> {
+      return api<{ data: ConsultantDashboard }>('/api/v1/dashboards/consultant/summary');
+    },
+    async subcontractor(): Promise<{ data: SubcontractorDashboard }> {
+      return api<{ data: SubcontractorDashboard }>('/api/v1/dashboards/subcontractor/summary');
     },
   },
 };
