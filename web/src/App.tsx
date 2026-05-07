@@ -6,6 +6,9 @@ import { AppLayout } from '@/components/layout/AppLayout';
 import { AuthLayout } from '@/components/layout/AuthLayout';
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { LoginPage } from '@/features/auth/LoginPage';
+import { NewPermitPage } from '@/features/permits/NewPermitPage';
+import { PermitDetailPage } from '@/features/permits/PermitDetailPage';
+import { PermitsListPage } from '@/features/permits/PermitsListPage';
 import { ScanPage } from '@/features/scans/ScanPage';
 import { WorkerDetailPage } from '@/features/workers/WorkerDetailPage';
 import { WorkersListPage } from '@/features/workers/WorkersListPage';
@@ -61,10 +64,9 @@ export default function App() {
               element={<PlaceholderPage titleKey="nav.equipment" fallback="Equipment" />}
             />
             <Route path="/scans" element={<ScanPage />} />
-            <Route
-              path="/permits"
-              element={<PlaceholderPage titleKey="nav.permits" fallback="Permits" />}
-            />
+            <Route path="/permits" element={<PermitsListPage />} />
+            <Route path="/permits/new" element={<NewPermitPage />} />
+            <Route path="/permits/:id" element={<PermitDetailPage />} />
             <Route
               path="/hazards"
               element={<PlaceholderPage titleKey="nav.hazards" fallback="Hazards" />}

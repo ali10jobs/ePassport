@@ -31,7 +31,9 @@
     "language": "اللغة",
     "back": "رجوع",
     "previous": "السابق",
-    "next": "التالي"
+    "next": "التالي",
+    "close": "إغلاق",
+    "remove": "إزالة"
   },
   "placeholder": {
     "coming_soon": "قريباً",
@@ -111,7 +113,98 @@
       "inducted": "مؤهل",
       "not_inducted": "غير مؤهل",
       "expired": "منتهي"
+    },
+    "permit": {
+      "draft": "مسودة",
+      "submitted": "تم الإرسال",
+      "approved": "معتمد",
+      "rejected": "مرفوض",
+      "closed": "مغلق",
+      "expired": "منتهي"
     }
+  },
+  "permits": {
+    "subtitle": "إصدارات تصاريح العمل ودورة حياتها.",
+    "new": "تصريح جديد",
+    "new_subtitle": "أنشئ مسودة. يمكنك إرفاق العمال والمعدات ثم إرسالها لمراجعة الاستشاري.",
+    "create_draft": "إنشاء مسودة",
+    "created": "تم إنشاء التصريح.",
+    "search_placeholder": "ابحث برقم التصريح أو نطاق العمل…",
+    "filter_status": "الحالة",
+    "filter_status_all": "أي حالة",
+    "col_number": "رقم التصريح",
+    "col_type": "النوع",
+    "col_status": "الحالة",
+    "col_scope": "نطاق العمل",
+    "col_workers": "العمال",
+    "col_submitted": "تاريخ الإرسال",
+    "empty": "لا توجد تصاريح تطابق عوامل التصفية.",
+    "error_loading": "تعذر تحميل التصاريح.",
+    "field_project": "المشروع",
+    "field_issuing_org": "الجهة المُصدِرة",
+    "field_type": "نوع التصريح",
+    "field_scope_en": "نطاق العمل (الإنجليزية)",
+    "field_scope_en_placeholder": "أعمال لحام على الطابق 12 الأعمدة الغربية",
+    "field_scope_ar": "نطاق العمل (العربية، اختياري)",
+    "field_location": "الموقع (اختياري)",
+    "field_location_placeholder": "الطابق 12، صف الأعمدة الغربية، خط 6-8",
+    "actions": {
+      "submit": "إرسال",
+      "submitted": "تم إرسال التصريح.",
+      "approve": "اعتماد",
+      "approved": "تم اعتماد التصريح.",
+      "reject": "رفض",
+      "rejected": "تم رفض التصريح.",
+      "close": "إغلاق",
+      "closed": "تم إغلاق التصريح.",
+      "error": "فشلت العملية."
+    },
+    "confirm": {
+      "reject_title": "رفض التصريح",
+      "reject_subtitle": "أدخل السبب. سيراه مُرسِل التصريح على الصفحة.",
+      "reject_placeholder": "سبب الرفض (5 أحرف على الأقل)",
+      "close_title": "إغلاق التصريح",
+      "close_subtitle": "ملاحظات الإغلاق (اختياري) — ما تم إنجازه أو أي حوادث.",
+      "close_placeholder": "ملاحظات الإغلاق (اختياري)"
+    },
+    "hardblock": {
+      "title": "تعذّر إرسال التصريح",
+      "subtitle": "تم التحقق من كل عامل ومعدة من جديد. عالج المشكلات أدناه ثم أعد الإرسال.",
+      "project_issues": "مشكلات على مستوى التصريح",
+      "worker_issues": "مشكلات العمال",
+      "equipment_issues": "مشكلات المعدات",
+      "role_on_permit": "الدور",
+      "open_worker": "فتح صفحة العامل"
+    },
+    "attach": {
+      "title": "إرفاق العمال",
+      "search_placeholder": "ابحث بالاسم أو رقم الموظف…",
+      "no_results": "لا يوجد عمال مطابقون.",
+      "queue": "في انتظار الإرفاق",
+      "submit": "إرفاق {{n}}",
+      "toast": "تم الإرفاق: {{n}}، مُرفَقون مسبقاً: {{a}}"
+    },
+    "detail": {
+      "error": "تعذر تحميل التصريح."
+    }
+  },
+  "permit_detail": {
+    "tabs": {
+      "overview": "نظرة عامة",
+      "events": "دورة الحياة"
+    },
+    "scope": "نطاق العمل",
+    "location": "الموقع",
+    "lifecycle_dates": "دورة الحياة",
+    "valid_from": "ساري من",
+    "valid_until": "ساري حتى",
+    "submitted_at": "تاريخ الإرسال",
+    "approved_at": "تاريخ الاعتماد",
+    "rejected_at": "تاريخ الرفض",
+    "closed_at": "تاريخ الإغلاق",
+    "workers_summary": "العمال المُرفَقون",
+    "workers_count": "{{count}} عامل مُرفَق.",
+    "events_empty": "لم تُسجَّل أي أحداث بعد."
   },
   "scan": {
     "subtitle": "تحقق من العامل أو المعدة عند بوابة الموقع.",

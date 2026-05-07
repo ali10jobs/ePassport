@@ -6,6 +6,10 @@ import {
   type ApiErrorBody,
   type MeUser,
   type PaginatedResponse,
+  type PermitEvent,
+  type PermitListItem,
+  type PermitTypeListItem,
+  type ProjectListItem,
   type ScanResult,
   type WorkerListItem,
   type WorkerPassport,
@@ -140,6 +144,98 @@ export const endpoints = {
         method: 'POST',
         body: { client_app: 'web', ...input },
       });
+    },
+  },
+
+  permits: {
+    async list(params: {
+      page?: number;
+      perPage?: number;
+      status?: string;
+      search?: string;
+      include?: string;
+    }): Promise<PaginatedResponse<PermitListItem>> {
+      const query: Record<string, string | number> = {};
+      if (params.page) query.page = params.page;
+      if (params.perPage) query.per_page = params.perPage;
+      if (params.status) query['filter[status]'] = params.status;
+      if (params.search) query['filter[search]'] = params.search;
+      query.include = params.include ?? 'permitType';
+
+      return api<PaginatedResponse<PermitListItem>>('/api/v1/permits', {
+        method: 'GET',
+        query,
+      });
+    },
+    async get(permitId: string): Promise<{ data: PermitListItem }> {
+      return api<{ data: PermitListItem }>(`/api/v1/permits/${permitId}`, {
+        method: 'GET',
+        query: { include: 'permitType' },
+      });
+    },
+    async create(input: {
+      project_id: string;
+      issuing_organization_id: string;
+      permit_type_id: string;
+      scope_en: string;
+      scope_ar?: string;
+      site_id?: string;
+      location_description_en?: string;
+      location_description_ar?: string;
+      valid_from?: string;
+      valid_until?: string;
+    }): Promise<{ data: PermitListItem }> {
+      return api<{ data: PermitListItem }>('/api/v1/permits', {
+        method: 'POST',
+        body: input,
+      });
+    },
+    async attachWorkers(
+      permitId: string,
+      input: {
+        workers?: Array<{ id: string; role_on_permit?: string }>;
+        tokens?: string[];
+      }
+    ): Promise<{ data: { attached: number; already_attached: number; unknown_tokens: string[] } }> {
+      return api(`/api/v1/permits/${permitId}/workers`, {
+        method: 'POST',
+        body: input,
+      });
+    },
+    async submit(permitId: string): Promise<{ data: PermitListItem }> {
+      return api<{ data: PermitListItem }>(`/api/v1/permits/${permitId}/submit`, {
+        method: 'POST',
+      });
+    },
+    async approve(permitId: string, comment?: string): Promise<{ data: PermitListItem }> {
+      return api<{ data: PermitListItem }>(`/api/v1/permits/${permitId}/approve`, {
+        method: 'POST',
+        body: comment ? { comment } : {},
+      });
+    },
+    async reject(permitId: string, reason: string): Promise<{ data: PermitListItem }> {
+      return api<{ data: PermitListItem }>(`/api/v1/permits/${permitId}/reject`, {
+        method: 'POST',
+        body: { reason },
+      });
+    },
+    async close(permitId: string, closureNotes?: string): Promise<{ data: PermitListItem }> {
+      return api<{ data: PermitListItem }>(`/api/v1/permits/${permitId}/close`, {
+        method: 'POST',
+        body: closureNotes ? { closure_notes: closureNotes } : {},
+      });
+    },
+    async events(permitId: string): Promise<{ data: PermitEvent[] }> {
+      return api<{ data: PermitEvent[] }>(`/api/v1/permits/${permitId}/events`);
+    },
+  },
+
+  catalogs: {
+    async projects(): Promise<{ data: ProjectListItem[] }> {
+      return api<{ data: ProjectListItem[] }>('/api/v1/projects');
+    },
+    async permitTypes(): Promise<{ data: PermitTypeListItem[] }> {
+      return api<{ data: PermitTypeListItem[] }>('/api/v1/permit-types');
     },
   },
 };

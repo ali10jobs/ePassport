@@ -31,7 +31,9 @@
     "language": "Language",
     "back": "Back",
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "close": "Close",
+    "remove": "Remove"
   },
   "placeholder": {
     "coming_soon": "Coming soon",
@@ -111,7 +113,98 @@
       "inducted": "Inducted",
       "not_inducted": "Not inducted",
       "expired": "Expired"
+    },
+    "permit": {
+      "draft": "Draft",
+      "submitted": "Submitted",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "closed": "Closed",
+      "expired": "Expired"
     }
+  },
+  "permits": {
+    "subtitle": "Permit-to-Work issuances and their lifecycle.",
+    "new": "New permit",
+    "new_subtitle": "Create a draft. You can attach workers and equipment, then submit for consultant review.",
+    "create_draft": "Create draft",
+    "created": "Permit created.",
+    "search_placeholder": "Search by permit number or scope…",
+    "filter_status": "Status",
+    "filter_status_all": "Any status",
+    "col_number": "Permit number",
+    "col_type": "Type",
+    "col_status": "Status",
+    "col_scope": "Scope",
+    "col_workers": "Workers",
+    "col_submitted": "Submitted",
+    "empty": "No permits match your filters.",
+    "error_loading": "Could not load permits.",
+    "field_project": "Project",
+    "field_issuing_org": "Issuing organization",
+    "field_type": "Permit type",
+    "field_scope_en": "Scope (English)",
+    "field_scope_en_placeholder": "Welding work on Level 12 west columns",
+    "field_scope_ar": "Scope (Arabic, optional)",
+    "field_location": "Location (optional)",
+    "field_location_placeholder": "Level 12, west column row, gridline 6-8",
+    "actions": {
+      "submit": "Submit",
+      "submitted": "Permit submitted.",
+      "approve": "Approve",
+      "approved": "Permit approved.",
+      "reject": "Reject",
+      "rejected": "Permit rejected.",
+      "close": "Close",
+      "closed": "Permit closed.",
+      "error": "Action failed."
+    },
+    "confirm": {
+      "reject_title": "Reject permit",
+      "reject_subtitle": "Provide a reason. The submitter will see this on the permit.",
+      "reject_placeholder": "Reason for rejection (≥5 chars)",
+      "close_title": "Close permit",
+      "close_subtitle": "Optional closure notes — what work was completed, any incidents, etc.",
+      "close_placeholder": "Closure notes (optional)"
+    },
+    "hardblock": {
+      "title": "Permit cannot be submitted",
+      "subtitle": "Each named worker and piece of equipment was re-validated. Fix the issues below and resubmit.",
+      "project_issues": "Permit-level issues",
+      "worker_issues": "Worker issues",
+      "equipment_issues": "Equipment issues",
+      "role_on_permit": "role",
+      "open_worker": "Open worker"
+    },
+    "attach": {
+      "title": "Attach workers",
+      "search_placeholder": "Find by name or employee ID…",
+      "no_results": "No workers match.",
+      "queue": "To attach",
+      "submit": "Attach {{n}}",
+      "toast": "Attached: {{n}}, already attached: {{a}}"
+    },
+    "detail": {
+      "error": "Could not load permit."
+    }
+  },
+  "permit_detail": {
+    "tabs": {
+      "overview": "Overview",
+      "events": "Lifecycle"
+    },
+    "scope": "Scope",
+    "location": "Location",
+    "lifecycle_dates": "Lifecycle",
+    "valid_from": "Valid from",
+    "valid_until": "Valid until",
+    "submitted_at": "Submitted",
+    "approved_at": "Approved",
+    "rejected_at": "Rejected",
+    "closed_at": "Closed",
+    "workers_summary": "Named workers",
+    "workers_count": "{{count}} attached.",
+    "events_empty": "No events recorded yet."
   },
   "scan": {
     "subtitle": "Verify a worker or piece of equipment at the gate.",

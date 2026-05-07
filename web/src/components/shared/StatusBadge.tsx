@@ -38,3 +38,38 @@ export function InductionStatusBadge({ status }: InductionStatusBadgeProps) {
   }
   return <Badge variant="warning">{t('status.induction.not_inducted', 'Not inducted')}</Badge>;
 }
+
+interface PermitStatusBadgeProps {
+  status: string;
+}
+
+/**
+ * Permit lifecycle badge — the colors map to demo expectations:
+ *   draft     -> neutral outline
+ *   submitted -> primary (blue) — awaiting consultant review
+ *   approved  -> success (green) — work can proceed
+ *   rejected  -> destructive (red)
+ *   closed    -> neutral fill — work complete
+ *   expired   -> warning (amber)
+ */
+export function PermitStatusBadge({ status }: PermitStatusBadgeProps) {
+  const { t } = useTranslation();
+  const variant = (() => {
+    switch (status) {
+      case 'approved':
+        return 'success' as const;
+      case 'submitted':
+        return 'primary' as const;
+      case 'rejected':
+        return 'destructive' as const;
+      case 'closed':
+        return 'neutral' as const;
+      case 'expired':
+        return 'warning' as const;
+      case 'draft':
+      default:
+        return 'outline' as const;
+    }
+  })();
+  return <Badge variant={variant}>{t(`status.permit.${status}`, status)}</Badge>;
+}

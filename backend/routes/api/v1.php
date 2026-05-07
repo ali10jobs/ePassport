@@ -10,6 +10,8 @@ use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\OpenApiController;
 use App\Http\Controllers\Api\V1\PermitController;
 use App\Http\Controllers\Api\V1\PermitLifecycleController;
+use App\Http\Controllers\Api\V1\PermitTypeController;
+use App\Http\Controllers\Api\V1\ProjectController;
 use App\Http\Controllers\Api\V1\ScanController;
 use App\Http\Controllers\Api\V1\WebhookSubscriptionController;
 use App\Http\Controllers\Api\V1\WorkerCertificationController;
@@ -117,6 +119,10 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     });
 
     // Permits
+    // Lookup catalogs (for the SPA's create form selects)
+    Route::get('/permit-types', [PermitTypeController::class, 'index'])->name('permit_types.index');
+    Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
+
     Route::prefix('permits')->name('permits.')->group(function () {
         Route::get('/', [PermitController::class, 'index'])->name('index');
         Route::post('/', [PermitController::class, 'store'])->name('store');

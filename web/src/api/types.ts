@@ -157,6 +157,110 @@ export interface ScanResult {
   scanned_at: string;
 }
 
+export interface ProjectListItem {
+  id: string;
+  code: string;
+  name_en: string;
+  name_ar: string;
+  status: string;
+  city: string | null;
+  region: string | null;
+}
+
+export interface PermitTypeListItem {
+  id: string;
+  code: string;
+  name_en: string;
+  name_ar: string;
+  description_en: string | null;
+  description_ar: string | null;
+  requires_consultant_approval: boolean;
+  requires_gas_test: boolean;
+  requires_fire_watch: boolean;
+  default_validity_hours: number;
+}
+
+// Permits — matches App\Models\Permit + PermitResource.
+export type PermitStatus =
+  | 'draft'
+  | 'submitted'
+  | 'approved'
+  | 'rejected'
+  | 'closed'
+  | 'expired';
+
+export interface PermitTypeRef {
+  id: string;
+  code: string;
+  name_en: string;
+  name_ar: string;
+}
+
+export interface PermitListItem {
+  id: string;
+  permit_number: string;
+  project_id: string;
+  site_id: string | null;
+  issuing_organization_id: string;
+  permit_type_id: string;
+  permit_type?: PermitTypeRef;
+  status: PermitStatus | string;
+  scope_en: string;
+  scope_ar: string | null;
+  location_description_en: string | null;
+  location_description_ar: string | null;
+  valid_from: string | null;
+  valid_until: string | null;
+  submitted_at: string | null;
+  approved_at: string | null;
+  rejected_at: string | null;
+  rejection_reason: string | null;
+  closed_at: string | null;
+  closure_notes: string | null;
+  workers_count?: number;
+  equipment_count?: number;
+  created_at: string | null;
+  updated_at: string | null;
+}
+
+export interface PermitEvent {
+  id: string;
+  event_type: string;
+  actor_user_id: number | null;
+  payload: Record<string, unknown> | null;
+  comment: string | null;
+  occurred_at: string | null;
+}
+
+// Worker / equipment failure structures returned by 422 PERMIT_VALIDATION_FAILED.
+export interface PermitWorkerFailure {
+  worker_id: string;
+  employee_id: string;
+  full_name_en: string;
+  full_name_ar: string | null;
+  role_on_permit: string;
+  reasons: ScanReason[];
+}
+
+export interface PermitEquipmentFailure {
+  equipment_id: string;
+  asset_tag: string;
+  manufacturer: string | null;
+  model: string | null;
+  reasons: ScanReason[];
+}
+
+export interface PermitProjectFailure {
+  code: string;
+  details?: Record<string, unknown>;
+}
+
+export interface PermitValidationDetails {
+  worker_failures: PermitWorkerFailure[];
+  equipment_failures: PermitEquipmentFailure[];
+  project_failures: PermitProjectFailure[];
+}
+
 export interface PaginatedResponse<T> {
   data: T[];
   links: {
