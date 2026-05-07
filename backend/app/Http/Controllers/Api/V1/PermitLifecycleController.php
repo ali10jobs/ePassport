@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Events\DomainEvent;
 use App\Exceptions\Api\ApiException;
 use App\Exceptions\Api\ErrorCodes;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\V1\PermitResource;
 use App\Models\Permit;
 use App\Models\PermitEvent;
+use App\Models\WebhookSubscription;
 use App\Services\Permit\PermitService;
 use App\Services\Permit\PermitValidationService;
 use Illuminate\Http\JsonResponse;
@@ -76,6 +78,9 @@ class PermitLifecycleController extends Controller
             $this->permits->logEvent($permit, PermitEvent::TYPE_VALIDATED, $request->user()?->id);
         });
 
+        $this->fireDomainEvent($permit, WebhookSubscription::EVENT_PERMIT_SUBMITTED);
+        $this->fireDomainEvent($permit, WebhookSubscription::EVENT_PERMIT_VALIDATED);
+
         return response()->json(['data' => (new PermitResource($permit->fresh()->load('permitType')))]);
     }
 
@@ -101,6 +106,8 @@ class PermitLifecycleController extends Controller
 
             $this->permits->logEvent($permit, PermitEvent::TYPE_APPROVED, $request->user()?->id, [], $request->input('comment'));
         });
+
+        $this->fireDomainEvent($permit, WebhookSubscription::EVENT_PERMIT_APPROVED, ['comment' => $request->input('comment')]);
 
         return response()->json(['data' => (new PermitResource($permit->fresh()->load('permitType')))]);
     }
@@ -129,6 +136,8 @@ class PermitLifecycleController extends Controller
             $this->permits->logEvent($permit, PermitEvent::TYPE_REJECTED, $request->user()?->id, [], $validated['reason']);
         });
 
+        $this->fireDomainEvent($permit, WebhookSubscription::EVENT_PERMIT_REJECTED, ['reason' => $validated['reason']]);
+
         return response()->json(['data' => (new PermitResource($permit->fresh()->load('permitType')))]);
     }
 
@@ -156,7 +165,25 @@ class PermitLifecycleController extends Controller
             $this->permits->logEvent($permit, PermitEvent::TYPE_CLOSED, $request->user()?->id, [], $validated['closure_notes'] ?? null);
         });
 
+        $this->fireDomainEvent($permit, WebhookSubscription::EVENT_PERMIT_CLOSED, ['closure_notes' => $validated['closure_notes'] ?? null]);
+
         return response()->json(['data' => (new PermitResource($permit->fresh()->load('permitType')))]);
+    }
+
+    /**
+     * @param  array<string, mixed>  $extra
+     */
+    private function fireDomainEvent(Permit $permit, string $eventName, array $extra = []): void
+    {
+        DomainEvent::dispatch($eventName, array_merge([
+            'permit_id' => $permit->id,
+            'permit_number' => $permit->permit_number,
+            'project_id' => $permit->project_id,
+            'site_id' => $permit->site_id,
+            'permit_type_id' => $permit->permit_type_id,
+            'issuing_organization_id' => $permit->issuing_organization_id,
+            'status' => $permit->status,
+        ], $extra));
     }
 
     /**

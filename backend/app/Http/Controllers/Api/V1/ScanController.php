@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Events\DomainEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\VerifyEquipmentOperatorScanRequest;
 use App\Http\Requests\V1\VerifyScanPairRequest;
 use App\Http\Requests\V1\VerifyScanRequest;
 use App\Models\ScanEvent;
+use App\Models\WebhookSubscription;
 use App\Services\Scan\ScanResult;
 use App\Services\Scan\ScanVerificationService;
 use Illuminate\Http\JsonResponse;
@@ -192,6 +194,28 @@ class ScanController extends Controller
 
     private function respond(ScanResult $result, ScanEvent $event): JsonResponse
     {
+        // Fire a domain event for webhook delivery. Map result -> event name.
+        $eventName = match ($result->result) {
+            ScanEvent::RESULT_GREEN => WebhookSubscription::EVENT_SCAN_GREEN,
+            ScanEvent::RESULT_RED => WebhookSubscription::EVENT_SCAN_RED,
+            ScanEvent::RESULT_IMPERSONATION_FLAG => WebhookSubscription::EVENT_SCAN_IMPERSONATION,
+            default => null,
+        };
+
+        if ($eventName !== null) {
+            DomainEvent::dispatch($eventName, [
+                'scan_event_id' => $event->id,
+                'subject_type' => $event->subject_type,
+                'subject_id' => $event->subject_id,
+                'result' => $event->result,
+                'reasons' => $event->reasons,
+                'site_id' => $event->site_id,
+                'scanner_user_id' => $event->scanner_user_id,
+                'scanned_at' => $event->scanned_at->toIso8601String(),
+                'client_app' => $event->client_app,
+            ]);
+        }
+
         return response()->json([
             'data' => array_merge($result->toArray(), [
                 'event_id' => $event->id,

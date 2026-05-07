@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Events\DomainEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\AddHazardNoteRequest;
 use App\Http\Requests\V1\UpdateHazardStatusRequest;
 use App\Models\HazardReport;
 use App\Models\HazardReportNote;
+use App\Models\WebhookSubscription;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -116,12 +118,31 @@ class HazardReportController extends Controller
     public function updateStatus(UpdateHazardStatusRequest $request, HazardReport $hazardReport): JsonResponse
     {
         $data = $request->validated();
+        $previousStatus = $hazardReport->status;
 
         if ($data['status'] === HazardReport::STATUS_RESOLVED && empty($hazardReport->resolved_at)) {
             $data['resolved_at'] = now();
         }
 
         $hazardReport->update($data);
+
+        if ($previousStatus !== $data['status']) {
+            $payload = [
+                'hazard_report_id' => $hazardReport->id,
+                'anonymous_report_id' => $hazardReport->anonymous_report_id,
+                'previous_status' => $previousStatus,
+                'status' => $hazardReport->status,
+                'severity' => $hazardReport->severity,
+                'category' => $hazardReport->category,
+            ];
+            DomainEvent::dispatch(WebhookSubscription::EVENT_HAZARD_STATUS_CHANGED, $payload);
+            if ($hazardReport->status === HazardReport::STATUS_RESOLVED) {
+                DomainEvent::dispatch(WebhookSubscription::EVENT_HAZARD_RESOLVED, array_merge($payload, [
+                    'resolution_summary' => $hazardReport->resolution_summary,
+                    'resolved_at' => $hazardReport->resolved_at?->toIso8601String(),
+                ]));
+            }
+        }
 
         return $this->show($hazardReport->fresh());
     }

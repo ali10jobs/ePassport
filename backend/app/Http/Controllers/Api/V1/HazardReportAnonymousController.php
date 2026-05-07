@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Events\DomainEvent;
 use App\Exceptions\Api\ApiException;
 use App\Exceptions\Api\ErrorCodes;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\SubmitAnonymousHazardRequest;
 use App\Models\HazardReport;
 use App\Models\HazardReportNote;
+use App\Models\WebhookSubscription;
 use App\Services\Hazard\HazardPhotoService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
@@ -68,6 +70,16 @@ class HazardReportAnonymousController extends Controller
             'longitude' => $request->validated('longitude'),
             'status' => HazardReport::STATUS_SUBMITTED,
             'metadata' => ['photo_path' => $filename, 'photo_bytes' => strlen($cleanedBytes)],
+        ]);
+
+        DomainEvent::dispatch(WebhookSubscription::EVENT_HAZARD_SUBMITTED, [
+            'hazard_report_id' => $report->id,
+            'anonymous_report_id' => $report->anonymous_report_id,
+            'category' => $report->category,
+            'severity' => $report->severity,
+            'project_id' => $report->project_id,
+            'site_id' => $report->site_id,
+            'submitted_at' => $report->created_at->toIso8601String(),
         ]);
 
         return response()->json([
