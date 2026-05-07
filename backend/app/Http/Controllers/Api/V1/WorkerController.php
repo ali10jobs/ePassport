@@ -8,6 +8,7 @@ use App\Http\Requests\V1\StoreWorkerRequest;
 use App\Http\Requests\V1\UpdateWorkerRequest;
 use App\Http\Resources\V1\WorkerResource;
 use App\Models\Worker;
+use App\Services\Authorization\OrganizationContext;
 use App\Services\QrCode\QrCodeService;
 use App\Services\Worker\BulkWorkerService;
 use App\Services\Worker\WorkerService;
@@ -41,9 +42,13 @@ class WorkerController extends Controller
      *
      * @authenticated
      */
-    public function index(Request $request): AnonymousResourceCollection
+    public function index(Request $request, OrganizationContext $orgContext): AnonymousResourceCollection
     {
-        $workers = QueryBuilder::for(Worker::class)
+        $accessibleOrgIds = $orgContext->forRequest($request)->accessibleOrganizationIds();
+
+        $workers = QueryBuilder::for(
+            Worker::query()->whereIn('employer_organization_id', $accessibleOrgIds)
+        )
             ->allowedFilters([
                 AllowedFilter::exact('employer_organization_id'),
                 AllowedFilter::exact('induction_status'),

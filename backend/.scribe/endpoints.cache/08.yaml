@@ -84,11 +84,11 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"70514f0a-8cef-4eb2-99e7-fc1fd67667aa"}}'
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"673aec4c-8100-4b75-9eb3-d51b28ea39e6"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-request-id: 70514f0a-8cef-4eb2-99e7-fc1fd67667aa
+          x-request-id: 673aec4c-8100-4b75-9eb3-d51b28ea39e6
           access-control-allow-origin: '*'
         description: null
     responseFields: []
@@ -306,11 +306,11 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"ff28ca39-66d0-4bb2-ae67-39b6a31032f6"}}'
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"a41592cf-e8f9-4d87-8a46-d90b69d815ed"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-request-id: ff28ca39-66d0-4bb2-ae67-39b6a31032f6
+          x-request-id: a41592cf-e8f9-4d87-8a46-d90b69d815ed
           access-control-allow-origin: '*'
         description: null
     responseFields: []
@@ -428,7 +428,7 @@ endpoints:
         name: manufacture_date
         description: 'Must be a valid date.'
         required: false
-        example: '2026-05-07T08:45:19'
+        example: '2026-05-07T09:04:21'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -474,7 +474,7 @@ endpoints:
       model: z
       type: m
       category: i
-      manufacture_date: '2026-05-07T08:45:19'
+      manufacture_date: '2026-05-07T09:04:21'
       safe_working_load_kg: 76
     fileParameters: []
     responses: []
@@ -575,11 +575,11 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"98a2dd28-f09f-4af3-8555-215c5e118190"}}'
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"5b268c8b-7818-4297-962d-09949690eb00"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-request-id: 98a2dd28-f09f-4af3-8555-215c5e118190
+          x-request-id: 5b268c8b-7818-4297-962d-09949690eb00
           access-control-allow-origin: '*'
         description: null
     responseFields: []
@@ -642,7 +642,7 @@ endpoints:
         name: inspection_type
         description: ''
         required: true
-        example: major
+        example: initial
         type: string
         enumValues:
           - periodic
@@ -712,7 +712,7 @@ endpoints:
         name: result
         description: ''
         required: true
-        example: fail
+        example: pass_with_conditions
         type: string
         enumValues:
           - pass
@@ -756,13 +756,13 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       certificate_number: b
-      inspection_type: major
+      inspection_type: initial
       tpi_body_en: 'n'
       tpi_body_ar: g
       inspector_name: z
       inspection_date: '2022-05-31'
       expiry_date: '2052-05-30'
-      result: fail
+      result: pass_with_conditions
       conditions_en: 'n'
       conditions_ar: g
     fileParameters: []
@@ -831,7 +831,7 @@ endpoints:
         name: valid_from
         description: 'Must be a valid date.'
         required: true
-        example: '2026-05-07T08:45:19'
+        example: '2026-05-07T09:04:21'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -850,7 +850,7 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       worker_id: 6ff8f7f6-1eb3-3525-be4a-3932c805afed
-      valid_from: '2026-05-07T08:45:19'
+      valid_from: '2026-05-07T09:04:21'
       valid_until: '2052-05-30'
     fileParameters: []
     responses: []

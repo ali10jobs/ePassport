@@ -41,11 +41,11 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"0de57188-8cd9-4457-b98f-0670c45d1c63"}}'
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"fe5fbd41-d400-4013-b85b-15b269c673be"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-request-id: 0de57188-8cd9-4457-b98f-0670c45d1c63
+          x-request-id: fe5fbd41-d400-4013-b85b-15b269c673be
           access-control-allow-origin: '*'
         description: null
     responseFields: []
@@ -93,11 +93,11 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"1d3f343d-1754-45fd-ae03-2017185ef9bc"}}'
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"10b9a3fe-2d99-435b-a873-708f0d3c524f"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-request-id: 1d3f343d-1754-45fd-ae03-2017185ef9bc
+          x-request-id: 10b9a3fe-2d99-435b-a873-708f0d3c524f
           access-control-allow-origin: '*'
         description: null
     responseFields: []
@@ -154,7 +154,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - hazards.write
+          - scans.read
         type: 'string[]'
         enumValues:
           - workers.read
@@ -186,7 +186,7 @@ endpoints:
     cleanBodyParameters:
       name: b
       abilities:
-        - hazards.write
+        - scans.read
       expires_at: '2052-05-30'
     fileParameters: []
     responses: []

@@ -25,12 +25,6 @@ parameters:
 			path: app/Http/Controllers/Api/V1/AuthController.php
 
 		-
-			message: '#^Call to function method_exists\(\) with Laravel\\Sanctum\\PersonalAccessToken and ''delete'' will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: app/Http/Controllers/Api/V1/AuthController.php
-
-		-
 			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) contains unresolvable type\.$#'
 			identifier: argument.unresolvableType
 			count: 1
@@ -213,12 +207,6 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) contains unresolvable type\.$#'
 			identifier: argument.unresolvableType
-			count: 1
-			path: app/Http/Controllers/Api/V1/HealthController.php
-
-		-
-			message: '#^Strict comparison using \!\=\= between PDO and null will always evaluate to true\.$#'
-			identifier: notIdentical.alwaysTrue
 			count: 1
 			path: app/Http/Controllers/Api/V1/HealthController.php
 
@@ -433,10 +421,10 @@ parameters:
 			path: app/Jobs/DeliverWebhookJob.php
 
 		-
-			message: '#^Strict comparison using \!\=\= between Carbon\\Carbon and null will always evaluate to true\.$#'
-			identifier: notIdentical.alwaysTrue
+			message: '#^Method App\\Services\\Authorization\\OrganizationContext\:\:resolveActiveOrganization\(\) never returns App\\Models\\Organization so it can be removed from the return type\.$#'
+			identifier: return.unusedType
 			count: 1
-			path: app/Models/WorkerMedicalRecord.php
+			path: app/Services/Authorization/OrganizationContext.php
 
 		-
 			message: '#^Method App\\Services\\Permit\\PermitService\:\:logEvent\(\) should return App\\Models\\PermitEvent but returns Illuminate\\Database\\Eloquent\\Model\.$#'
@@ -525,12 +513,6 @@ parameters:
 		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:engagements\(\)\.$#'
 			identifier: method.notFound
-			count: 1
-			path: app/Services/Permit/PermitValidationService.php
-
-		-
-			message: '#^Strict comparison using \!\=\= between string and null will always evaluate to true\.$#'
-			identifier: notIdentical.alwaysTrue
 			count: 1
 			path: app/Services/Permit/PermitValidationService.php
 

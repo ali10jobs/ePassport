@@ -39,11 +39,11 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"99435582-5e67-4a72-8923-96cb32cb0bd8"}}'
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"0d14356a-2369-4c1c-b41c-03a2fb09ffb1"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-request-id: 99435582-5e67-4a72-8923-96cb32cb0bd8
+          x-request-id: 0d14356a-2369-4c1c-b41c-03a2fb09ffb1
           access-control-allow-origin: '*'
         description: null
     responseFields: []
@@ -123,7 +123,7 @@ endpoints:
         description: ''
         required: true
         example:
-          - permit.validated
+          - permit.closed
         type: 'string[]'
         enumValues:
           - scan.green
@@ -169,7 +169,7 @@ endpoints:
       label: g
       url: 'http://www.okuneva.com/fugiat-sunt-nihil-accusantium-harum-mollitia.html'
       events:
-        - permit.validated
+        - permit.closed
       headers:
         - k
       active: true
@@ -229,11 +229,11 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"832a0d68-e3fd-49de-a0e9-69f4b1727bdd"}}'
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"3d12b39d-c7b8-42c5-a0d4-4096a915002b"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-request-id: 832a0d68-e3fd-49de-a0e9-69f4b1727bdd
+          x-request-id: 3d12b39d-c7b8-42c5-a0d4-4096a915002b
           access-control-allow-origin: '*'
         description: null
     responseFields: []
@@ -312,7 +312,7 @@ endpoints:
         description: ''
         required: true
         example:
-          - permit.created
+          - permit.submitted
         type: 'string[]'
         enumValues:
           - scan.green
@@ -346,7 +346,7 @@ endpoints:
         name: active
         description: ''
         required: false
-        example: false
+        example: true
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -356,8 +356,8 @@ endpoints:
       label: b
       url: 'http://bailey.com/'
       events:
-        - permit.created
-      active: false
+        - permit.submitted
+      active: true
     fileParameters: []
     responses: []
     responseFields: []

@@ -13,6 +13,7 @@ use App\Http\Requests\V1\UpdateEquipmentRequest;
 use App\Http\Resources\V1\EquipmentResource;
 use App\Models\Equipment;
 use App\Models\Worker;
+use App\Services\Authorization\OrganizationContext;
 use App\Services\Equipment\BulkEquipmentService;
 use App\Services\Equipment\EquipmentService;
 use App\Services\QrCode\QrCodeService;
@@ -39,9 +40,13 @@ class EquipmentController extends Controller
      *
      * @authenticated
      */
-    public function index(Request $request): AnonymousResourceCollection
+    public function index(Request $request, OrganizationContext $orgContext): AnonymousResourceCollection
     {
-        $items = QueryBuilder::for(Equipment::class)
+        $accessibleOrgIds = $orgContext->forRequest($request)->accessibleOrganizationIds();
+
+        $items = QueryBuilder::for(
+            Equipment::query()->whereIn('owner_organization_id', $accessibleOrgIds)
+        )
             ->allowedFilters([
                 AllowedFilter::exact('owner_organization_id'),
                 AllowedFilter::exact('type'),

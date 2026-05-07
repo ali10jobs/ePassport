@@ -62,7 +62,7 @@ endpoints:
         name: category
         description: ''
         required: true
-        example: environmental
+        example: ppe
         type: string
         enumValues:
           - fall
@@ -82,7 +82,7 @@ endpoints:
         name: severity
         description: ''
         required: true
-        example: high
+        example: medium
         type: string
         enumValues:
           - low
@@ -161,8 +161,8 @@ endpoints:
         nullable: true
         deprecated: false
     cleanBodyParameters:
-      category: environmental
-      severity: high
+      category: ppe
+      severity: medium
       description: 'Eius et animi quos velit et.'
       description_lang: ar
       project_id: 21c4122b-d554-3723-966c-6d723ea5293f
@@ -236,7 +236,7 @@ endpoints:
           content-type: application/json
           x-ratelimit-limit: '10'
           x-ratelimit-remaining: '9'
-          x-request-id: 1ad0bca8-bfa5-497c-8b26-2890f17d4544
+          x-request-id: 04f5608c-039f-4413-a485-6dc2217a66ee
           access-control-allow-origin: '*'
         description: null
     responseFields: []

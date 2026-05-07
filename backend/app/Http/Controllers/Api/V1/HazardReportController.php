@@ -8,6 +8,7 @@ use App\Http\Requests\V1\AddHazardNoteRequest;
 use App\Http\Requests\V1\UpdateHazardStatusRequest;
 use App\Models\HazardReport;
 use App\Models\WebhookSubscription;
+use App\Services\Authorization\OrganizationContext;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -29,9 +30,23 @@ class HazardReportController extends Controller
     /**
      * @authenticated
      */
-    public function index(Request $request): AnonymousResourceCollection
+    public function index(Request $request, OrganizationContext $orgContext): AnonymousResourceCollection
     {
-        $reports = QueryBuilder::for(HazardReport::class)
+        $ctx = $orgContext->forRequest($request);
+        $accessibleProjectIds = $ctx->accessibleProjectIds();
+        $accessibleOrgIds = $ctx->accessibleOrganizationIds();
+
+        $reports = QueryBuilder::for(
+            HazardReport::query()->where(function ($q) use ($accessibleProjectIds, $accessibleOrgIds) {
+                // Hazard reports are visible if scoped to a project the user
+                // can see, OR assigned to an org they belong to. Reports with
+                // no project_id and no assignment (rare in real use) are NOT
+                // exposed via this endpoint — they're only retrievable by
+                // anonymous_report_id at the public status endpoint.
+                $q->whereIn('project_id', $accessibleProjectIds)
+                    ->orWhereIn('assigned_to_organization_id', $accessibleOrgIds);
+            })
+        )
             ->allowedFilters([
                 AllowedFilter::exact('status'),
                 AllowedFilter::exact('severity'),

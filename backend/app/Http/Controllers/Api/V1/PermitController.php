@@ -10,6 +10,7 @@ use App\Http\Requests\V1\AttachPermitWorkersRequest;
 use App\Http\Requests\V1\StorePermitRequest;
 use App\Http\Resources\V1\PermitResource;
 use App\Models\Permit;
+use App\Services\Authorization\OrganizationContext;
 use App\Services\Permit\PermitService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -30,9 +31,18 @@ class PermitController extends Controller
     /**
      * @authenticated
      */
-    public function index(Request $request): AnonymousResourceCollection
+    public function index(Request $request, OrganizationContext $orgContext): AnonymousResourceCollection
     {
-        $permits = QueryBuilder::for(Permit::class)
+        $ctx = $orgContext->forRequest($request);
+        $accessibleProjectIds = $ctx->accessibleProjectIds();
+        $accessibleOrgIds = $ctx->accessibleOrganizationIds();
+
+        $permits = QueryBuilder::for(
+            Permit::query()->where(function ($q) use ($accessibleProjectIds, $accessibleOrgIds) {
+                $q->whereIn('project_id', $accessibleProjectIds)
+                    ->orWhereIn('issuing_organization_id', $accessibleOrgIds);
+            })
+        )
             ->allowedFilters([
                 AllowedFilter::exact('status'),
                 AllowedFilter::exact('project_id'),

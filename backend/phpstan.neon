@@ -9,6 +9,7 @@ parameters:
         - database/
         - routes/
     level: 5
+    treatPhpDocTypesAsCertain: false
     ignoreErrors:
     excludePaths:
         - vendor/

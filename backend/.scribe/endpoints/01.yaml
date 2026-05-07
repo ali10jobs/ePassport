@@ -71,7 +71,7 @@ endpoints:
         name: mode
         description: ''
         required: false
-        example: cookie
+        example: token
         type: string
         enumValues:
           - cookie
@@ -93,7 +93,7 @@ endpoints:
     cleanBodyParameters:
       email: gbailey@example.net
       password: '|]|{+-'
-      mode: cookie
+      mode: token
       device_name: v
     fileParameters: []
     responses: []
