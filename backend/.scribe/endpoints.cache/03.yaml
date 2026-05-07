@@ -43,11 +43,11 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"171444a7-da78-4ec2-9ad4-0537f2e69b02"}}'
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"897e9519-3a76-40ad-a37c-3f05b3e44298"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-request-id: 171444a7-da78-4ec2-9ad4-0537f2e69b02
+          x-request-id: 897e9519-3a76-40ad-a37c-3f05b3e44298
           access-control-allow-origin: '*'
         description: null
     responseFields: []
@@ -95,11 +95,11 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"890d1db7-4ff6-4cdb-9c62-23f06bdb04f1"}}'
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"13406c53-835d-4825-ac8c-fd99d72b418a"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-request-id: 890d1db7-4ff6-4cdb-9c62-23f06bdb04f1
+          x-request-id: 13406c53-835d-4825-ac8c-fd99d72b418a
           access-control-allow-origin: '*'
         description: null
     responseFields: []
@@ -156,7 +156,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - webhooks.manage
+          - hazards.write
         type: 'string[]'
         enumValues:
           - workers.read
@@ -188,7 +188,7 @@ endpoints:
     cleanBodyParameters:
       name: b
       abilities:
-        - webhooks.manage
+        - hazards.write
       expires_at: '2052-05-30'
     fileParameters: []
     responses: []

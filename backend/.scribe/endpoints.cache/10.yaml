@@ -41,11 +41,11 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"fd7f5099-459c-4e9e-91a0-9492a7d388d7"}}'
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"ac65e2d8-6694-4963-8b97-6276467ec601"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-request-id: fd7f5099-459c-4e9e-91a0-9492a7d388d7
+          x-request-id: ac65e2d8-6694-4963-8b97-6276467ec601
           access-control-allow-origin: '*'
         description: null
     responseFields: []
@@ -125,7 +125,7 @@ endpoints:
         description: ''
         required: true
         example:
-          - permit.closed
+          - permit.created
         type: 'string[]'
         enumValues:
           - scan.green
@@ -171,7 +171,7 @@ endpoints:
       label: g
       url: 'http://www.okuneva.com/fugiat-sunt-nihil-accusantium-harum-mollitia.html'
       events:
-        - permit.closed
+        - permit.created
       headers:
         - k
       active: false
@@ -231,11 +231,11 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"d662185c-0dd8-4675-b201-94b90ecc3e3e"}}'
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"6b5a9ab8-b37b-4b72-982e-496fc965b7ba"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-request-id: d662185c-0dd8-4675-b201-94b90ecc3e3e
+          x-request-id: 6b5a9ab8-b37b-4b72-982e-496fc965b7ba
           access-control-allow-origin: '*'
         description: null
     responseFields: []
@@ -314,7 +314,7 @@ endpoints:
         description: ''
         required: true
         example:
-          - scan.green
+          - permit.closed
         type: 'string[]'
         enumValues:
           - scan.green
@@ -358,7 +358,7 @@ endpoints:
       label: b
       url: 'http://bailey.com/'
       events:
-        - scan.green
+        - permit.closed
       active: true
     fileParameters: []
     responses: []

@@ -62,7 +62,7 @@ endpoints:
         name: category
         description: ''
         required: true
-        example: ppe
+        example: fall
         type: string
         enumValues:
           - fall
@@ -82,7 +82,7 @@ endpoints:
         name: severity
         description: ''
         required: true
-        example: high
+        example: critical
         type: string
         enumValues:
           - low
@@ -108,7 +108,7 @@ endpoints:
         name: description_lang
         description: ''
         required: false
-        example: ar
+        example: en
         type: string
         enumValues:
           - en
@@ -161,10 +161,10 @@ endpoints:
         nullable: true
         deprecated: false
     cleanBodyParameters:
-      category: ppe
-      severity: high
+      category: fall
+      severity: critical
       description: 'Eius et animi quos velit et.'
-      description_lang: ar
+      description_lang: en
       project_id: 21c4122b-d554-3723-966c-6d723ea5293f
       site_id: add3503c-ebff-3875-93af-b8c6a695762b
       latitude: -89
@@ -236,7 +236,7 @@ endpoints:
           content-type: application/json
           x-ratelimit-limit: '10'
           x-ratelimit-remaining: '9'
-          x-request-id: 3442c201-79d9-4bef-9ec2-674078ba51fe
+          x-request-id: 68fb612f-dc69-439c-a362-7e5c42c0f8e1
           access-control-allow-origin: '*'
         description: null
     responseFields: []

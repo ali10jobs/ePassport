@@ -40,11 +40,11 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"status":"ok","service":"ePassport API","version":"v1","time":"2026-05-07T09:11:47+00:00","checks":{"database":{"ok":true},"redis":{"ok":true}}}'
+        content: '{"status":"ok","service":"ePassport API","version":"v1","time":"2026-05-07T09:14:10+00:00","checks":{"database":{"ok":true},"redis":{"ok":true}}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-request-id: 070674d5-98e0-440d-a833-f74f2995d090
+          x-request-id: 4f44faa6-e8e3-40c6-9fe4-e4320e2eea07
           access-control-allow-origin: '*'
         description: null
     responseFields: []
@@ -88,11 +88,11 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"23da5a2a-e11e-4fb3-92c2-c5bdfeab2f67"}}'
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"1c272d4f-7c11-45d9-8841-b5a6dd727402"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-request-id: 23da5a2a-e11e-4fb3-92c2-c5bdfeab2f67
+          x-request-id: 1c272d4f-7c11-45d9-8841-b5a6dd727402
           access-control-allow-origin: '*'
         description: null
     responseFields: []
