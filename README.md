@@ -24,3 +24,19 @@ Multi-codebase MVP for a Saudi construction safety platform. Centerpiece: QR-sca
 ## Development status
 
 7-day sprint to demo. See `master-claude.md` for the day-by-day schedule.
+
+## Backend status (Days 1-5 complete)
+
+The Laravel backend is feature-complete for the demo:
+
+- 21 entity tables + 21 Eloquent models
+- 60+ versioned API endpoints under `/api/v1/`
+- All 5 reason codes (CERT_EXPIRED, MEDICAL_FAIL, INDUCTION_MISSING, ORG_NOT_ENGAGED, IMPERSONATION_FLAG, EQUIPMENT_TPI_EXPIRED, OPERATOR_NOT_AUTHORIZED, UNKNOWN_QR) wired through scan verification + permit submit
+- Webhook delivery with HMAC-SHA256 + retry with exponential backoff
+- Per-credential rate limiting with X-RateLimit-* headers
+- API key issuance with scoped abilities for ERP integrations
+- 34 Pest feature tests passing
+- Larastan level 5 (with baseline)
+- Demo data: 4 orgs, 30 workers (4 with red-scan candidates), 10 equipment
+
+Quick start: see `backend/README.md`. Deploy: see `backend/DEPLOYMENT.md`.

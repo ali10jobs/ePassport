@@ -1,66 +1,131 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# ePassport Backend
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+REST API for the e-Passport construction safety platform. Single source of truth — consumed by the React web SPA, Flutter mobile app, and ERP integrations.
 
-## About Laravel
+## Stack
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Laravel 11 + PHP 8.4
+- PostgreSQL 16
+- Redis 7 (cache, queues, idempotency keys, rate-limit counters)
+- Laravel Sanctum (cookie session for web, PAT for mobile + ERPs)
+- Spatie permission/query-builder/medialibrary/activitylog
+- Scribe (OpenAPI 3.1 generation)
+- Endroid QR Code, Intervention Image (EXIF strip)
+- Pest, Larastan, Pint
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Local development setup
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+```bash
+# 1. Clone the monorepo and enter the backend
+cd backend
 
-## Learning Laravel
+# 2. PHP deps
+composer install
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+# 3. PostgreSQL + Redis
+createdb epassport_dev
+createdb epassport_test
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+# 4. Env
+cp .env.example .env
+php artisan key:generate
+# edit .env: DB_USERNAME etc.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+# 5. Schema + seed demo data
+php artisan migrate:fresh --seed
 
-## Laravel Sponsors
+# 6. Run
+php artisan serve --port=8000
+# In a second terminal: php artisan horizon  (queue worker)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+# 7. Verify
+curl http://127.0.0.1:8000/api/v1/health
+```
 
-### Premium Partners
+## Demo accounts (password `password` — local dev only)
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+| Email                              | Role                |
+|------------------------------------|---------------------|
+| `sara.client@epassport.local`      | client_safety_lead  |
+| `khalid.maincon@epassport.local`   | hse_manager (main contractor) |
+| `nasser.consultant@epassport.local`| consultant          |
 
-## Contributing
+## Login (token mode for curl/Postman)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+curl -X POST http://127.0.0.1:8000/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"khalid.maincon@epassport.local","password":"password","mode":"token","device_name":"my-cli"}'
+```
 
-## Code of Conduct
+Use the returned `access_token` as `Authorization: Bearer <token>` on subsequent requests.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## API documentation
 
-## Security Vulnerabilities
+- OpenAPI 3.1 spec:    `GET /api/v1/openapi.json`
+- Interactive HTML:    `GET /api/v1/docs`
+- Postman collection:  `storage/app/private/scribe/collection.json`
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Re-generate after adding endpoints: `php artisan scribe:generate`.
 
-## License
+## Testing
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+./vendor/bin/pest           # 34 tests, ~12s
+./vendor/bin/phpstan        # static analysis, level 5 (with baseline)
+./vendor/bin/pint --test    # check formatting; drop --test to apply
+```
+
+The test suite uses `epassport_test` and `RefreshDatabase`. Each test seeds the catalogs + demo data so assertions can rely on known fixtures (4 orgs, 30 workers with 2 expired certs, 10 equipment with 2 expired TPI, etc.).
+
+## Subscribing to a webhook
+
+```bash
+TOKEN=...   # from /auth/login
+ORG=...     # one of your organization IDs
+
+curl -X POST http://127.0.0.1:8000/api/v1/webhooks \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"owner_organization_id\": \"$ORG\",
+    \"label\": \"my-erp\",
+    \"url\": \"https://my-erp.example.com/hooks/epassport\",
+    \"events\": [\"scan.red\", \"scan.impersonation_flag\", \"permit.approved\", \"hazard_report.submitted\"]
+  }"
+```
+
+The response includes the HMAC-SHA256 secret **once**. Verify each delivery on your end:
+
+```js
+const expected = 'sha256=' + crypto.createHmac('sha256', SECRET).update(rawBody).digest('hex');
+if (expected !== req.headers['x-epassport-signature']) abort();
+```
+
+Headers sent on every delivery:
+
+| Header                          | Purpose                                  |
+|---------------------------------|------------------------------------------|
+| `X-ePassport-Event`             | event name (e.g. `scan.red`)             |
+| `X-ePassport-Event-Id`          | UUID — dedupe on consumer side           |
+| `X-ePassport-Signature`         | `sha256=<hex>` of the raw body            |
+| `X-ePassport-Delivery-Attempt`  | 1..5; we retry with exponential backoff  |
+
+## Issuing API keys for ERP integrations
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/v1/auth/api-keys \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "sap-erp-prod",
+    "abilities": ["workers.read", "equipment.read", "permits.read", "scans.read"],
+    "expires_at": "2027-12-31T23:59:59Z"
+  }'
+```
+
+The plaintext token is returned **once**. Send it as `Authorization: Bearer <token>` on subsequent requests. Available abilities: `GET /api/v1/auth/api-keys/abilities`.
+
+## Deployment
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for staging + production setup on Hetzner Cloud (or DigitalOcean) with Laravel Forge.
