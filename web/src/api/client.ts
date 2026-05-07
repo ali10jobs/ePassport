@@ -1,7 +1,14 @@
 import { ofetch } from 'ofetch';
 
 import { authStorage } from './auth-storage';
-import { ApiError, type ApiErrorBody, type MeUser } from './types';
+import {
+  ApiError,
+  type ApiErrorBody,
+  type MeUser,
+  type PaginatedResponse,
+  type WorkerListItem,
+  type WorkerPassport,
+} from './types';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://127.0.0.1:8000';
 
@@ -77,5 +84,35 @@ export const endpoints = {
       version: string;
       checks: Record<string, { ok: boolean }>;
     }>('/api/v1/health');
+  },
+
+  workers: {
+    async list(params: {
+      page?: number;
+      perPage?: number;
+      search?: string;
+      inductionStatus?: string;
+      certStatus?: 'expired' | 'valid';
+      employerOrganizationId?: string;
+      include?: string;
+    }): Promise<PaginatedResponse<WorkerListItem>> {
+      const query: Record<string, string | number> = {};
+      if (params.page) query.page = params.page;
+      if (params.perPage) query.per_page = params.perPage;
+      if (params.search) query['filter[search]'] = params.search;
+      if (params.inductionStatus) query['filter[induction_status]'] = params.inductionStatus;
+      if (params.certStatus) query['filter[cert_status]'] = params.certStatus;
+      if (params.employerOrganizationId)
+        query['filter[employer_organization_id]'] = params.employerOrganizationId;
+      query.include = params.include ?? 'employerOrganization';
+
+      return api<PaginatedResponse<WorkerListItem>>('/api/v1/workers', {
+        method: 'GET',
+        query,
+      });
+    },
+    async passport(workerId: string): Promise<{ data: WorkerPassport }> {
+      return api<{ data: WorkerPassport }>(`/api/v1/workers/${workerId}/passport`);
+    },
   },
 };

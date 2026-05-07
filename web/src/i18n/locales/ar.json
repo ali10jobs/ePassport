@@ -28,6 +28,89 @@
     "cancel": "إلغاء",
     "save": "حفظ",
     "loading": "جارٍ التحميل…",
-    "language": "اللغة"
+    "language": "اللغة",
+    "back": "رجوع",
+    "previous": "السابق",
+    "next": "التالي"
+  },
+  "placeholder": {
+    "coming_soon": "قريباً",
+    "body": "هذه الصفحة جزء من إصدار 1.0 ولم يتم بناؤها بعد.",
+    "description": "ستُربط في المرحلة التالية. افتح وثائق OpenAPI على /api/v1/docs لمعرفة ما سيظهر هنا."
+  },
+  "dashboard": {
+    "subtitle": "نظرة عامة على مؤشرات السلامة عبر مشاريعك النشطة.",
+    "usage": "الاستخدام",
+    "last_30_days": "آخر 30 يوماً",
+    "scans": "عمليات المسح",
+    "permits_open": "التصاريح المفتوحة",
+    "hazards_mtd": "البلاغات هذا الشهر",
+    "alerts": "التنبيهات",
+    "alerts_description": "الانحرافات والفحوصات المتأخرة.",
+    "alerts_empty": "لا توجد تنبيهات. ستُربط طبقة البيانات في المرحلة التالية.",
+    "recent": "النشاط الأخير",
+    "recent_description": "عمليات المسح وتغيرات التصاريح وبلاغات السلامة.",
+    "recent_empty": "لا يوجد شيء هنا بعد."
+  },
+  "workers": {
+    "subtitle": "جميع العمال في مؤسستك وفي المقاولين من الباطن المرتبطين.",
+    "add": "إضافة عامل",
+    "search_placeholder": "البحث بالاسم أو رقم الموظف أو الهوية…",
+    "filter_induction": "حالة التأهيل",
+    "filter_induction_all": "أي حالة تأهيل",
+    "filter_certs": "الشهادات",
+    "filter_certs_all": "أي حالة شهادة",
+    "filter_certs_valid": "لا توجد شهادات منتهية",
+    "filter_certs_expired": "لديه شهادة منتهية",
+    "col_employee_id": "المعرف",
+    "col_name": "الاسم",
+    "col_trade": "المهنة",
+    "col_employer": "صاحب العمل",
+    "col_nationality": "الجنسية",
+    "col_induction": "التأهيل",
+    "empty": "لا يوجد عمال يطابقون عوامل التصفية.",
+    "pagination": "{{from}}–{{to}} من {{total}}",
+    "error_loading": "تعذر تحميل قائمة العمال.",
+    "detail": {
+      "error": "تعذر تحميل بيانات العامل."
+    }
+  },
+  "worker_detail": {
+    "tabs": {
+      "overview": "نظرة عامة",
+      "certifications": "الشهادات",
+      "medical": "الفحص الطبي"
+    },
+    "identity": "الهوية",
+    "full_name_ar": "الاسم (بالعربية)",
+    "nationality": "الجنسية",
+    "employer": "صاحب العمل",
+    "induction": "التأهيل",
+    "induction_date": "تاريخ التأهيل",
+    "induction_valid_until": "صالح حتى",
+    "medical": "اللياقة الطبية",
+    "medical_status": "الحالة",
+    "medical_currently_fit": "لائق حالياً",
+    "medical_exam_date": "آخر فحص",
+    "medical_valid_until": "صالح حتى",
+    "medical_none": "لا يوجد سجل طبي.",
+    "certs_empty": "لا توجد شهادات مسجلة.",
+    "col_cert": "الشهادة",
+    "col_issuer": "جهة الإصدار",
+    "col_issue_date": "تاريخ الإصدار",
+    "col_expiry": "تاريخ الانتهاء",
+    "col_status": "الحالة"
+  },
+  "status": {
+    "cert": {
+      "valid": "سارية",
+      "expiring_soon": "قارب على الانتهاء",
+      "expired": "منتهية"
+    },
+    "induction": {
+      "inducted": "مؤهل",
+      "not_inducted": "غير مؤهل",
+      "expired": "منتهي"
+    }
   }
 }

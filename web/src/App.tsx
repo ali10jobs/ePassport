@@ -6,6 +6,8 @@ import { AppLayout } from '@/components/layout/AppLayout';
 import { AuthLayout } from '@/components/layout/AuthLayout';
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { LoginPage } from '@/features/auth/LoginPage';
+import { WorkerDetailPage } from '@/features/workers/WorkerDetailPage';
+import { WorkersListPage } from '@/features/workers/WorkersListPage';
 import { DashboardPage } from '@/pages/DashboardPage';
 import { PlaceholderPage } from '@/pages/PlaceholderPage';
 
@@ -51,10 +53,8 @@ export default function App() {
           >
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/dashboard" element={<DashboardPage />} />
-            <Route
-              path="/workers"
-              element={<PlaceholderPage titleKey="nav.workers" fallback="Workers" />}
-            />
+            <Route path="/workers" element={<WorkersListPage />} />
+            <Route path="/workers/:id" element={<WorkerDetailPage />} />
             <Route
               path="/equipment"
               element={<PlaceholderPage titleKey="nav.equipment" fallback="Equipment" />}

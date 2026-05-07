@@ -28,6 +28,89 @@
     "cancel": "Cancel",
     "save": "Save",
     "loading": "Loading…",
-    "language": "Language"
+    "language": "Language",
+    "back": "Back",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "placeholder": {
+    "coming_soon": "Coming soon",
+    "body": "This page is part of the v1.0 sprint and is not built yet.",
+    "description": "Wired in the next phase. Open the OpenAPI docs at /api/v1/docs to inspect what will land here."
+  },
+  "dashboard": {
+    "subtitle": "Overview of safety metrics across your active projects.",
+    "usage": "Usage",
+    "last_30_days": "Last 30 days",
+    "scans": "Scans",
+    "permits_open": "Open permits",
+    "hazards_mtd": "Hazards MTD",
+    "alerts": "Alerts",
+    "alerts_description": "Anomalies and overdue checks.",
+    "alerts_empty": "No alerts. The data layer wires in next phase.",
+    "recent": "Recent activity",
+    "recent_description": "Scans, permit transitions, hazard reports.",
+    "recent_empty": "Nothing here yet."
+  },
+  "workers": {
+    "subtitle": "All workers in your organisation and the engaged subcontractors.",
+    "add": "Add worker",
+    "search_placeholder": "Search by name, employee ID, national ID…",
+    "filter_induction": "Induction status",
+    "filter_induction_all": "Any induction",
+    "filter_certs": "Certifications",
+    "filter_certs_all": "Any cert status",
+    "filter_certs_valid": "No expired certs",
+    "filter_certs_expired": "Has expired cert",
+    "col_employee_id": "ID",
+    "col_name": "Name",
+    "col_trade": "Trade",
+    "col_employer": "Employer",
+    "col_nationality": "Nat.",
+    "col_induction": "Induction",
+    "empty": "No workers match your filters.",
+    "pagination": "{{from}}–{{to}} of {{total}}",
+    "error_loading": "Could not load workers.",
+    "detail": {
+      "error": "Could not load worker."
+    }
+  },
+  "worker_detail": {
+    "tabs": {
+      "overview": "Overview",
+      "certifications": "Certifications",
+      "medical": "Medical"
+    },
+    "identity": "Identity",
+    "full_name_ar": "Name (Arabic)",
+    "nationality": "Nationality",
+    "employer": "Employer",
+    "induction": "Induction",
+    "induction_date": "Induction date",
+    "induction_valid_until": "Valid until",
+    "medical": "Medical fitness",
+    "medical_status": "Status",
+    "medical_currently_fit": "Currently fit",
+    "medical_exam_date": "Last exam",
+    "medical_valid_until": "Valid until",
+    "medical_none": "No medical record on file.",
+    "certs_empty": "No certifications on file.",
+    "col_cert": "Certification",
+    "col_issuer": "Issuer",
+    "col_issue_date": "Issued",
+    "col_expiry": "Expiry",
+    "col_status": "Status"
+  },
+  "status": {
+    "cert": {
+      "valid": "Valid",
+      "expiring_soon": "Expiring soon",
+      "expired": "Expired"
+    },
+    "induction": {
+      "inducted": "Inducted",
+      "not_inducted": "Not inducted",
+      "expired": "Expired"
+    }
   }
 }
