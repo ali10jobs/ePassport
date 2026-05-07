@@ -63,26 +63,31 @@ export function MainContractorView({ data }: { data: MainContractorDashboard }) 
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <MetricCard
-          title={t('dashboard.hazards_assigned', 'Hazards assigned to us')}
-          description={t('dashboard.hazards_assigned_desc', 'Open + lifetime total')}
-          value={data.hazards.open_assigned_to_us}
-          unit={t('dashboard.open_unit', 'open')}
-          tone={data.hazards.open_assigned_to_us > 0 ? 'warning' : 'default'}
-          href="/hazards?status=under_review"
-          breakdown={[
-            {
-              label: t('dashboard.lifetime', 'Lifetime'),
-              value: data.hazards.assigned_to_us,
-            },
-          ]}
-        />
-        <MetricCard
-          title={t('dashboard.subs_count', 'Subcontractors')}
-          description={t('dashboard.subs_count_desc', 'Engaged under your contracts')}
-          value={data.subcontractors.length}
-        />
+      {/* Bottom row mirrors the 3-col grid above so card widths line up */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="lg:col-span-1">
+          <MetricCard
+            title={t('dashboard.hazards_assigned', 'Hazards assigned to us')}
+            description={t('dashboard.hazards_assigned_desc', 'Open + lifetime total')}
+            value={data.hazards.open_assigned_to_us}
+            unit={t('dashboard.open_unit', 'open')}
+            tone={data.hazards.open_assigned_to_us > 0 ? 'warning' : 'default'}
+            href="/hazards?status=under_review"
+            breakdown={[
+              {
+                label: t('dashboard.lifetime', 'Lifetime'),
+                value: data.hazards.assigned_to_us,
+              },
+            ]}
+          />
+        </div>
+        <div className="lg:col-span-2">
+          <MetricCard
+            title={t('dashboard.subs_count', 'Subcontractors')}
+            description={t('dashboard.subs_count_desc', 'Engaged under your contracts')}
+            value={data.subcontractors.length}
+          />
+        </div>
       </div>
     </div>
   );
