@@ -126,6 +126,26 @@ class AppStrings {
       _t('No open hazards reported.', 'لا توجد مخاطر مفتوحة.');
   String get noClosedHazards =>
       _t('No closed hazards in history.', 'لا توجد مخاطر مغلقة في السجل.');
+  String get openLabel => _t('OPEN', 'مفتوحة');
+  String get closedLabel => _t('CLOSED', 'مغلقة');
+  String get bySeverity => _t('BY SEVERITY', 'حسب الخطورة');
+  String get showClosedHazards =>
+      _t('Show Closed Hazards', 'عرض المخاطر المغلقة');
+  String get showOpenHazards =>
+      _t('Show Open Hazards', 'عرض المخاطر المفتوحة');
+  String get hazardDetailTitle => _t('HAZARD DETAIL', 'تفاصيل الخطر');
+  String get hazardCategoryField => _t('Category', 'الفئة');
+  String get hazardSeverityField => _t('Severity', 'الخطورة');
+  String get hazardStatusField => _t('Status', 'الحالة');
+  String get hazardDescriptionField => _t('Description', 'الوصف');
+  String get hazardLocationField => _t('Location', 'الموقع');
+  String get hazardSubmittedAt => _t('Submitted', 'تم الإرسال');
+  String get hazardResolvedAt => _t('Resolved', 'تم الحل');
+  String get hazardReportIdLabel => _t('Report ID', 'معرف البلاغ');
+  String get noDescriptionProvided =>
+      _t('No description provided.', 'لم يتم تقديم وصف.');
+  String get couldNotLoadHazard =>
+      _t('Could not load hazard report.', 'تعذر تحميل بلاغ المخاطر.');
   String get hazardSeverityCritical => _t('Critical', 'حرج');
   String get hazardSeverityHigh => _t('High', 'شديد');
   String get hazardSeverityMedium => _t('Medium', 'متوسط');
@@ -201,6 +221,8 @@ class AppStrings {
   String get tabScan => _t('Scan', 'المسح');
   String get tabPermits => _t('Permits', 'التصاريح');
   String get tabHazards => _t('Hazards', 'المخاطر');
+  String get anonymousBadge => _t('ANONYMOUS', 'مجهول');
+  String get routeNotFound => _t('Route not found', 'الصفحة غير موجودة');
 
   // Scan screen
   String get alignQr =>

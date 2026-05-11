@@ -177,6 +177,14 @@ class ApiClient {
         .toList();
   }
 
+  Future<HazardReport> fetchHazardReport(String id) async {
+    final res = await _dio.get('/api/v1/hazard-reports/$id');
+    if (res.statusCode != 200) throw _toException(res);
+    final body = res.data as Map<String, dynamic>;
+    final data = (body['data'] as Map).cast<String, dynamic>();
+    return HazardReport.fromJson(data);
+  }
+
   // ---- Hazard reports (anonymous) ------------------------------------
 
   Future<AnonymousHazardSubmitted> submitAnonymousHazard({
@@ -184,21 +192,31 @@ class ApiClient {
     required String descriptionLang,
     required String severity,
     required String category,
-    required List<int> photoBytes,
+    required List<List<int>> photos,
     String? projectId,
     double? latitude,
     double? longitude,
   }) async {
-    final form = FormData.fromMap({
-      'description': description,
-      'description_lang': descriptionLang,
-      'severity': severity,
-      'category': category,
-      if (projectId != null) 'project_id': projectId,
-      if (latitude != null) 'latitude': latitude,
-      if (longitude != null) 'longitude': longitude,
-      'photo': MultipartFile.fromBytes(photoBytes, filename: 'hazard.jpg'),
-    });
+    assert(photos.isNotEmpty, 'at least one photo required');
+    final form = FormData();
+    form.fields.addAll([
+      MapEntry('description', description),
+      MapEntry('description_lang', descriptionLang),
+      MapEntry('severity', severity),
+      MapEntry('category', category),
+      if (projectId != null) MapEntry('project_id', projectId),
+      if (latitude != null) MapEntry('latitude', latitude.toString()),
+      if (longitude != null) MapEntry('longitude', longitude.toString()),
+    ]);
+    // PHP/Laravel only parses repeated fields into an array when the key
+    // carries the `[]` suffix; without it only the last value is kept and
+    // validation reports "photos must be an array".
+    for (var i = 0; i < photos.length; i++) {
+      form.files.add(MapEntry(
+        'photos[]',
+        MultipartFile.fromBytes(photos[i], filename: 'hazard_$i.jpg'),
+      ));
+    }
 
     final res = await _dio.post(
       '/api/v1/hazard-reports/anonymous',

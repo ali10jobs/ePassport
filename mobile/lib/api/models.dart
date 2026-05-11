@@ -263,6 +263,10 @@ class HazardReport {
   final String? description;
   final String? descriptionLang;
   final String? photoPath;
+  final List<String> photoPaths;
+  final List<HazardPhotoLink> photos;
+  final double? latitude;
+  final double? longitude;
   final DateTime? createdAt;
   final DateTime? resolvedAt;
 
@@ -276,6 +280,10 @@ class HazardReport {
     required this.description,
     required this.descriptionLang,
     required this.photoPath,
+    required this.photoPaths,
+    required this.photos,
+    required this.latitude,
+    required this.longitude,
     required this.createdAt,
     required this.resolvedAt,
   });
@@ -292,6 +300,15 @@ class HazardReport {
         description: json['description'] as String?,
         descriptionLang: json['description_lang'] as String?,
         photoPath: json['photo_path'] as String?,
+        photoPaths: (json['photo_paths'] as List? ?? const [])
+            .map((e) => e.toString())
+            .toList(),
+        photos: (json['photos'] as List? ?? const [])
+            .whereType<Map>()
+            .map((e) => HazardPhotoLink.fromJson(e.cast<String, dynamic>()))
+            .toList(),
+        latitude: _asDouble(json['latitude']),
+        longitude: _asDouble(json['longitude']),
         createdAt: json['created_at'] != null
             ? DateTime.tryParse(json['created_at'] as String)
             : null,
@@ -299,6 +316,23 @@ class HazardReport {
             ? DateTime.tryParse(json['resolved_at'] as String)
             : null,
       );
+}
+
+class HazardPhotoLink {
+  final int index;
+  final String url;
+  HazardPhotoLink({required this.index, required this.url});
+  factory HazardPhotoLink.fromJson(Map<String, dynamic> json) => HazardPhotoLink(
+        index: (json['index'] as num?)?.toInt() ?? 0,
+        url: json['url'] as String? ?? '',
+      );
+}
+
+double? _asDouble(Object? v) {
+  if (v == null) return null;
+  if (v is num) return v.toDouble();
+  if (v is String) return double.tryParse(v);
+  return null;
 }
 
 /// Server response after submitting an anonymous hazard. Mobile shows the

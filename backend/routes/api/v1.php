@@ -36,6 +36,13 @@ Route::middleware('throttle:hazard-anonymous')->group(function () {
     Route::get('/hazard-reports/anonymous/{anonymousReportId}', [HazardReportAnonymousController::class, 'status'])->name('hazard.anonymous.status');
 });
 
+// Hazard photo stream — no auth, signed URL is the credential. Issued by the
+// authenticated show() response with a short TTL.
+Route::get('/hazard-reports/{hazardReport}/photo/{index}', [HazardReportController::class, 'photo'])
+    ->middleware('signed')
+    ->name('hazards.photo')
+    ->whereNumber('index');
+
 // Authenticated endpoints
 Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout'])->name('auth.logout');

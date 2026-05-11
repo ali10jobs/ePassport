@@ -3,7 +3,9 @@
 namespace App\Http\Requests\V1;
 
 use App\Models\HazardReport;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\Rule;
 
 class SubmitAnonymousHazardRequest extends FormRequest
@@ -17,8 +19,12 @@ class SubmitAnonymousHazardRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // multipart/form-data: file upload
-            'photo' => ['required', 'file', 'image', 'max:10240'], // 10 MB cap
+            // multipart/form-data: accepts either a single `photo` (legacy)
+            // or a `photos[]` array (up to 5 files). At least one must be
+            // present — enforced via withValidator() below.
+            'photo' => ['nullable', 'file', 'image', 'max:10240'],
+            'photos' => ['nullable', 'array', 'max:5'],
+            'photos.*' => ['file', 'image', 'max:10240'],
             'category' => ['required', Rule::in([
                 HazardReport::CATEGORY_FALL,
                 HazardReport::CATEGORY_ELECTRICAL,
@@ -45,5 +51,40 @@ class SubmitAnonymousHazardRequest extends FormRequest
             'latitude' => ['nullable', 'numeric', 'between:-90,90'],
             'longitude' => ['nullable', 'numeric', 'between:-180,180'],
         ];
+    }
+
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $v) {
+            if (count($this->uploadedPhotos()) === 0) {
+                $v->errors()->add('photos', 'At least one photo is required.');
+            }
+        });
+    }
+
+    /**
+     * Returns the photos to process as a flat list of UploadedFile, merging
+     * the legacy single-`photo` field with the new `photos[]` array.
+     *
+     * @return list<UploadedFile>
+     */
+    public function uploadedPhotos(): array
+    {
+        $files = [];
+        if ($this->hasFile('photo')) {
+            $single = $this->file('photo');
+            if ($single instanceof UploadedFile) {
+                $files[] = $single;
+            }
+        }
+        if ($this->hasFile('photos')) {
+            foreach ((array) $this->file('photos') as $f) {
+                if ($f instanceof UploadedFile) {
+                    $files[] = $f;
+                }
+            }
+        }
+
+        return $files;
     }
 }

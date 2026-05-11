@@ -153,7 +153,7 @@ class _MetricCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(18, 16, 16, 18),
+      padding: const EdgeInsetsDirectional.fromSTEB(18, 16, 16, 18),
       decoration: BoxDecoration(
         color: UiTokens.surface,
         border: Border.all(color: UiTokens.border),
@@ -224,7 +224,7 @@ class _OrgCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(18, 16, 16, 18),
+      padding: const EdgeInsetsDirectional.fromSTEB(18, 16, 16, 18),
       decoration: BoxDecoration(
         color: UiTokens.inkSolid,
         borderRadius: BorderRadius.circular(8),

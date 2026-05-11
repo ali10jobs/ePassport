@@ -46,7 +46,8 @@ class _AnonymousHazardScreenState extends ConsumerState<AnonymousHazardScreen> {
   String _category = 'fall';
   double _severity = 0.85;
   bool _gpsOn = true;
-  Uint8List? _photoBytes;
+  final List<Uint8List> _photos = [];
+  static const int _maxPhotos = 5;
   bool _stripping = false;
   Position? _position;
   bool _resolvingGps = false;
@@ -128,19 +129,47 @@ class _AnonymousHazardScreenState extends ConsumerState<AnonymousHazardScreen> {
     return 'critical';
   }
 
-  Future<void> _pickPhoto(ImageSource source) async {
+  Future<void> _pickFromCamera() async {
+    if (_photos.length >= _maxPhotos) return;
     final picker = ImagePicker();
     final file = await picker.pickImage(
-        source: source, maxWidth: 1920, imageQuality: 85);
+        source: ImageSource.camera, maxWidth: 1920, imageQuality: 85);
     if (file == null) return;
+    await _processAndAppend([await file.readAsBytes()]);
+  }
+
+  Future<void> _pickFromGallery() async {
+    if (_photos.length >= _maxPhotos) return;
+    final picker = ImagePicker();
+    final remaining = _maxPhotos - _photos.length;
+    final files = await picker.pickMultiImage(
+      maxWidth: 1920,
+      imageQuality: 85,
+      limit: remaining,
+    );
+    if (files.isEmpty) return;
+    final selected = files.take(remaining).toList();
+    final raws = <Uint8List>[];
+    for (final f in selected) {
+      raws.add(await f.readAsBytes());
+    }
+    await _processAndAppend(raws);
+  }
+
+  Future<void> _processAndAppend(List<Uint8List> raws) async {
     setState(() => _stripping = true);
     try {
-      final raw = await file.readAsBytes();
-      final decoded = img.decodeImage(raw);
-      if (decoded == null) throw Exception('decode failed');
-      final stripped = Uint8List.fromList(img.encodeJpg(decoded, quality: 85));
+      final processed = <Uint8List>[];
+      for (final raw in raws) {
+        final decoded = img.decodeImage(raw);
+        if (decoded == null) throw Exception('decode failed');
+        processed.add(Uint8List.fromList(img.encodeJpg(decoded, quality: 85)));
+      }
       setState(() {
-        _photoBytes = stripped;
+        _photos.addAll(processed);
+        if (_photos.length > _maxPhotos) {
+          _photos.removeRange(_maxPhotos, _photos.length);
+        }
         _stripping = false;
       });
     } catch (_) {
@@ -151,6 +180,10 @@ class _AnonymousHazardScreenState extends ConsumerState<AnonymousHazardScreen> {
     }
   }
 
+  void _removePhotoAt(int i) {
+    setState(() => _photos.removeAt(i));
+  }
+
   Future<void> _onSubmit() async {
     final s = ref.read(stringsProvider);
     final desc = _descCtrl.text.trim();
@@ -158,7 +191,7 @@ class _AnonymousHazardScreenState extends ConsumerState<AnonymousHazardScreen> {
       setState(() => _error = s.hazardDescriptionRequired);
       return;
     }
-    if (_photoBytes == null) {
+    if (_photos.isEmpty) {
       setState(() => _error = s.addPhotoOfHazard);
       return;
     }
@@ -172,7 +205,7 @@ class _AnonymousHazardScreenState extends ConsumerState<AnonymousHazardScreen> {
             descriptionLang: s.isAr ? 'ar' : 'en',
             severity: _severityApiValue(),
             category: _category,
-            photoBytes: _photoBytes!,
+            photos: _photos,
             latitude: _gpsOn ? _position?.latitude : null,
             longitude: _gpsOn ? _position?.longitude : null,
           );
@@ -201,6 +234,8 @@ class _AnonymousHazardScreenState extends ConsumerState<AnonymousHazardScreen> {
       return AppShell(
         tab: AppTab.hazards,
         bodyPadding: EdgeInsets.zero,
+        onBack: () =>
+            context.canPop() ? context.pop() : context.go('/hazards'),
         child: body,
       );
     }
@@ -240,10 +275,12 @@ class _AnonymousHazardScreenState extends ConsumerState<AnonymousHazardScreen> {
         _SectionTitle(s.evidence),
         const SizedBox(height: 10),
         _Evidence(
-          bytes: _photoBytes,
+          photos: _photos,
+          maxPhotos: _maxPhotos,
           loading: _stripping,
-          onCamera: () => _pickPhoto(ImageSource.camera),
-          onGallery: () => _pickPhoto(ImageSource.gallery),
+          onCamera: _pickFromCamera,
+          onGallery: _pickFromGallery,
+          onRemove: _removePhotoAt,
         ),
         const SizedBox(height: 20),
         _SectionTitle(s.severity),
@@ -303,17 +340,18 @@ class _AnonymousHazardScreenState extends ConsumerState<AnonymousHazardScreen> {
   }
 }
 
-class _AnonymousHeader extends StatelessWidget {
+class _AnonymousHeader extends ConsumerWidget {
   const _AnonymousHeader({required this.onBack});
   final VoidCallback onBack;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final s = ref.watch(stringsProvider);
     return Container(
       decoration: BoxDecoration(
         border: Border(bottom: BorderSide(color: UiTokens.border)),
       ),
-      padding: const EdgeInsets.fromLTRB(12, 8, 16, 12),
+      padding: const EdgeInsetsDirectional.fromSTEB(12, 8, 16, 12),
       child: Row(
         children: [
           IconButton(
@@ -338,7 +376,7 @@ class _AnonymousHeader extends StatelessWidget {
               borderRadius: BorderRadius.circular(100),
             ),
             child: Text(
-              'ANONYMOUS',
+              s.anonymousBadge,
               style: TextStyle(
                 color: UiTokens.mutedStrong,
                 fontSize: 10,
@@ -438,59 +476,76 @@ class _CategoryGrid extends ConsumerWidget {
 
 class _Evidence extends ConsumerWidget {
   const _Evidence({
-    required this.bytes,
+    required this.photos,
+    required this.maxPhotos,
     required this.loading,
     required this.onCamera,
     required this.onGallery,
+    required this.onRemove,
   });
-  final Uint8List? bytes;
+  final List<Uint8List> photos;
+  final int maxPhotos;
   final bool loading;
   final VoidCallback onCamera;
   final VoidCallback onGallery;
+  final ValueChanged<int> onRemove;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final s = ref.watch(stringsProvider);
+    final atLimit = photos.length >= maxPhotos;
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        AspectRatio(
-          aspectRatio: 16 / 9,
-          child: Container(
-            decoration: BoxDecoration(
-              color: UiTokens.surfaceMuted,
-              border: Border.all(color: UiTokens.border),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            clipBehavior: Clip.antiAlias,
-            child: bytes != null
-                ? Image.memory(bytes!, fit: BoxFit.cover)
-                : Center(
-                    child: loading
-                        ? const CircularProgressIndicator()
-                        : Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.photo_camera_outlined,
-                                  color: UiTokens.muted, size: 28),
-                              const SizedBox(height: 6),
-                              Text(
-                                s.tapToAddPhoto,
-                                style: TextStyle(
-                                  color: UiTokens.muted,
-                                  fontSize: 13,
-                                ),
-                              ),
-                            ],
+        if (photos.isEmpty)
+          AspectRatio(
+            aspectRatio: 16 / 9,
+            child: Container(
+              decoration: BoxDecoration(
+                color: UiTokens.surfaceMuted,
+                border: Border.all(color: UiTokens.border),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Center(
+                child: loading
+                    ? const CircularProgressIndicator()
+                    : Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.photo_camera_outlined,
+                              color: UiTokens.muted, size: 28),
+                          const SizedBox(height: 6),
+                          Text(
+                            s.tapToAddPhoto,
+                            style: TextStyle(
+                              color: UiTokens.muted,
+                              fontSize: 13,
+                            ),
                           ),
-                  ),
+                        ],
+                      ),
+              ),
+            ),
+          )
+        else
+          SizedBox(
+            height: 96,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: photos.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 8),
+              itemBuilder: (_, i) => _PhotoThumb(
+                bytes: photos[i],
+                onRemove: () => onRemove(i),
+              ),
+            ),
           ),
-        ),
         const SizedBox(height: 8),
         Row(
           children: [
             Expanded(
               child: OutlinedButton.icon(
-                onPressed: loading ? null : onCamera,
+                onPressed: (loading || atLimit) ? null : onCamera,
                 icon: const Icon(Icons.camera_alt_outlined, size: 16),
                 label: Text(s.camera),
               ),
@@ -498,12 +553,50 @@ class _Evidence extends ConsumerWidget {
             const SizedBox(width: 8),
             Expanded(
               child: OutlinedButton.icon(
-                onPressed: loading ? null : onGallery,
+                onPressed: (loading || atLimit) ? null : onGallery,
                 icon: const Icon(Icons.photo_library_outlined, size: 16),
                 label: Text(s.gallery),
               ),
             ),
           ],
+        ),
+        const SizedBox(height: 6),
+        Text(
+          '${photos.length} / $maxPhotos',
+          style: TextStyle(color: UiTokens.muted, fontSize: 11),
+        ),
+      ],
+    );
+  }
+}
+
+class _PhotoThumb extends StatelessWidget {
+  const _PhotoThumb({required this.bytes, required this.onRemove});
+  final Uint8List bytes;
+  final VoidCallback onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Image.memory(bytes, width: 96, height: 96, fit: BoxFit.cover),
+        ),
+        Positioned(
+          top: 2,
+          right: 2,
+          child: GestureDetector(
+            onTap: onRemove,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: 0.6),
+                shape: BoxShape.circle,
+              ),
+              padding: const EdgeInsets.all(4),
+              child: const Icon(Icons.close, size: 14, color: Colors.white),
+            ),
+          ),
         ),
       ],
     );
@@ -695,7 +788,7 @@ class _GpsRow extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final s = ref.watch(stringsProvider);
     return Container(
-      padding: const EdgeInsets.fromLTRB(14, 10, 8, 10),
+      padding: const EdgeInsetsDirectional.fromSTEB(14, 10, 8, 10),
       decoration: BoxDecoration(
         color: UiTokens.surface,
         border: Border.all(color: UiTokens.border),

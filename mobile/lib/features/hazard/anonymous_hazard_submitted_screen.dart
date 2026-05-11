@@ -40,7 +40,7 @@ class AnonymousHazardSubmittedScreen extends ConsumerWidget {
               decoration: BoxDecoration(
                 border: Border(bottom: BorderSide(color: UiTokens.border)),
               ),
-              padding: const EdgeInsets.fromLTRB(20, 12, 16, 12),
+              padding: const EdgeInsetsDirectional.fromSTEB(20, 12, 16, 12),
               child: Row(
                 children: [
                   Text(

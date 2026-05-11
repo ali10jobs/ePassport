@@ -44,20 +44,27 @@ class HazardReportAnonymousController extends Controller
      */
     public function store(SubmitAnonymousHazardRequest $request): JsonResponse
     {
-        // Strip EXIF and re-encode
-        $cleanedBytes = $this->photos->stripExifAndReencode($request->file('photo'));
-
-        if (! $this->photos->verifyNoExif($cleanedBytes)) {
-            throw new ApiException(
-                errorCode: ErrorCodes::HAZARD_EXIF_STRIP_FAILED,
-                message: 'Photo EXIF strip failed. The photo could not be safely processed for anonymous submission.',
-                status: 422,
-            );
+        // Strip EXIF and re-encode each uploaded photo. We collect all stored
+        // paths into `photo_paths`; `photo_path` is kept set to the first one
+        // for any reader still on the legacy single-photo field.
+        $photoPaths = [];
+        $totalBytes = 0;
+        foreach ($request->uploadedPhotos() as $upload) {
+            $cleanedBytes = $this->photos->stripExifAndReencode($upload);
+            if (! $this->photos->verifyNoExif($cleanedBytes)) {
+                throw new ApiException(
+                    errorCode: ErrorCodes::HAZARD_EXIF_STRIP_FAILED,
+                    message: 'Photo EXIF strip failed. The photo could not be safely processed for anonymous submission.',
+                    status: 422,
+                );
+            }
+            $filename = sprintf('hazard-photos/%s/%s.jpg', date('Y/m'), Str::uuid());
+            Storage::disk(config('filesystems.default'))->put($filename, $cleanedBytes);
+            $photoPaths[] = $filename;
+            $totalBytes += strlen($cleanedBytes);
         }
 
         $anonId = (string) Str::uuid();
-        $filename = sprintf('hazard-photos/%s/%s.jpg', date('Y/m'), Str::uuid());
-        Storage::disk(config('filesystems.default'))->put($filename, $cleanedBytes);
 
         // If the submitter is authenticated and didn't pass a project_id,
         // infer one from their accessible projects so the report rolls into
@@ -86,7 +93,11 @@ class HazardReportAnonymousController extends Controller
             'latitude' => $request->validated('latitude'),
             'longitude' => $request->validated('longitude'),
             'status' => HazardReport::STATUS_SUBMITTED,
-            'metadata' => ['photo_path' => $filename, 'photo_bytes' => strlen($cleanedBytes)],
+            'metadata' => [
+                'photo_path' => $photoPaths[0] ?? null,
+                'photo_paths' => $photoPaths,
+                'photo_bytes' => $totalBytes,
+            ],
         ]);
 
         DomainEvent::dispatch(WebhookSubscription::EVENT_HAZARD_SUBMITTED, [

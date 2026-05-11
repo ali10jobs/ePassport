@@ -22,6 +22,7 @@ class AppShell extends StatelessWidget {
     required this.child,
     this.showHeader = true,
     this.headerAction,
+    this.onBack,
     this.backgroundColor,
     this.bodyPadding,
   });
@@ -30,6 +31,7 @@ class AppShell extends StatelessWidget {
   final Widget child;
   final bool showHeader;
   final Widget? headerAction;
+  final VoidCallback? onBack;
   final Color? backgroundColor;
   final EdgeInsetsGeometry? bodyPadding;
 
@@ -42,7 +44,7 @@ class AppShell extends StatelessWidget {
         bottom: false,
         child: Column(
           children: [
-            if (showHeader) AppHeader(action: headerAction),
+            if (showHeader) AppHeader(action: headerAction, onBack: onBack),
             Expanded(
               child: Padding(
                 padding: bodyPadding ?? EdgeInsets.zero,
@@ -58,8 +60,9 @@ class AppShell extends StatelessWidget {
 }
 
 class AppHeader extends StatelessWidget {
-  const AppHeader({super.key, this.action});
+  const AppHeader({super.key, this.action, this.onBack});
   final Widget? action;
+  final VoidCallback? onBack;
 
   @override
   Widget build(BuildContext context) {
@@ -67,9 +70,19 @@ class AppHeader extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border(bottom: BorderSide(color: UiTokens.border)),
       ),
-      padding: const EdgeInsets.fromLTRB(20, 12, 16, 12),
+      padding: const EdgeInsetsDirectional.fromSTEB(8, 12, 16, 12),
       child: Row(
         children: [
+          if (onBack != null)
+            IconButton(
+              onPressed: onBack,
+              icon: Icon(Icons.arrow_back, color: UiTokens.ink, size: 22),
+              tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+              padding: const EdgeInsets.all(8),
+              constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+            )
+          else
+            const SizedBox(width: 12),
           Text(
             'ePassport',
             style: TextStyle(

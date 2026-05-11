@@ -13,8 +13,11 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * @group Hazard Reports — Authenticated
@@ -77,6 +80,7 @@ class HazardReportController extends Controller
             'site_id' => $r->site_id,
             'assigned_to_organization_id' => $r->assigned_to_organization_id,
             'photo_path' => $r->metadata['photo_path'] ?? null,
+            'photo_paths' => self::photoPathsFor($r),
             'created_at' => $r->created_at?->toIso8601String(),
             'resolved_at' => $r->resolved_at?->toIso8601String(),
         ]));
@@ -109,6 +113,8 @@ class HazardReportController extends Controller
                 'resolution_summary' => $hazardReport->resolution_summary,
                 'resolved_at' => $hazardReport->resolved_at?->toIso8601String(),
                 'photo_path' => $hazardReport->metadata['photo_path'] ?? null,
+                'photo_paths' => self::photoPathsFor($hazardReport),
+                'photos' => self::photoLinksFor($hazardReport),
                 'notes' => $hazardReport->notes->map(fn ($n) => [
                     'id' => $n->id,
                     'note_type' => $n->note_type,
@@ -187,5 +193,72 @@ class HazardReportController extends Controller
                 'created_at' => $note->created_at->toIso8601String(),
             ],
         ], 201);
+    }
+
+    /**
+     * Stream a single hazard photo by index. Reached via a signed URL (no
+     * auth middleware) so mobile clients can use Image.network without
+     * needing to attach a bearer token.
+     */
+    public function photo(Request $request, HazardReport $hazardReport, int $index): StreamedResponse
+    {
+        $paths = self::photoPathsFor($hazardReport);
+        if ($index < 0 || $index >= count($paths)) {
+            abort(404);
+        }
+        $disk = Storage::disk(config('filesystems.default'));
+        if (! $disk->exists($paths[$index])) {
+            abort(404);
+        }
+
+        return $disk->response($paths[$index], headers: [
+            'Content-Type' => 'image/jpeg',
+            'Cache-Control' => 'private, max-age=600',
+        ]);
+    }
+
+    /**
+     * Photo paths for a report, preferring the new `photo_paths` array and
+     * falling back to the legacy single `photo_path` for older records.
+     *
+     * @return list<string>
+     */
+    private static function photoPathsFor(HazardReport $r): array
+    {
+        $metadata = $r->metadata ?? [];
+        $paths = $metadata['photo_paths'] ?? null;
+        if (is_array($paths) && count($paths) > 0) {
+            return array_values(array_filter($paths, fn ($p) => is_string($p) && $p !== ''));
+        }
+        $legacy = $metadata['photo_path'] ?? null;
+        if (is_string($legacy) && $legacy !== '') {
+            return [$legacy];
+        }
+
+        return [];
+    }
+
+    /**
+     * Signed URLs for each photo so the mobile client can render images
+     * without re-attaching the bearer token on each load.
+     *
+     * @return list<array{index:int,url:string}>
+     */
+    private static function photoLinksFor(HazardReport $r): array
+    {
+        $paths = self::photoPathsFor($r);
+        $links = [];
+        foreach ($paths as $i => $_) {
+            $links[] = [
+                'index' => $i,
+                'url' => URL::temporarySignedRoute(
+                    'v1.hazards.photo',
+                    now()->addHours(2),
+                    ['hazardReport' => $r->id, 'index' => $i],
+                ),
+            ];
+        }
+
+        return $links;
     }
 }

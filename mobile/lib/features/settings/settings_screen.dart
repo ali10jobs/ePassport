@@ -89,7 +89,7 @@ class _Header extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border(bottom: BorderSide(color: borderColor)),
       ),
-      padding: const EdgeInsets.fromLTRB(8, 8, 16, 8),
+      padding: const EdgeInsetsDirectional.fromSTEB(8, 8, 16, 8),
       child: Row(
         children: [
           IconButton(

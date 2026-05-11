@@ -193,7 +193,7 @@ class _Header extends ConsumerWidget {
       decoration: BoxDecoration(
         border: Border(bottom: BorderSide(color: UiTokens.border)),
       ),
-      padding: const EdgeInsets.fromLTRB(12, 8, 16, 12),
+      padding: const EdgeInsetsDirectional.fromSTEB(12, 8, 16, 12),
       child: Row(
         children: [
           IconButton(

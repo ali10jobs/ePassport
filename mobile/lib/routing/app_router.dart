@@ -7,6 +7,7 @@ import '../features/auth/login_screen.dart';
 import '../features/dashboard/dashboard_screen.dart';
 import '../features/hazard/anonymous_hazard_screen.dart';
 import '../features/hazard/anonymous_hazard_submitted_screen.dart';
+import '../features/hazard/hazard_detail_screen.dart';
 import '../features/hazard/hazards_screen.dart';
 import '../features/launch/launch_screen.dart';
 import '../features/permits/permits_screen.dart';
@@ -14,6 +15,7 @@ import '../features/profile/profile_screen.dart';
 import '../features/scan/scan_screen.dart';
 import '../features/settings/settings_screen.dart';
 import '../features/splash/splash_screen.dart';
+import '../shared/i18n.dart';
 import 'auth_state.dart';
 
 /// Router. Auth gate runs in `redirect`:
@@ -70,6 +72,11 @@ GoRouter _buildRouter(Ref ref) {
         ),
       ),
       GoRoute(
+        path: '/hazards/:id',
+        builder: (_, state) =>
+            HazardDetailScreen(id: state.pathParameters['id'] ?? ''),
+      ),
+      GoRoute(
         path: '/hazard/new',
         builder: (_, __) => const AnonymousHazardScreen(),
       ),
@@ -81,7 +88,12 @@ GoRouter _buildRouter(Ref ref) {
       ),
     ],
     errorBuilder: (_, state) => Scaffold(
-      body: Center(child: Text('Route not found: ${state.uri}')),
+      body: Builder(
+        builder: (ctx) {
+          final s = ProviderScope.containerOf(ctx).read(stringsProvider);
+          return Center(child: Text('${s.routeNotFound}: ${state.uri}'));
+        },
+      ),
     ),
   );
 }
