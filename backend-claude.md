@@ -66,6 +66,7 @@ Single source of truth. REST API consumed by React web (Sanctum cookie), Flutter
 ### Day 2 — Worker + Equipment APIs
 - Worker CRUD: `POST/GET/PATCH/DELETE /api/v1/workers`, `GET /api/v1/workers/{id}/passport`, `POST /api/v1/workers/{id}/certifications`, `POST /api/v1/workers/{id}/qr` (helmet + coverall QRs).
 - Worker bulk import: `POST /api/v1/workers/bulk` with idempotency, per-record success/failure.
+- Worker medical profile fields on `workers`: `blood_type`, `allergies`, `chronic_conditions`, `emergency_contact_name`, `emergency_contact_phone` — surfaced on gate-scan result for on-site medics. Distinct from `worker_medical_records` (per-exam fitness history driving MEDICAL_FAIL).
 - Equipment CRUD + TPI inspection attach + operator pairing + QR generation.
 - Database seeder with **PRE-1 friend's authentic Saudi data**: 4 orgs (one per type), 1 project, 1 site, 30 workers across contractors and subs with realistic Saudi-context certs (NEBOSH, IOSH, Aramco SAEP, scaffolding, working-at-heights, confined-space) including some intentionally expired, 10 pieces of equipment with TPI certs (TÜV Rheinland, Bureau Veritas, SGS), 3 user accounts (one per role).
 - **Verification:** `curl -X POST /api/v1/workers` creates a worker with PRE-1 cert types; QR endpoint returns printable image.

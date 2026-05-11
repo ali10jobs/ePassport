@@ -2,6 +2,11 @@
 
 > Full project context: see `master-claude.md`. Source: `plan-files/03_Mobile_Flutter.pdf`.
 
+## Design reference
+- Visual source of truth: `MobileScreens/stitch/*/screen.png` (one PNG per MVP screen). Match layout, spacing, and hierarchy to these mockups when building Flutter UI.
+- Design tokens (colors, typography, spacing, components, RTL rules): `MobileScreens/stitch/field_ops_monochrome/DESIGN.md`.
+- **Ignore the `code.html` files** in each stitch subfolder — they are Stitch export artifacts, not a reference implementation. Build Flutter widgets from the PNGs + DESIGN.md only.
+
 ## Role
 Field application for safety engineers, supervisors, and (via the public anonymous flow) workers themselves. Optimized for fast scanning at site gates and anonymous hazard reporting that workers use without any login. Targets: iOS 13+ and Android 8+ (minSdk 26).
 

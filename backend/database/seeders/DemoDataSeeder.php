@@ -217,8 +217,25 @@ class DemoDataSeeder extends Seeder
         $employers = [$mainContractor, $subcontractor];
         $created = [];
 
+        $bloodTypes = ['O+', 'A+', 'B+', 'O-', 'A-', 'AB+', 'B-', 'AB-'];
+        $allergyPool = [
+            3 => 'Penicillin',
+            10 => 'Bee stings',
+            18 => 'Latex',
+            24 => 'Sulfa drugs',
+        ];
+        $conditionPool = [
+            6 => 'Type 2 diabetes (controlled)',
+            14 => 'Hypertension (medicated)',
+            21 => 'Mild asthma (inhaler on site)',
+        ];
+
         foreach ($roster as $i => $row) {
             [$employerIdx, $empId, $fEn, $lEn, $fAr, $lAr, $nat, $trade] = $row;
+
+            $emergencyPhone = $nat === 'SAU'
+                ? '+9665'.str_pad((string) (10000000 + $i * 41), 8, '0', STR_PAD_LEFT)
+                : '+9665'.str_pad((string) (50000000 + $i * 23), 8, '0', STR_PAD_LEFT);
 
             $worker = Worker::firstOrCreate(
                 ['employer_organization_id' => $employers[$employerIdx]->id, 'employee_id' => $empId],
@@ -231,6 +248,11 @@ class DemoDataSeeder extends Seeder
                     'trade' => $trade,
                     'iqama_number' => $nat !== 'SAU' ? '23'.str_pad((string) (10000000 + $i * 17), 8, '0', STR_PAD_LEFT) : null,
                     'national_id' => $nat === 'SAU' ? '10'.str_pad((string) (10000000 + $i * 31), 8, '0', STR_PAD_LEFT) : null,
+                    'blood_type' => $bloodTypes[$i % count($bloodTypes)],
+                    'allergies' => $allergyPool[$i] ?? null,
+                    'chronic_conditions' => $conditionPool[$i] ?? null,
+                    'emergency_contact_name' => 'Next of kin '.($i + 1),
+                    'emergency_contact_phone' => $emergencyPhone,
                     'induction_status' => $i % 11 === 5 ? Worker::INDUCTION_NOT_INDUCTED : Worker::INDUCTION_INDUCTED,
                     'induction_date' => $i % 11 === 5 ? null : now()->subDays($i * 2 + 30)->toDateString(),
                     'induction_valid_until' => $i % 11 === 5 ? null : now()->addMonths(11 - ($i % 4))->toDateString(),
@@ -238,6 +260,19 @@ class DemoDataSeeder extends Seeder
                     'coverall_qr_token' => $this->qr->generateToken(),
                 ]
             );
+
+            // Backfill medical profile fields on rows that pre-date the
+            // 2026_05_06_120025 migration. firstOrCreate above skips attributes
+            // for matched rows; these are deterministic from $i so re-applying
+            // is idempotent.
+            $worker->forceFill([
+                'blood_type' => $bloodTypes[$i % count($bloodTypes)],
+                'allergies' => $allergyPool[$i] ?? null,
+                'chronic_conditions' => $conditionPool[$i] ?? null,
+                'emergency_contact_name' => 'Next of kin '.($i + 1),
+                'emergency_contact_phone' => $emergencyPhone,
+            ])->save();
+
             $created[] = $worker;
 
             $this->seedWorkerCerts($worker, $i);
