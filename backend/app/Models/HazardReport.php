@@ -53,6 +53,10 @@ class HazardReport extends Model implements HasMedia
 
     public const CATEGORY_ENVIRONMENTAL = 'environmental';
 
+    public const CATEGORY_TOXIC = 'toxic';
+
+    public const CATEGORY_IMPACT = 'impact';
+
     public const CATEGORY_OTHER = 'other';
 
     protected $fillable = [

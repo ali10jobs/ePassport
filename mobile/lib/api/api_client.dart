@@ -116,6 +116,67 @@ class ApiClient {
     return ScanResult.fromJson(res.data as Map<String, dynamic>);
   }
 
+  // ---- Dashboard / scans (live data for the mobile dashboard) -------
+
+  /// Pulls the role-routed dashboard summary. The Laravel side exposes one
+  /// endpoint per org-role; we pick from the caller's primary org so a main
+  /// contractor sees their permits, a client sees aggregate stats, etc.
+  Future<DashboardSummary> fetchDashboardSummary({required String orgRole}) async {
+    final path = switch (orgRole) {
+      'client' => '/api/v1/dashboards/client/summary',
+      'main_contractor' => '/api/v1/dashboards/main-contractor/summary',
+      'consultant' => '/api/v1/dashboards/consultant/summary',
+      'subcontractor' => '/api/v1/dashboards/subcontractor/summary',
+      _ => '/api/v1/dashboards/main-contractor/summary',
+    };
+    final res = await _dio.get(path);
+    if (res.statusCode != 200) throw _toException(res);
+    return DashboardSummary.fromJson(res.data as Map<String, dynamic>);
+  }
+
+  /// Recent scan events, newest first. We only ask for the small page the
+  /// dashboard tile renders — full pagination lives on the web admin.
+  Future<List<ScanLog>> fetchRecentScans({int limit = 5}) async {
+    final res = await _dio.get('/api/v1/scans', queryParameters: {
+      'per_page': limit,
+      'sort': '-scanned_at',
+    });
+    if (res.statusCode != 200) throw _toException(res);
+    final body = res.data as Map<String, dynamic>;
+    final list = (body['data'] as List? ?? const []);
+    return list
+        .map((e) => ScanLog.fromJson((e as Map).cast<String, dynamic>()))
+        .toList();
+  }
+
+  /// Worker passport details — used after a green scan to surface the real
+  /// name / trade / employer on the result screen.
+  Future<WorkerSummary> fetchWorker(String workerId) async {
+    final res = await _dio.get('/api/v1/workers/$workerId');
+    if (res.statusCode != 200) throw _toException(res);
+    return WorkerSummary.fromJson(res.data as Map<String, dynamic>);
+  }
+
+  /// Authenticated hazard reports list. `status` filter is forwarded to the
+  /// backend QueryBuilder; pass null to skip filtering. Only reports the user
+  /// is authorized to see are returned (org/project scoping is server-side).
+  Future<List<HazardReport>> fetchHazardReports({
+    String? status,
+    int perPage = 25,
+  }) async {
+    final res = await _dio.get('/api/v1/hazard-reports', queryParameters: {
+      'per_page': perPage,
+      'sort': '-created_at',
+      if (status != null) 'filter[status]': status,
+    });
+    if (res.statusCode != 200) throw _toException(res);
+    final body = res.data as Map<String, dynamic>;
+    final list = (body['data'] as List? ?? const []);
+    return list
+        .map((e) => HazardReport.fromJson((e as Map).cast<String, dynamic>()))
+        .toList();
+  }
+
   // ---- Hazard reports (anonymous) ------------------------------------
 
   Future<AnonymousHazardSubmitted> submitAnonymousHazard({

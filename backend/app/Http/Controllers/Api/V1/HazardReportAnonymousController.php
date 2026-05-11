@@ -10,8 +10,10 @@ use App\Http\Requests\V1\SubmitAnonymousHazardRequest;
 use App\Models\HazardReport;
 use App\Models\HazardReportNote;
 use App\Models\WebhookSubscription;
+use App\Services\Authorization\OrganizationContext;
 use App\Services\Hazard\HazardPhotoService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -29,7 +31,10 @@ use Illuminate\Support\Str;
  */
 class HazardReportAnonymousController extends Controller
 {
-    public function __construct(private readonly HazardPhotoService $photos) {}
+    public function __construct(
+        private readonly HazardPhotoService $photos,
+        private readonly OrganizationContext $orgContext,
+    ) {}
 
     /**
      * Submit an anonymous hazard report. Photo EXIF stripped server-side
@@ -54,11 +59,25 @@ class HazardReportAnonymousController extends Controller
         $filename = sprintf('hazard-photos/%s/%s.jpg', date('Y/m'), Str::uuid());
         Storage::disk(config('filesystems.default'))->put($filename, $cleanedBytes);
 
+        // If the submitter is authenticated and didn't pass a project_id,
+        // infer one from their accessible projects so the report rolls into
+        // the right inbox / dashboard. Submitter PII still isn't recorded:
+        // reporter_user_id stays null and is_anonymous stays true.
+        $projectId = $request->validated('project_id');
+        if ($projectId === null) {
+            $authUser = Auth::guard('sanctum')->user();
+            if ($authUser !== null) {
+                $request->setUserResolver(fn () => $authUser);
+                $accessible = $this->orgContext->forRequest($request)->accessibleProjectIds();
+                $projectId = $accessible[0] ?? null;
+            }
+        }
+
         $report = HazardReport::create([
             'anonymous_report_id' => $anonId,
             'is_anonymous' => true,
             'reporter_user_id' => null,
-            'project_id' => $request->validated('project_id'),
+            'project_id' => $projectId,
             'site_id' => $request->validated('site_id'),
             'category' => $request->validated('category'),
             'severity' => $request->validated('severity'),

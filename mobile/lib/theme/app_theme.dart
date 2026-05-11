@@ -19,15 +19,19 @@ class AppTokens {
   static const Color primary = Color(0xFF0070F3); // vercel-blue
 }
 
-ThemeData buildAppTheme() {
-  const surface = Colors.white;
-  const onSurface = Color(0xFF0A0A0A);
-  const muted = Color(0xFFF5F5F5); // neutral-100
+ThemeData buildAppTheme() => _buildTheme(Brightness.light);
+ThemeData buildDarkTheme() => _buildTheme(Brightness.dark);
+
+ThemeData _buildTheme(Brightness brightness) {
+  final isDark = brightness == Brightness.dark;
+  final surface = isDark ? const Color(0xFF0A0A0A) : Colors.white;
+  final onSurface = isDark ? const Color(0xFFF9F9F9) : const Color(0xFF0A0A0A);
+  final muted = isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF5F5F5);
   const mutedForeground = Color(0xFF737373); // neutral-500
-  const border = Color(0xFFE5E5E5); // neutral-200
+  final border = isDark ? const Color(0xFF1F1F1F) : const Color(0xFFE5E5E5);
 
   final scheme = ColorScheme(
-    brightness: Brightness.light,
+    brightness: brightness,
     primary: AppTokens.primary,
     onPrimary: Colors.white,
     secondary: onSurface,
@@ -48,11 +52,12 @@ ThemeData buildAppTheme() {
   return ThemeData(
     useMaterial3: true,
     colorScheme: scheme,
-    scaffoldBackgroundColor: surface,
+    brightness: brightness,
+    scaffoldBackgroundColor: isDark ? const Color(0xFF0A0A0A) : surface,
     fontFamily: 'Roboto', // platform fallback; Geist requires asset add later
     splashFactory: NoSplash.splashFactory,
     visualDensity: VisualDensity.compact,
-    appBarTheme: const AppBarTheme(
+    appBarTheme: AppBarTheme(
       backgroundColor: surface,
       foregroundColor: onSurface,
       elevation: 0,
@@ -71,7 +76,7 @@ ThemeData buildAppTheme() {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppTokens.radius),
-        side: const BorderSide(color: border, width: 1),
+        side: BorderSide(color: border, width: 1),
       ),
       margin: EdgeInsets.zero,
     ),
@@ -99,7 +104,7 @@ ThemeData buildAppTheme() {
       style: OutlinedButton.styleFrom(
         foregroundColor: onSurface,
         shape: shape,
-        side: const BorderSide(color: border, width: 1),
+        side: BorderSide(color: border, width: 1),
         minimumSize: const Size(0, 40),
         padding: const EdgeInsets.symmetric(horizontal: 16),
       ),
@@ -117,11 +122,11 @@ ThemeData buildAppTheme() {
       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppTokens.radius),
-        borderSide: const BorderSide(color: border),
+        borderSide: BorderSide(color: border),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppTokens.radius),
-        borderSide: const BorderSide(color: border),
+        borderSide: BorderSide(color: border),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppTokens.radius),
@@ -133,14 +138,14 @@ ThemeData buildAppTheme() {
       ),
       hintStyle: const TextStyle(color: mutedForeground, fontSize: 14),
     ),
-    dividerTheme: const DividerThemeData(color: border, thickness: 1, space: 1),
+    dividerTheme: DividerThemeData(color: border, thickness: 1, space: 1),
     snackBarTheme: SnackBarThemeData(
       backgroundColor: onSurface,
-      contentTextStyle: const TextStyle(color: surface),
+      contentTextStyle: TextStyle(color: surface),
       shape: shape,
       behavior: SnackBarBehavior.floating,
     ),
-    textTheme: const TextTheme(
+    textTheme: TextTheme(
       bodyLarge: TextStyle(color: onSurface, fontSize: 14),
       bodyMedium: TextStyle(color: onSurface, fontSize: 14),
       bodySmall: TextStyle(color: mutedForeground, fontSize: 12),

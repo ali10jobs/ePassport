@@ -68,6 +68,7 @@ class HealthController extends Controller
                     'name_en' => $org->name_en,
                     'name_ar' => $org->name_ar,
                     'role' => $org->pivot->role,
+                    'org_role' => $org->role,
                     'is_default' => (bool) $org->pivot->is_default,
                 ]),
             ],

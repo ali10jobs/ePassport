@@ -43,6 +43,9 @@ dependencies:
   # Idempotency-Key generation
   uuid: ^4.5.1
 
+  # GPS for hazard reports
+  geolocator: ^13.0.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

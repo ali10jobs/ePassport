@@ -2,96 +2,164 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 
 import '../../api/api_client.dart';
 import '../../api/api_exception.dart';
+import '../../shared/app_shell.dart';
+import '../../shared/i18n.dart';
+import '../../shared/ui_tokens.dart';
 
-/// Anonymous hazard report — public, no auth.
-///   1. Take a photo (or pick from gallery).
-///   2. Strip EXIF (location, device) before upload — privacy contract.
-///   3. Pick severity + category, write a description.
-///   4. POST /api/v1/hazard-reports/anonymous
-///   5. Surface the anonymous_report_id so the reporter can check status
-///      later via /hazard-status?id=...
+/// Hazard report — matches MobileScreens/stitch/hazard_report_full_width_slider.
+///
+/// Two presentations of the same form:
+///   - Anonymous flow (from launch screen): standalone scaffold, no auth shell.
+///   - Authenticated flow (Hazards tab): wrapped in AppShell with bottom nav.
+///
+/// In v1.0 only the anonymous backend endpoint is wired
+/// (POST /api/v1/hazard-reports/anonymous). The form is identical in both
+/// modes.
 class AnonymousHazardScreen extends ConsumerStatefulWidget {
-  const AnonymousHazardScreen({super.key});
+  const AnonymousHazardScreen({super.key, this.inAppShell = false});
+  final bool inAppShell;
+
   @override
   ConsumerState<AnonymousHazardScreen> createState() =>
       _AnonymousHazardScreenState();
 }
 
-const _categories = [
-  ('fall', 'Fall'),
-  ('electrical', 'Electrical'),
-  ('fire', 'Fire'),
-  ('working_at_heights', 'Working at heights'),
-  ('lifting', 'Lifting'),
-  ('housekeeping', 'Housekeeping'),
-  ('ppe', 'PPE'),
-  ('environmental', 'Environmental'),
-  ('other', 'Other'),
+const _categories = <(String, String, IconData)>[
+  ('fall', 'Fall', Icons.height),
+  ('fire', 'Fire', Icons.local_fire_department_outlined),
+  ('electrical', 'Electrical', Icons.bolt),
+  ('toxic', 'Toxic', Icons.coronavirus_outlined),
+  ('impact', 'Impact', Icons.directions_car_outlined),
+  ('other', 'Other', Icons.more_horiz),
 ];
 
-const _severities = [
-  ('low', 'Low'),
-  ('medium', 'Medium'),
-  ('high', 'High'),
-  ('critical', 'Critical'),
-];
-
-class _AnonymousHazardScreenState
-    extends ConsumerState<AnonymousHazardScreen> {
+class _AnonymousHazardScreenState extends ConsumerState<AnonymousHazardScreen> {
   final _descCtrl = TextEditingController();
-  String _category = 'other';
-  String _severity = 'medium';
+  final _locationCtrl = TextEditingController();
+  String _category = 'fall';
+  double _severity = 0.85;
+  bool _gpsOn = true;
   Uint8List? _photoBytes;
   bool _stripping = false;
+  Position? _position;
+  bool _resolvingGps = false;
+  String? _gpsError;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _resolveGps());
+  }
+
+  Future<void> _resolveGps() async {
+    if (!_gpsOn) return;
+    setState(() {
+      _resolvingGps = true;
+      _gpsError = null;
+    });
+    try {
+      if (!await Geolocator.isLocationServiceEnabled()) {
+        if (!mounted) return;
+        setState(() {
+          _gpsError = ref.read(stringsProvider).gpsServicesOff;
+          _resolvingGps = false;
+        });
+        return;
+      }
+      var perm = await Geolocator.checkPermission();
+      if (perm == LocationPermission.denied) {
+        perm = await Geolocator.requestPermission();
+      }
+      if (perm == LocationPermission.denied ||
+          perm == LocationPermission.deniedForever) {
+        if (!mounted) return;
+        setState(() {
+          _gpsError = ref.read(stringsProvider).gpsPermissionDenied;
+          _resolvingGps = false;
+        });
+        return;
+      }
+      final last = await Geolocator.getLastKnownPosition();
+      if (last != null && mounted) {
+        setState(() {
+          _position = last;
+          _resolvingGps = false;
+        });
+      }
+      final pos = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+        ),
+      ).timeout(const Duration(seconds: 10));
+      if (!mounted) return;
+      setState(() {
+        _position = pos;
+        _resolvingGps = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _gpsError = ref.read(stringsProvider).couldNotReachServer;
+        _resolvingGps = false;
+      });
+    }
+  }
   bool _submitting = false;
   String? _error;
 
   @override
   void dispose() {
     _descCtrl.dispose();
+    _locationCtrl.dispose();
     super.dispose();
   }
 
-  Future<void> _pickPhoto({required ImageSource source}) async {
+  String _severityApiValue() {
+    if (_severity < 0.25) return 'low';
+    if (_severity < 0.5) return 'medium';
+    if (_severity < 0.75) return 'high';
+    return 'critical';
+  }
+
+  Future<void> _pickPhoto(ImageSource source) async {
     final picker = ImagePicker();
     final file = await picker.pickImage(
-      source: source,
-      maxWidth: 1920,
-      imageQuality: 85,
-    );
+        source: source, maxWidth: 1920, imageQuality: 85);
     if (file == null) return;
     setState(() => _stripping = true);
     try {
       final raw = await file.readAsBytes();
       final decoded = img.decodeImage(raw);
-      if (decoded == null) throw Exception('Could not decode image');
-      // Re-encode without EXIF — image package drops metadata by default.
+      if (decoded == null) throw Exception('decode failed');
       final stripped = Uint8List.fromList(img.encodeJpg(decoded, quality: 85));
       setState(() {
         _photoBytes = stripped;
         _stripping = false;
       });
-    } catch (e) {
+    } catch (_) {
       setState(() {
-        _error = 'Could not process photo';
+        _error = ref.read(stringsProvider).couldNotProcessPhoto;
         _stripping = false;
       });
     }
   }
 
   Future<void> _onSubmit() async {
-    if (_photoBytes == null) {
-      setState(() => _error = 'A photo is required.');
+    final s = ref.read(stringsProvider);
+    final desc = _descCtrl.text.trim();
+    if (desc.length < 5) {
+      setState(() => _error = s.hazardDescriptionRequired);
       return;
     }
-    if (_descCtrl.text.trim().isEmpty) {
-      setState(() => _error = 'Add a short description.');
+    if (_photoBytes == null) {
+      setState(() => _error = s.addPhotoOfHazard);
       return;
     }
     setState(() {
@@ -100,14 +168,19 @@ class _AnonymousHazardScreenState
     });
     try {
       final res = await ref.read(apiClientProvider).submitAnonymousHazard(
-            description: _descCtrl.text.trim(),
-            descriptionLang: 'en',
-            severity: _severity,
+            description: desc,
+            descriptionLang: s.isAr ? 'ar' : 'en',
+            severity: _severityApiValue(),
             category: _category,
             photoBytes: _photoBytes!,
+            latitude: _gpsOn ? _position?.latitude : null,
+            longitude: _gpsOn ? _position?.longitude : null,
           );
       if (!mounted) return;
-      context.pushReplacement('/hazard/submitted/${res.anonymousReportId}');
+      final route = widget.inAppShell
+          ? '/hazards/submitted/${res.anonymousReportId}'
+          : '/hazard/submitted/${res.anonymousReportId}';
+      context.pushReplacement(route);
     } on ApiException catch (e) {
       setState(() {
         _error = e.message;
@@ -115,7 +188,7 @@ class _AnonymousHazardScreenState
       });
     } catch (_) {
       setState(() {
-        _error = 'Could not submit. Check your network and try again.';
+        _error = ref.read(stringsProvider).couldNotSubmitNetwork;
         _submitting = false;
       });
     }
@@ -123,193 +196,645 @@ class _AnonymousHazardScreenState
 
   @override
   Widget build(BuildContext context) {
+    final body = _buildBody(context);
+    if (widget.inAppShell) {
+      return AppShell(
+        tab: AppTab.hazards,
+        bodyPadding: EdgeInsets.zero,
+        child: body,
+      );
+    }
     return Scaffold(
-      appBar: AppBar(title: const Text('Submit hazard')),
+      backgroundColor: UiTokens.bg,
       body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(16),
+        bottom: false,
+        child: Column(
           children: [
-            _PrivacyCallout(),
-            const SizedBox(height: 16),
-
-            _Label('Photo'),
-            const SizedBox(height: 4),
-            _PhotoField(
-              bytes: _photoBytes,
-              loading: _stripping,
-              onCamera: () => _pickPhoto(source: ImageSource.camera),
-              onGallery: () => _pickPhoto(source: ImageSource.gallery),
-            ),
-            const SizedBox(height: 16),
-
-            _Label('Severity'),
-            const SizedBox(height: 4),
-            DropdownButtonFormField<String>(
-              initialValue: _severity,
-              isDense: true,
-              items: _severities
-                  .map((s) =>
-                      DropdownMenuItem(value: s.$1, child: Text(s.$2)))
-                  .toList(),
-              onChanged: (v) => setState(() => _severity = v!),
-            ),
-            const SizedBox(height: 12),
-
-            _Label('Category'),
-            const SizedBox(height: 4),
-            DropdownButtonFormField<String>(
-              initialValue: _category,
-              isDense: true,
-              items: _categories
-                  .map((c) =>
-                      DropdownMenuItem(value: c.$1, child: Text(c.$2)))
-                  .toList(),
-              onChanged: (v) => setState(() => _category = v!),
-            ),
-            const SizedBox(height: 12),
-
-            _Label('What did you see?'),
-            const SizedBox(height: 4),
-            TextField(
-              controller: _descCtrl,
-              minLines: 3,
-              maxLines: 6,
-              maxLength: 1500,
-              decoration: const InputDecoration(
-                hintText:
-                    'Describe the hazard, location on site, and any people at risk.',
-              ),
-            ),
-
-            if (_error != null) ...[
-              const SizedBox(height: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.error.withValues(alpha: 0.06),
-                  border: Border.all(
-                      color:
-                          Theme.of(context).colorScheme.error.withValues(alpha: 0.3)),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(
-                  _error!,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.error,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-            ],
-
-            const SizedBox(height: 16),
-            FilledButton(
-              onPressed: _submitting ? null : _onSubmit,
-              child: Text(_submitting ? 'Submitting…' : 'Submit anonymously'),
-            ),
+            _AnonymousHeader(onBack: () => context.canPop() ? context.pop() : context.go('/launch')),
+            Expanded(child: body),
           ],
         ),
       ),
     );
   }
+
+  Widget _buildBody(BuildContext context) {
+    final s = ref.watch(stringsProvider);
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+      children: [
+        _SectionTitle(s.hazardCategory),
+        const SizedBox(height: 10),
+        _CategoryGrid(
+          value: _category,
+          onChanged: (v) => setState(() => _category = v),
+        ),
+        const SizedBox(height: 20),
+        _SectionTitle(s.hazardDescription),
+        const SizedBox(height: 10),
+        _DescriptionField(
+          controller: _descCtrl,
+          hint: s.hazardDescriptionHint,
+        ),
+        const SizedBox(height: 20),
+        _SectionTitle(s.evidence),
+        const SizedBox(height: 10),
+        _Evidence(
+          bytes: _photoBytes,
+          loading: _stripping,
+          onCamera: () => _pickPhoto(ImageSource.camera),
+          onGallery: () => _pickPhoto(ImageSource.gallery),
+        ),
+        const SizedBox(height: 20),
+        _SectionTitle(s.severity),
+        const SizedBox(height: 8),
+        _SeveritySlider(
+          value: _severity,
+          onChanged: (v) => setState(() => _severity = v),
+        ),
+        const SizedBox(height: 10),
+        _SeverityCallout(label: s.severityLevelLabel(_severity), severity: _severity),
+        const SizedBox(height: 20),
+        _SectionTitle(s.location),
+        const SizedBox(height: 10),
+        _MiniLabel(s.location),
+        const SizedBox(height: 6),
+        _LocationField(controller: _locationCtrl),
+        const SizedBox(height: 10),
+        _GpsRow(
+          on: _gpsOn,
+          position: _position,
+          resolving: _resolvingGps,
+          error: _gpsError,
+          onChanged: (v) {
+            setState(() => _gpsOn = v);
+            if (v) _resolveGps();
+          },
+        ),
+        const SizedBox(height: 18),
+        const _PrivacyNotice(),
+        if (_error != null) ...[
+          const SizedBox(height: 12),
+          _ErrorBanner(message: _error!),
+        ],
+        const SizedBox(height: 16),
+        _PrimaryPill(
+          label: _submitting ? '…' : s.submitReport,
+          icon: Icons.arrow_forward,
+          onTap: _submitting ? null : _onSubmit,
+        ),
+        const SizedBox(height: 10),
+        Center(
+          child: GestureDetector(
+            onTap: _submitting ? null : () {},
+            child: Text(
+              s.saveAsDraft,
+              style: TextStyle(
+                color: UiTokens.muted,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                decoration: TextDecoration.underline,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }
 
-class _Label extends StatelessWidget {
-  final String text;
-  const _Label(this.text);
-  @override
-  Widget build(BuildContext context) => Text(text,
-      style: const TextStyle(
-        fontSize: 12,
-        color: Color(0xFF737373),
-        letterSpacing: 0.4,
-      ));
-}
+class _AnonymousHeader extends StatelessWidget {
+  const _AnonymousHeader({required this.onBack});
+  final VoidCallback onBack;
 
-class _PrivacyCallout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFF5F5F5),
-        borderRadius: BorderRadius.circular(4),
+        border: Border(bottom: BorderSide(color: UiTokens.border)),
       ),
-      child: const Text(
-        'No login required. We strip image metadata before upload, and the '
-        'safety team only sees your description, severity, and photo. You '
-        'will receive a code to check status later.',
-        style: TextStyle(fontSize: 12, color: Color(0xFF404040)),
+      padding: const EdgeInsets.fromLTRB(12, 8, 16, 12),
+      child: Row(
+        children: [
+          IconButton(
+            onPressed: onBack,
+            icon: Icon(Icons.arrow_back, color: UiTokens.ink),
+          ),
+          const SizedBox(width: 4),
+          Text(
+            'ePassport',
+            style: TextStyle(
+              color: UiTokens.ink,
+              fontSize: 20,
+              fontWeight: FontWeight.w800,
+              letterSpacing: -0.3,
+            ),
+          ),
+          const Spacer(),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            decoration: BoxDecoration(
+              color: UiTokens.surfaceMuted,
+              borderRadius: BorderRadius.circular(100),
+            ),
+            child: Text(
+              'ANONYMOUS',
+              style: TextStyle(
+                color: UiTokens.mutedStrong,
+                fontSize: 10,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 1.0,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class _PhotoField extends StatelessWidget {
-  final Uint8List? bytes;
-  final bool loading;
-  final VoidCallback onCamera;
-  final VoidCallback onGallery;
+class _SectionTitle extends StatelessWidget {
+  const _SectionTitle(this.text);
+  final String text;
+  @override
+  Widget build(BuildContext context) => Text(
+        text,
+        style: TextStyle(
+          color: UiTokens.ink,
+          fontSize: 18,
+          fontWeight: FontWeight.w800,
+        ),
+      );
+}
 
-  const _PhotoField({
+class _MiniLabel extends StatelessWidget {
+  const _MiniLabel(this.text);
+  final String text;
+  @override
+  Widget build(BuildContext context) => Text(
+        text,
+        style: TextStyle(color: UiTokens.muted, fontSize: 13),
+      );
+}
+
+class _CategoryGrid extends ConsumerWidget {
+  const _CategoryGrid({required this.value, required this.onChanged});
+  final String value;
+  final ValueChanged<String> onChanged;
+
+  String _labelFor(String key, AppStrings s) => switch (key) {
+        'fall' => s.hazFall,
+        'fire' => s.hazFire,
+        'electrical' => s.hazElectrical,
+        'toxic' => s.hazToxic,
+        'impact' => s.hazImpact,
+        _ => s.hazOther,
+      };
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final s = ref.watch(stringsProvider);
+    return GridView.count(
+      crossAxisCount: 3,
+      mainAxisSpacing: 10,
+      crossAxisSpacing: 10,
+      childAspectRatio: 1.0,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      children: _categories.map((c) {
+        final selected = c.$1 == value;
+        return GestureDetector(
+          onTap: () => onChanged(c.$1),
+          child: Container(
+            decoration: BoxDecoration(
+              color: UiTokens.surface,
+              border: Border.all(
+                color: selected ? UiTokens.ink : UiTokens.border,
+                width: selected ? 2 : 1,
+              ),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(c.$3, color: UiTokens.ink, size: 28),
+                const SizedBox(height: 8),
+                Text(
+                  _labelFor(c.$1, s),
+                  style: TextStyle(
+                    color: UiTokens.ink,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+}
+
+class _Evidence extends ConsumerWidget {
+  const _Evidence({
     required this.bytes,
     required this.loading,
     required this.onCamera,
     required this.onGallery,
   });
+  final Uint8List? bytes;
+  final bool loading;
+  final VoidCallback onCamera;
+  final VoidCallback onGallery;
 
   @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (bytes != null)
-              ClipRRect(
-                borderRadius: BorderRadius.circular(4),
-                child: Image.memory(bytes!, height: 220, fit: BoxFit.cover),
-              )
-            else
-              Container(
-                height: 220,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFAFAFA),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: loading
-                    ? const CircularProgressIndicator()
-                    : const Text(
-                        'No photo selected',
-                        style: TextStyle(color: Color(0xFF737373), fontSize: 13),
-                      ),
-              ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: loading ? null : onCamera,
-                    icon: const Icon(Icons.camera_alt_outlined, size: 16),
-                    label: const Text('Camera'),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final s = ref.watch(stringsProvider);
+    return Column(
+      children: [
+        AspectRatio(
+          aspectRatio: 16 / 9,
+          child: Container(
+            decoration: BoxDecoration(
+              color: UiTokens.surfaceMuted,
+              border: Border.all(color: UiTokens.border),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: bytes != null
+                ? Image.memory(bytes!, fit: BoxFit.cover)
+                : Center(
+                    child: loading
+                        ? const CircularProgressIndicator()
+                        : Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.photo_camera_outlined,
+                                  color: UiTokens.muted, size: 28),
+                              const SizedBox(height: 6),
+                              Text(
+                                s.tapToAddPhoto,
+                                style: TextStyle(
+                                  color: UiTokens.muted,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ],
+                          ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: loading ? null : onGallery,
-                    icon: const Icon(Icons.photo_library_outlined, size: 16),
-                    label: const Text('Gallery'),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: loading ? null : onCamera,
+                icon: const Icon(Icons.camera_alt_outlined, size: 16),
+                label: Text(s.camera),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: loading ? null : onGallery,
+                icon: const Icon(Icons.photo_library_outlined, size: 16),
+                label: Text(s.gallery),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _SeveritySlider extends ConsumerWidget {
+  const _SeveritySlider({required this.value, required this.onChanged});
+  final double value;
+  final ValueChanged<double> onChanged;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final s = ref.watch(stringsProvider);
+    return SliderTheme(
+      data: SliderTheme.of(context).copyWith(
+        activeTrackColor: UiTokens.inkSolid,
+        inactiveTrackColor: UiTokens.border,
+        thumbColor: UiTokens.inkSolid,
+        overlayColor: UiTokens.inkSolid.withValues(alpha: 0.1),
+        trackHeight: 4,
+        thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 10),
+      ),
+      child: Column(
+        children: [
+          Slider(value: value, onChanged: onChanged),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(s.severityLow, style: TextStyle(color: UiTokens.muted, fontSize: 12)),
+                Text(
+                  s.severityCritical,
+                  style: TextStyle(
+                    color: UiTokens.destructive,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ],
             ),
-          ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SeverityCallout extends ConsumerWidget {
+  const _SeverityCallout({required this.label, required this.severity});
+  final String label;
+  final double severity;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final s = ref.watch(stringsProvider);
+    final isCritical = severity >= 0.75;
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: isCritical ? UiTokens.destructiveSoft : UiTokens.surfaceMuted,
+        border: Border.all(
+          color: isCritical
+              ? UiTokens.destructive.withValues(alpha: 0.35)
+              : UiTokens.border,
+        ),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.warning_amber_rounded,
+            color: isCritical ? UiTokens.destructive : UiTokens.muted,
+            size: 18,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: isCritical ? UiTokens.destructive : UiTokens.ink,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  s.severityCalloutDescription,
+                  style: TextStyle(color: UiTokens.mutedStrong, fontSize: 12, height: 1.3),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _LocationField extends StatelessWidget {
+  const _LocationField({required this.controller});
+  final TextEditingController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: controller,
+      style: TextStyle(color: UiTokens.ink, fontSize: 14),
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: UiTokens.surface,
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: UiTokens.border),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: UiTokens.ink, width: 1.5),
         ),
       ),
     );
   }
 }
 
+class _DescriptionField extends StatelessWidget {
+  const _DescriptionField({required this.controller, required this.hint});
+  final TextEditingController controller;
+  final String hint;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: controller,
+      style: TextStyle(color: UiTokens.ink, fontSize: 14),
+      minLines: 3,
+      maxLines: 6,
+      maxLength: 2000,
+      textInputAction: TextInputAction.newline,
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: UiTokens.surface,
+        hintText: hint,
+        hintStyle: TextStyle(color: UiTokens.muted, fontSize: 13),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: UiTokens.border),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: UiTokens.ink, width: 1.5),
+        ),
+      ),
+    );
+  }
+}
+
+class _GpsRow extends ConsumerWidget {
+  const _GpsRow({
+    required this.on,
+    required this.onChanged,
+    required this.position,
+    required this.resolving,
+    required this.error,
+  });
+  final bool on;
+  final ValueChanged<bool> onChanged;
+  final Position? position;
+  final bool resolving;
+  final String? error;
+
+  String _subtitle(AppStrings s) {
+    if (!on) return '—';
+    if (resolving) return s.loadingDashboard;
+    if (error != null) return error!;
+    final p = position;
+    if (p == null) return '—';
+    return '${p.latitude.toStringAsFixed(6)}, ${p.longitude.toStringAsFixed(6)}';
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final s = ref.watch(stringsProvider);
+    return Container(
+      padding: const EdgeInsets.fromLTRB(14, 10, 8, 10),
+      decoration: BoxDecoration(
+        color: UiTokens.surface,
+        border: Border.all(color: UiTokens.border),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.location_on_outlined,
+              color: UiTokens.ink, size: 20),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  s.attachGps,
+                  style: TextStyle(
+                    color: UiTokens.ink,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                Text(
+                  _subtitle(s),
+                  style: TextStyle(
+                    color: error != null ? UiTokens.destructive : UiTokens.muted,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Switch(
+            value: on,
+            onChanged: onChanged,
+            activeThumbColor: Colors.white,
+            activeTrackColor: UiTokens.inkSolid,
+            inactiveThumbColor: UiTokens.muted,
+            inactiveTrackColor: UiTokens.surfaceMuted,
+            trackOutlineColor: WidgetStateProperty.resolveWith(
+              (states) => states.contains(WidgetState.selected)
+                  ? UiTokens.inkSolid
+                  : UiTokens.border,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PrivacyNotice extends ConsumerWidget {
+  const _PrivacyNotice();
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final s = ref.watch(stringsProvider);
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: UiTokens.surfaceMuted,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.lock_outline, color: UiTokens.muted, size: 18),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              s.privacyNotice,
+              style: TextStyle(color: UiTokens.mutedStrong, fontSize: 12, height: 1.4),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PrimaryPill extends StatelessWidget {
+  const _PrimaryPill({
+    required this.label,
+    required this.icon,
+    required this.onTap,
+  });
+  final String label;
+  final IconData icon;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 52,
+      child: Material(
+        color: UiTokens.ink,
+        shape: const StadiumBorder(),
+        child: InkWell(
+          customBorder: const StadiumBorder(),
+          onTap: onTap,
+          child: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: UiTokens.inkInverse,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Icon(icon, size: 18, color: UiTokens.inkInverse),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ErrorBanner extends StatelessWidget {
+  const _ErrorBanner({required this.message});
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: UiTokens.destructiveSoft,
+        border: Border.all(color: UiTokens.destructive.withValues(alpha: 0.3)),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        message,
+        style: TextStyle(color: UiTokens.destructive, fontSize: 13),
+      ),
+    );
+  }
+}

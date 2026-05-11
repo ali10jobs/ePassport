@@ -28,6 +28,8 @@ class SubmitAnonymousHazardRequest extends FormRequest
                 HazardReport::CATEGORY_HOUSEKEEPING,
                 HazardReport::CATEGORY_PPE,
                 HazardReport::CATEGORY_ENVIRONMENTAL,
+                HazardReport::CATEGORY_TOXIC,
+                HazardReport::CATEGORY_IMPACT,
                 HazardReport::CATEGORY_OTHER,
             ])],
             'severity' => ['required', Rule::in([
@@ -36,7 +38,7 @@ class SubmitAnonymousHazardRequest extends FormRequest
                 HazardReport::SEVERITY_HIGH,
                 HazardReport::SEVERITY_CRITICAL,
             ])],
-            'description' => ['nullable', 'string', 'max:2000'],
+            'description' => ['required', 'string', 'min:5', 'max:2000'],
             'description_lang' => ['nullable', 'in:en,ar'],
             'project_id' => ['nullable', 'uuid', 'exists:projects,id'],
             'site_id' => ['nullable', 'uuid', 'exists:sites,id'],

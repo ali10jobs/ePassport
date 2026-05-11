@@ -72,7 +72,7 @@ export function LoginPage() {
       </CardHeader>
       <CardContent>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
-          <div className="space-y-1.5">
+          <div className="flex flex-col space-y-1.5">
             <label htmlFor="email" className="text-xs font-medium text-foreground">
               {t('auth.email_label')}
             </label>
@@ -89,7 +89,7 @@ export function LoginPage() {
             )}
           </div>
 
-          <div className="space-y-1.5">
+          <div className="flex flex-col space-y-1.5">
             <label htmlFor="password" className="text-xs font-medium text-foreground">
               {t('auth.password_label')}
             </label>
