@@ -66,8 +66,14 @@ jobs:
           sed -i 's/^DB_USERNAME=.*/DB_USERNAME=postgres/'          .env
           sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=postgres/'          .env
 
+      - name: Diagnose DB connectivity
+        run: |
+          grep ^DB_ .env
+          php -r "var_dump(extension_loaded('pdo_pgsql'));"
+          php artisan db:show --database=pgsql || true
+
       - name: Migrate
-        run: php artisan migrate --force
+        run: php artisan migrate --force -vvv
 
       - name: Test
         run: vendor/bin/pest
