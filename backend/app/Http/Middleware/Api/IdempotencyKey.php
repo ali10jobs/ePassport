@@ -4,7 +4,7 @@ namespace App\Http\Middleware\Api;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Cache;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -49,27 +49,24 @@ class IdempotencyKey
 
         $cacheKey = $this->buildCacheKey($request, $key);
 
-        $cached = Redis::get($cacheKey);
-        if ($cached !== null) {
-            $payload = json_decode($cached, true);
-            if (is_array($payload) && isset($payload['status'], $payload['body'])) {
-                return response($payload['body'], $payload['status'], array_merge(
-                    $payload['headers'] ?? [],
-                    ['Idempotency-Replayed' => 'true']
-                ));
-            }
+        $cached = Cache::get($cacheKey);
+        if (is_array($cached) && isset($cached['status'], $cached['body'])) {
+            return response($cached['body'], $cached['status'], array_merge(
+                $cached['headers'] ?? [],
+                ['Idempotency-Replayed' => 'true']
+            ));
         }
 
         $response = $next($request);
 
         if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
-            Redis::setex($cacheKey, self::TTL_SECONDS, json_encode([
+            Cache::put($cacheKey, [
                 'status' => $response->getStatusCode(),
                 'body' => $response->getContent(),
                 'headers' => [
                     'Content-Type' => $response->headers->get('Content-Type'),
                 ],
-            ]));
+            ], self::TTL_SECONDS);
         }
 
         return $response;
