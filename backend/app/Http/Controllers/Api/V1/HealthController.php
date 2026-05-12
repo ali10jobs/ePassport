@@ -29,8 +29,15 @@ class HealthController extends Controller
     {
         $checks = [
             'database' => $this->probe(fn () => DB::connection()->getPdo() !== null),
-            'redis' => $this->probe(fn () => Redis::connection()->ping() !== false),
         ];
+
+        // Only probe Redis when something is actually configured to use it.
+        // On the MVP free-tier deploy we route cache/queue/session through
+        // postgres + sync drivers, so the PHP redis extension isn't shipped
+        // and probing here would falsely flag the service as degraded.
+        if ($this->redisInUse()) {
+            $checks['redis'] = $this->probe(fn () => Redis::connection()->ping() !== false);
+        }
 
         $healthy = collect($checks)->every(fn (array $r) => $r['ok']);
 
@@ -73,6 +80,14 @@ class HealthController extends Controller
                 ]),
             ],
         ]);
+    }
+
+    private function redisInUse(): bool
+    {
+        return config('cache.default') === 'redis'
+            || config('queue.default') === 'redis'
+            || config('session.driver') === 'redis'
+            || config('broadcasting.default') === 'redis';
     }
 
     /** @return array{ok: bool, error?: string} */
