@@ -33,13 +33,6 @@ jobs:
           --health-timeout 5s
           --health-retries 10
 
-    env:
-      DB_HOST: 127.0.0.1
-      DB_PORT: 5432
-      DB_USERNAME: postgres
-      DB_PASSWORD: postgres
-      DB_DATABASE: epassport_test
-
     steps:
       - uses: actions/checkout@v4
 
@@ -64,6 +57,14 @@ jobs:
         run: |
           cp .env.example .env
           php artisan key:generate
+          # Point Laravel at the CI postgres service. We rewrite .env
+          # explicitly (rather than relying on system-env override) so
+          # both `artisan migrate` and the test runner agree.
+          sed -i 's/^DB_HOST=.*/DB_HOST=127.0.0.1/'                .env
+          sed -i 's/^DB_PORT=.*/DB_PORT=5432/'                      .env
+          sed -i 's/^DB_DATABASE=.*/DB_DATABASE=epassport_test/'    .env
+          sed -i 's/^DB_USERNAME=.*/DB_USERNAME=postgres/'          .env
+          sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=postgres/'          .env
 
       - name: Migrate
         run: php artisan migrate --force
