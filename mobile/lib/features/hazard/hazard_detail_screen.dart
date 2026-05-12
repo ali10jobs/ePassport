@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../api/api_client.dart';
 import '../../api/models.dart';
@@ -134,9 +135,9 @@ class _Body extends StatelessWidget {
           const SizedBox(height: 16),
           _SectionLabel(s.hazardLocationField),
           const SizedBox(height: 8),
-          _ValueCard(
-            text:
-                '${report.latitude!.toStringAsFixed(6)}, ${report.longitude!.toStringAsFixed(6)}',
+          _LocationCard(
+            latitude: report.latitude!,
+            longitude: report.longitude!,
           ),
         ],
       ],
@@ -350,6 +351,67 @@ class _SectionLabel extends StatelessWidget {
         fontSize: 11,
         fontWeight: FontWeight.w700,
         letterSpacing: 1.2,
+      ),
+    );
+  }
+}
+
+class _LocationCard extends StatelessWidget {
+  const _LocationCard({required this.latitude, required this.longitude});
+  final double latitude;
+  final double longitude;
+
+  Future<void> _open(BuildContext context) async {
+    final coords = '$latitude,$longitude';
+    final candidates = <Uri>[
+      // Android: prefer the Google Maps app via geo: with a query so it
+      // drops a pin and labels it; falls back to the universal web URL
+      // (which Maps app on Android/iOS also handles).
+      Uri.parse('geo:$coords?q=$coords'),
+      Uri.parse('https://www.google.com/maps/search/?api=1&query=$coords'),
+    ];
+    for (final uri in candidates) {
+      if (await canLaunchUrl(uri)) {
+        final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+        if (ok) return;
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: UiTokens.surface,
+      borderRadius: BorderRadius.circular(10),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(10),
+        onTap: () => _open(context),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
+          decoration: BoxDecoration(
+            border: Border.all(color: UiTokens.border),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.place_outlined, color: UiTokens.ink, size: 18),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  '${latitude.toStringAsFixed(6)}, ${longitude.toStringAsFixed(6)}',
+                  style: TextStyle(
+                    color: UiTokens.ink,
+                    fontSize: 14,
+                    height: 1.4,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Icon(Icons.open_in_new, color: UiTokens.muted, size: 16),
+            ],
+          ),
+        ),
       ),
     );
   }

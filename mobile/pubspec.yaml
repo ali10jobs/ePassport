@@ -45,6 +45,7 @@ dependencies:
 
   # GPS for hazard reports
   geolocator: ^13.0.2
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:
