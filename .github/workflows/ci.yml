@@ -46,7 +46,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
+          php-version: '8.4'
           extensions: gd, pdo_pgsql, mbstring, exif, bcmath, zip, intl
           coverage: none
           tools: composer:v2
@@ -55,8 +55,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: backend/vendor
-          key: composer-${{ runner.os }}-${{ hashFiles('backend/composer.lock') }}
-          restore-keys: composer-${{ runner.os }}-
+          key: composer-v2-${{ runner.os }}-php84-${{ hashFiles('backend/composer.lock') }}
+          restore-keys: composer-v2-${{ runner.os }}-php84-
 
       - run: composer install --prefer-dist --no-progress --no-interaction
 
