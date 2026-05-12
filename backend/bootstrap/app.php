@@ -26,6 +26,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Trust the platform proxy (Render / Fly / Railway / Cloudflare).
+        // Without this, generated absolute URLs (incl. signed photo URLs)
+        // keep their original scheme and break behind TLS termination.
+        $middleware->trustProxies(at: '*');
+
         // Sanctum stateful middleware lets cookie-authenticated SPA requests through.
         $middleware->statefulApi();
 

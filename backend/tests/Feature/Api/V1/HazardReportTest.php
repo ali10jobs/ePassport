@@ -51,7 +51,10 @@ it('NEVER captures reporter PII on anonymous submission', function () {
         'X-Forwarded-For' => '203.0.113.42',
         'User-Agent' => 'PestAttacker/1.0',
     ])->postJson('/api/v1/hazard-reports/anonymous', [
-        'photo' => $upload, 'category' => 'fall', 'severity' => 'low',
+        'photo' => $upload,
+        'category' => 'fall',
+        'severity' => 'low',
+        'description' => 'PestSuite test description',
     ])->assertStatus(201);
 
     $report = HazardReport::latest('created_at')->first();
@@ -74,8 +77,11 @@ it('public status check exposes only public notes (never internal)', function ()
     $upload = new UploadedFile($tmpPath, 'h.jpg', 'image/jpeg', null, true);
 
     $resp = $this->postJson('/api/v1/hazard-reports/anonymous', [
-        'photo' => $upload, 'category' => 'fall', 'severity' => 'low',
-    ]);
+        'photo' => $upload,
+        'category' => 'fall',
+        'severity' => 'low',
+        'description' => 'PestSuite test description',
+    ])->assertStatus(201);
     $anonId = $resp->json('data.anonymous_report_id');
     $report = HazardReport::where('anonymous_report_id', $anonId)->first();
 
