@@ -3,7 +3,7 @@
 # For higher traffic, swap CMD for nginx + php-fpm + supervisord — the
 # install layer below already has every extension that needs.
 
-FROM php:8.3-cli-alpine
+FROM php:8.4-cli-alpine
 
 # System packages + PHP extensions Laravel + intervention/image need
 RUN apk add --no-cache \
