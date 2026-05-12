@@ -96,6 +96,13 @@ class WorkerService
                 'valid_until' => optional($worker->induction_valid_until)->toDateString(),
             ],
             'medical_fitness' => $medical,
+            'medical_profile' => [
+                'blood_type' => $worker->blood_type,
+                'allergies' => $worker->allergies,
+                'chronic_conditions' => $worker->chronic_conditions,
+                'emergency_contact_name' => $worker->emergency_contact_name,
+                'emergency_contact_phone' => $worker->emergency_contact_phone,
+            ],
             'certifications' => $certs,
             'photo_path' => $worker->photo_path,
         ];

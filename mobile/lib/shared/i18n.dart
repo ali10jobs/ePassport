@@ -108,7 +108,7 @@ class AppStrings {
   String get today => _t('TODAY', 'اليوم');
   String get pendingPermits => _t('PENDING PERMITS', 'التصاريح المعلقة');
   String get actionRequired => _t('ACTION REQUIRED', 'إجراء مطلوب');
-  String get organization => _t('ORGANIZATION', 'المنظمة');
+  String get organization => _t('ORGANIZATION', 'الجهة');
   String get myPermits => _t('MY PERMITS', 'تصاريحي');
   String get hazardReports => _t('HAZARD REPORTS', 'بلاغات المخاطر');
   String get myPermitsBlurb => _t(
@@ -254,9 +254,45 @@ class AppStrings {
   // Scan result
   String get valid => _t('VALID', 'صالح');
   String get expired => _t('EXPIRED', 'منتهي الصلاحية');
+  String get accessDenied => _t('ACCESS DENIED', 'تم رفض الوصول');
+  String get notFoundBanner => _t('NOT FOUND', 'غير موجود');
+  String get employeeNotFoundTitle =>
+      _t('Employee not found', 'الموظف غير موجود');
+  String get employeeNotFoundBlurb => _t(
+        'No employee matches that ID. Please check the number and try again.',
+        'لا يوجد موظف يطابق هذا الرقم. يرجى التحقق وإعادة المحاولة.',
+      );
+  String get tryAgain => _t('Try again', 'إعادة المحاولة');
+  String get noPermitReason =>
+      _t('Employee has no permit.', 'الموظف لا يملك تصريحاً.');
+  String permitExpiredOn(String date) => isAr
+      ? 'انتهت صلاحية التصريح بتاريخ $date.'
+      : 'Permit expired on $date.';
+  String get noPermitOnFile => _t('No permit on file', 'لا يوجد تصريح مسجل');
   String get permitsTab => _t('PERMITS', 'التصاريح');
   String get certificationsTab => _t('CERTIFICATIONS', 'الشهادات');
   String get medicalTab => _t('MEDICAL', 'الطبية');
+  String get bloodTypeLabel => _t('Blood type', 'فصيلة الدم');
+  String get allergiesLabel => _t('Allergies', 'الحساسية');
+  String get chronicConditionsLabel =>
+      _t('Chronic conditions', 'الحالات المزمنة');
+  String get emergencyContactLabel =>
+      _t('Emergency contact', 'جهة الاتصال للطوارئ');
+  String get medicalFitnessLabel => _t('Medical fitness', 'اللياقة الطبية');
+  String get noCertifications =>
+      _t('No certifications on file.', 'لا توجد شهادات مسجلة.');
+  String get noMedicalProfile =>
+      _t('No medical profile on file.', 'لا يوجد ملف طبي مسجل.');
+  String get notAvailableShort => _t('—', '—');
+  String certExpiresOn(String date) =>
+      isAr ? 'تنتهي في $date' : 'Expires $date';
+  String certExpiredOn(String date) =>
+      isAr ? 'انتهت في $date' : 'Expired $date';
+  String get certStatusValid => _t('Valid', 'سارية');
+  String get certStatusExpired => _t('Expired', 'منتهية');
+  String get inductionLabel => _t('Site induction', 'تعريف الموقع');
+  String get statusInducted => _t('Inducted', 'تم التدريب');
+  String get statusNotInducted => _t('Not inducted', 'بدون تدريب');
   String get scanAgain => _t('Scan Again', 'مسح مرة أخرى');
   String get contactSupport => _t('Contact Support', 'الاتصال بالدعم');
   String get expiresOn => _t('EXPIRES', 'تنتهي في');

@@ -157,6 +157,14 @@ class ApiClient {
     return WorkerSummary.fromJson(res.data as Map<String, dynamic>);
   }
 
+  /// Consolidated passport view — drives the Permits / Certifications /
+  /// Medical tabs on the scan-result screen.
+  Future<WorkerPassport> fetchWorkerPassport(String workerId) async {
+    final res = await _dio.get('/api/v1/workers/$workerId/passport');
+    if (res.statusCode != 200) throw _toException(res);
+    return WorkerPassport.fromJson(res.data as Map<String, dynamic>);
+  }
+
   /// Authenticated hazard reports list. `status` filter is forwarded to the
   /// backend QueryBuilder; pass null to skip filtering. Only reports the user
   /// is authorized to see are returned (org/project scoping is server-side).

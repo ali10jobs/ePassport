@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
@@ -348,10 +349,14 @@ class _ManualEntrySheetState extends ConsumerState<_ManualEntrySheet> {
             controller: _ctrl,
             autofocus: true,
             textInputAction: TextInputAction.go,
+            keyboardType: TextInputType.number,
+            maxLength: 10,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             onSubmitted: (v) => Navigator.of(context).pop(v.trim()),
             style: TextStyle(color: UiTokens.ink, fontSize: 15),
             decoration: InputDecoration(
-              hintText: 'EMP-001',
+              counterText: '',
+              hintText: '9XXXXXXXXX',
               hintStyle: TextStyle(color: UiTokens.muted),
               filled: true,
               fillColor: UiTokens.inputFill,

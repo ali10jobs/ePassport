@@ -33,8 +33,10 @@ class ScanResultScreen extends ConsumerStatefulWidget {
 
 class _ScanResultScreenState extends ConsumerState<ScanResultScreen> {
   _ResultTab _tab = _ResultTab.permits;
-  WorkerSummary? _worker;
+  WorkerPassport? _passport;
   bool _loadingWorker = false;
+
+  WorkerSummary? get _worker => _passport?.summary;
 
   @override
   void initState() {
@@ -48,10 +50,12 @@ class _ScanResultScreenState extends ConsumerState<ScanResultScreen> {
     }
     setState(() => _loadingWorker = true);
     try {
-      final w = await ref.read(apiClientProvider).fetchWorker(widget.result.subjectId!);
+      final p = await ref
+          .read(apiClientProvider)
+          .fetchWorkerPassport(widget.result.subjectId!);
       if (!mounted) return;
       setState(() {
-        _worker = w;
+        _passport = p;
         _loadingWorker = false;
       });
     } catch (_) {
@@ -88,6 +92,29 @@ class _ScanResultScreenState extends ConsumerState<ScanResultScreen> {
 
   String _displayEmployeeId() => _worker?.employeeId ?? _subjectId;
 
+  /// True when the manually-entered id (or scanned token) didn't resolve to
+  /// any worker/equipment. Backend returns reason code UNKNOWN_QR with
+  /// subject_id == null.
+  bool get _notFound {
+    if (widget.result.subjectId != null) return false;
+    for (final r in widget.result.reasons) {
+      if (r.code == 'UNKNOWN_QR') return true;
+    }
+    return false;
+  }
+
+  /// True when the worker has never been inducted (vs. inducted-but-expired).
+  /// Server returns reason INDUCTION_MISSING for both cases; we differentiate
+  /// using details.status === 'not_inducted'.
+  bool get _noPermit {
+    for (final r in widget.result.reasons) {
+      if (r.code == 'INDUCTION_MISSING' || r.code == 'INDUCTION_EXPIRED') {
+        if (r.details?['status'] == 'not_inducted') return true;
+      }
+    }
+    return false;
+  }
+
   String _failureReason(AppStrings s) {
     if (widget.result.reasons.isEmpty) return s.verificationFailed;
     final r = widget.result.reasons.first;
@@ -96,10 +123,13 @@ class _ScanResultScreenState extends ConsumerState<ScanResultScreen> {
         return s.certificationExpired;
       case 'INDUCTION_MISSING':
       case 'INDUCTION_EXPIRED':
+        if (_noPermit) return s.noPermitReason;
         final d = _worker?.inductionValidUntil;
-        return s.inductionExpired(
-          d == null ? '' : DateFormat.yMd(s.locale.toLanguageTag()).format(d),
-        );
+        return d == null
+            ? s.noPermitReason
+            : s.permitExpiredOn(
+                DateFormat.yMd(s.locale.toLanguageTag()).format(d),
+              );
       case 'MEDICAL_FAIL':
         return s.medicalFitnessExpired;
       case 'IMPERSONATION_FLAG':
@@ -114,9 +144,12 @@ class _ScanResultScreenState extends ConsumerState<ScanResultScreen> {
   @override
   Widget build(BuildContext context) {
     final s = ref.watch(stringsProvider);
-    final statusLabel = _success ? s.valid : s.expired;
+    if (_notFound) {
+      return _NotFoundScreen(onDone: widget.onDone);
+    }
+    final statusLabel = _success ? s.valid : s.accessDenied;
     final expiryText = _worker?.inductionValidUntil == null
-        ? '—'
+        ? (_noPermit ? s.noPermitOnFile : '—')
         : s.validUntil(
             DateFormat.yMd(s.locale.toLanguageTag())
                 .format(_worker!.inductionValidUntil!),
@@ -164,9 +197,15 @@ class _ScanResultScreenState extends ConsumerState<ScanResultScreen> {
           const SizedBox(height: 14),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: _success
-                ? _ExpiryCard(label: s.expiryInformation, text: expiryText)
-                : _FailureCard(label: s.failureReason, reason: _failureReason(s)),
+            child: _TabContent(
+              tab: _tab,
+              success: _success,
+              passport: _passport,
+              expiryText: expiryText,
+              failureLabel: s.failureReason,
+              failureReason: _failureReason(s),
+              expiryLabel: s.expiryInformation,
+            ),
           ),
           const SizedBox(height: 10),
           Padding(
@@ -281,60 +320,110 @@ class _Portrait extends StatelessWidget {
   }
 }
 
+/// Segmented tab strip whose selected-pill width hugs the label text and
+/// slides between positions when the active tab changes. The strip itself
+/// is intrinsic-width and centered in its parent.
 class _TabStrip extends ConsumerWidget {
   const _TabStrip({required this.tab, required this.onChanged});
   final _ResultTab tab;
   final ValueChanged<_ResultTab> onChanged;
 
+  // Layout constants kept in one place so the TextPainter measurements and
+  // the rendered cells stay in sync.
+  static const double _padX = 18;
+  static const double _padY = 9;
+  static const double _trackPad = 4;
+  static const TextStyle _labelStyle = TextStyle(
+    fontSize: 13,
+    fontWeight: FontWeight.w700,
+  );
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final s = ref.watch(stringsProvider);
-    return Container(
-      decoration: BoxDecoration(
-        color: UiTokens.surfaceMuted,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      padding: const EdgeInsets.all(4),
-      child: Row(
-        children: [
-          _TabPill(label: s.permitsTab, selected: tab == _ResultTab.permits, onTap: () => onChanged(_ResultTab.permits)),
-          _TabPill(label: s.certificationsTab, selected: tab == _ResultTab.certifications, onTap: () => onChanged(_ResultTab.certifications)),
-          _TabPill(label: s.medicalTab, selected: tab == _ResultTab.medical, onTap: () => onChanged(_ResultTab.medical)),
-        ],
-      ),
-    );
-  }
-}
+    final tabs = <(String, _ResultTab)>[
+      (s.permitsTab, _ResultTab.permits),
+      (s.certificationsTab, _ResultTab.certifications),
+      (s.medicalTab, _ResultTab.medical),
+    ];
+    final dir = Directionality.of(context);
+    final scaler = MediaQuery.textScalerOf(context);
 
-class _TabPill extends StatelessWidget {
-  const _TabPill({
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
+    // Pre-measure each label so the selected pill can size to text + padding.
+    final widths = tabs.map((t) {
+      final tp = TextPainter(
+        text: TextSpan(text: t.$1, style: _labelStyle),
+        textDirection: dir,
+        textScaler: scaler,
+      )..layout();
+      return tp.width + _padX * 2;
+    }).toList();
 
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 9),
-          decoration: BoxDecoration(
-            color: selected ? UiTokens.ink : Colors.transparent,
-            borderRadius: BorderRadius.circular(6),
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            label,
-            style: TextStyle(
-              color: selected ? Colors.white : UiTokens.ink,
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-            ),
+    // Cumulative offsets from the start edge of the inner row.
+    final offsets = <double>[];
+    double cursor = 0;
+    for (final w in widths) {
+      offsets.add(cursor);
+      cursor += w;
+    }
+    final activeIdx = tabs.indexWhere((t) => t.$2 == tab);
+    final pillLeft = offsets[activeIdx] + _trackPad;
+    final pillWidth = widths[activeIdx];
+    final cellHeight =
+        (_labelStyle.fontSize ?? 13) * scaler.scale(1) + _padY * 2;
+
+    return Center(
+      child: Container(
+        decoration: BoxDecoration(
+          color: UiTokens.surfaceMuted,
+          borderRadius: BorderRadius.circular(999),
+        ),
+        padding: const EdgeInsets.all(_trackPad),
+        child: SizedBox(
+          width: cursor,
+          height: cellHeight,
+          child: Stack(
+            children: [
+              AnimatedPositionedDirectional(
+                duration: const Duration(milliseconds: 240),
+                curve: Curves.easeOutCubic,
+                start: pillLeft - _trackPad,
+                top: 0,
+                bottom: 0,
+                width: pillWidth,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                ),
+              ),
+              Row(
+                children: [
+                  for (var i = 0; i < tabs.length; i++)
+                    SizedBox(
+                      width: widths[i],
+                      height: cellHeight,
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () => onChanged(tabs[i].$2),
+                        child: Center(
+                          child: AnimatedDefaultTextStyle(
+                            duration: const Duration(milliseconds: 240),
+                            curve: Curves.easeOutCubic,
+                            style: _labelStyle.copyWith(
+                              color: i == activeIdx
+                                  ? Colors.black
+                                  : UiTokens.muted,
+                            ),
+                            child: Text(tabs[i].$1),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
@@ -510,8 +599,8 @@ class _PillButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fg = _primary ? Colors.white : UiTokens.ink;
-    final bg = _primary ? UiTokens.ink : UiTokens.surface;
+    final fg = _primary ? Colors.black : UiTokens.ink;
+    final bg = _primary ? Colors.white : UiTokens.surface;
     return SizedBox(
       height: 50,
       child: Material(
@@ -546,6 +635,382 @@ class _PillButton extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _NotFoundScreen extends ConsumerWidget {
+  const _NotFoundScreen({required this.onDone});
+  final VoidCallback onDone;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final s = ref.watch(stringsProvider);
+    return AppShell(
+      tab: AppTab.scan,
+      bodyPadding: const EdgeInsets.symmetric(horizontal: 0),
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(0, 0, 0, 24),
+        children: [
+          _StatusBanner(
+            color: UiTokens.destructive,
+            icon: Icons.search_off,
+            label: s.notFoundBanner,
+          ),
+          const SizedBox(height: 28),
+          Center(
+            child: Container(
+              width: 120,
+              height: 120,
+              decoration: BoxDecoration(
+                color: UiTokens.surfaceMuted,
+                shape: BoxShape.circle,
+                border: Border.all(color: UiTokens.destructive, width: 3),
+              ),
+              alignment: Alignment.center,
+              child: Icon(Icons.person_off_outlined,
+                  size: 56, color: UiTokens.destructive),
+            ),
+          ),
+          const SizedBox(height: 22),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Text(
+              s.employeeNotFoundTitle,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: UiTokens.ink,
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 28),
+            child: Text(
+              s.employeeNotFoundBlurb,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: UiTokens.muted,
+                fontSize: 14,
+                height: 1.5,
+              ),
+            ),
+          ),
+          const SizedBox(height: 28),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: _PillButton.primary(
+              label: s.tryAgain,
+              icon: Icons.qr_code_scanner,
+              onTap: onDone,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TabContent extends ConsumerWidget {
+  const _TabContent({
+    required this.tab,
+    required this.success,
+    required this.passport,
+    required this.expiryText,
+    required this.failureLabel,
+    required this.failureReason,
+    required this.expiryLabel,
+  });
+  final _ResultTab tab;
+  final bool success;
+  final WorkerPassport? passport;
+  final String expiryText;
+  final String failureLabel;
+  final String failureReason;
+  final String expiryLabel;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final s = ref.watch(stringsProvider);
+    switch (tab) {
+      case _ResultTab.permits:
+        return success
+            ? _ExpiryCard(label: expiryLabel, text: expiryText)
+            : _FailureCard(label: failureLabel, reason: failureReason);
+      case _ResultTab.certifications:
+        return _CertificationsList(
+          certifications: passport?.certifications ?? const [],
+          isAr: s.isAr,
+          s: s,
+        );
+      case _ResultTab.medical:
+        return _MedicalProfileCard(passport: passport, s: s);
+    }
+  }
+}
+
+class _CertificationsList extends StatelessWidget {
+  const _CertificationsList({
+    required this.certifications,
+    required this.isAr,
+    required this.s,
+  });
+  final List<WorkerCertification> certifications;
+  final bool isAr;
+  final AppStrings s;
+
+  @override
+  Widget build(BuildContext context) {
+    if (certifications.isEmpty) {
+      return _EmptyCard(label: s.noCertifications);
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (var i = 0; i < certifications.length; i++) ...[
+          if (i > 0) const SizedBox(height: 10),
+          _CertCard(cert: certifications[i], isAr: isAr, s: s),
+        ],
+      ],
+    );
+  }
+}
+
+class _CertCard extends StatelessWidget {
+  const _CertCard({required this.cert, required this.isAr, required this.s});
+  final WorkerCertification cert;
+  final bool isAr;
+  final AppStrings s;
+
+  @override
+  Widget build(BuildContext context) {
+    final expired = cert.isExpired;
+    final df = DateFormat.yMd(s.locale.toLanguageTag());
+    final name = (isAr ? cert.typeNameAr : cert.typeNameEn) ??
+        cert.typeCode ??
+        '';
+    final body = (isAr ? cert.issuingBodyAr : cert.issuingBodyEn) ?? '';
+    final dateText = cert.expiryDate == null
+        ? '—'
+        : (expired
+            ? s.certExpiredOn(df.format(cert.expiryDate!))
+            : s.certExpiresOn(df.format(cert.expiryDate!)));
+    final accent = expired ? UiTokens.destructive : UiTokens.success;
+    return Container(
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
+      decoration: BoxDecoration(
+        color: UiTokens.surface,
+        border: Border.all(color: UiTokens.border),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 6,
+            height: 40,
+            margin: const EdgeInsetsDirectional.only(end: 12),
+            decoration: BoxDecoration(
+              color: accent,
+              borderRadius: BorderRadius.circular(3),
+            ),
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: TextStyle(
+                    color: UiTokens.ink,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                if (body.isNotEmpty) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    body,
+                    style: TextStyle(color: UiTokens.muted, fontSize: 12),
+                  ),
+                ],
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: accent.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: Text(
+                        expired ? s.certStatusExpired : s.certStatusValid,
+                        style: TextStyle(
+                          color: accent,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.3,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        dateText,
+                        style: TextStyle(
+                          color: UiTokens.muted,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                    if (cert.verified)
+                      Icon(Icons.verified_outlined,
+                          size: 16, color: UiTokens.muted),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MedicalProfileCard extends StatelessWidget {
+  const _MedicalProfileCard({required this.passport, required this.s});
+  final WorkerPassport? passport;
+  final AppStrings s;
+
+  bool _hasAny(WorkerPassport p) {
+    return (p.bloodType?.isNotEmpty ?? false) ||
+        (p.allergies?.isNotEmpty ?? false) ||
+        (p.chronicConditions?.isNotEmpty ?? false) ||
+        (p.emergencyContactName?.isNotEmpty ?? false) ||
+        (p.emergencyContactPhone?.isNotEmpty ?? false) ||
+        p.medicalFitness != null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final p = passport;
+    if (p == null || !_hasAny(p)) {
+      return _EmptyCard(label: s.noMedicalProfile);
+    }
+    final df = DateFormat.yMd(s.locale.toLanguageTag());
+    final rows = <_KV>[
+      _KV(s.bloodTypeLabel, p.bloodType),
+      _KV(s.allergiesLabel, p.allergies),
+      _KV(s.chronicConditionsLabel, p.chronicConditions),
+    ];
+    final fitness = p.medicalFitness;
+    if (fitness != null) {
+      final v = fitness.validUntil;
+      final label = fitness.isCurrentlyFit
+          ? (v == null ? s.certStatusValid : s.certExpiresOn(df.format(v)))
+          : s.certStatusExpired;
+      rows.add(_KV(s.medicalFitnessLabel, label));
+    }
+    final contactName = p.emergencyContactName;
+    final contactPhone = p.emergencyContactPhone;
+    if ((contactName?.isNotEmpty ?? false) ||
+        (contactPhone?.isNotEmpty ?? false)) {
+      final parts = <String>[
+        if (contactName?.isNotEmpty ?? false) contactName!,
+        if (contactPhone?.isNotEmpty ?? false) contactPhone!,
+      ];
+      rows.add(_KV(s.emergencyContactLabel, parts.join(' • ')));
+    }
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
+      decoration: BoxDecoration(
+        color: UiTokens.surface,
+        border: Border.all(color: UiTokens.border),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (var i = 0; i < rows.length; i++) ...[
+            if (i > 0)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Container(height: 1, color: UiTokens.border),
+              ),
+            _MedicalRow(label: rows[i].label, value: rows[i].value ?? '—'),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _KV {
+  final String label;
+  final String? value;
+  _KV(this.label, this.value);
+}
+
+class _MedicalRow extends StatelessWidget {
+  const _MedicalRow({required this.label, required this.value});
+  final String label;
+  final String value;
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          flex: 2,
+          child: Text(
+            label,
+            style: TextStyle(
+              color: UiTokens.muted,
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          flex: 3,
+          child: Text(
+            value,
+            style: TextStyle(
+              color: UiTokens.ink,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _EmptyCard extends StatelessWidget {
+  const _EmptyCard({required this.label});
+  final String label;
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 14),
+      decoration: BoxDecoration(
+        color: UiTokens.surface,
+        border: Border.all(color: UiTokens.border),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        label,
+        textAlign: TextAlign.center,
+        style: TextStyle(color: UiTokens.muted, fontSize: 13),
       ),
     );
   }

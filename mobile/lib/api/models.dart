@@ -200,6 +200,138 @@ class ScanLog {
       );
 }
 
+class WorkerPassport {
+  final WorkerSummary summary;
+  final String? bloodType;
+  final String? allergies;
+  final String? chronicConditions;
+  final String? emergencyContactName;
+  final String? emergencyContactPhone;
+  final WorkerMedicalFitness? medicalFitness;
+  final List<WorkerCertification> certifications;
+
+  WorkerPassport({
+    required this.summary,
+    required this.bloodType,
+    required this.allergies,
+    required this.chronicConditions,
+    required this.emergencyContactName,
+    required this.emergencyContactPhone,
+    required this.medicalFitness,
+    required this.certifications,
+  });
+
+  factory WorkerPassport.fromJson(Map<String, dynamic> json) {
+    final data = (json['data'] is Map ? json['data'] : json).cast<String, dynamic>();
+    final profile = (data['medical_profile'] as Map?)?.cast<String, dynamic>() ?? const {};
+    final fitness = data['medical_fitness'] is Map
+        ? WorkerMedicalFitness.fromJson((data['medical_fitness'] as Map).cast<String, dynamic>())
+        : null;
+    final certs = (data['certifications'] as List? ?? const [])
+        .whereType<Map>()
+        .map((m) => WorkerCertification.fromJson(m.cast<String, dynamic>()))
+        .toList();
+    final induction = (data['induction'] as Map?)?.cast<String, dynamic>() ?? const {};
+    final employer = (data['employer'] as Map?)?.cast<String, dynamic>();
+    final summary = WorkerSummary(
+      id: data['id'].toString(),
+      fullNameEn: data['full_name_en'] as String? ?? '',
+      fullNameAr: data['full_name_ar'] as String? ?? '',
+      trade: data['trade'] as String?,
+      employeeId: data['employee_id'] as String?,
+      employer: employer == null
+          ? null
+          : WorkerEmployer(
+              id: employer['id']?.toString() ?? '',
+              nameEn: employer['name_en'] as String? ?? '',
+              nameAr: employer['name_ar'] as String? ?? '',
+            ),
+      inductionValidUntil: induction['valid_until'] != null
+          ? DateTime.tryParse(induction['valid_until'] as String)
+          : null,
+    );
+    return WorkerPassport(
+      summary: summary,
+      bloodType: profile['blood_type'] as String?,
+      allergies: profile['allergies'] as String?,
+      chronicConditions: profile['chronic_conditions'] as String?,
+      emergencyContactName: profile['emergency_contact_name'] as String?,
+      emergencyContactPhone: profile['emergency_contact_phone'] as String?,
+      medicalFitness: fitness,
+      certifications: certs,
+    );
+  }
+}
+
+class WorkerMedicalFitness {
+  final String? status;
+  final DateTime? examDate;
+  final DateTime? validUntil;
+  final bool isCurrentlyFit;
+  WorkerMedicalFitness({
+    required this.status,
+    required this.examDate,
+    required this.validUntil,
+    required this.isCurrentlyFit,
+  });
+  factory WorkerMedicalFitness.fromJson(Map<String, dynamic> json) => WorkerMedicalFitness(
+        status: json['status'] as String?,
+        examDate: json['exam_date'] != null
+            ? DateTime.tryParse(json['exam_date'] as String)
+            : null,
+        validUntil: json['valid_until'] != null
+            ? DateTime.tryParse(json['valid_until'] as String)
+            : null,
+        isCurrentlyFit: json['is_currently_fit'] as bool? ?? false,
+      );
+}
+
+class WorkerCertification {
+  final String id;
+  final String? typeCode;
+  final String? typeNameEn;
+  final String? typeNameAr;
+  final String? certificateNumber;
+  final String? issuingBodyEn;
+  final String? issuingBodyAr;
+  final DateTime? issueDate;
+  final DateTime? expiryDate;
+  final String? status;
+  final bool verified;
+  WorkerCertification({
+    required this.id,
+    required this.typeCode,
+    required this.typeNameEn,
+    required this.typeNameAr,
+    required this.certificateNumber,
+    required this.issuingBodyEn,
+    required this.issuingBodyAr,
+    required this.issueDate,
+    required this.expiryDate,
+    required this.status,
+    required this.verified,
+  });
+  factory WorkerCertification.fromJson(Map<String, dynamic> json) => WorkerCertification(
+        id: json['id'].toString(),
+        typeCode: json['type_code'] as String?,
+        typeNameEn: json['type_name_en'] as String?,
+        typeNameAr: json['type_name_ar'] as String?,
+        certificateNumber: json['certificate_number'] as String?,
+        issuingBodyEn: json['issuing_body_en'] as String?,
+        issuingBodyAr: json['issuing_body_ar'] as String?,
+        issueDate: json['issue_date'] != null
+            ? DateTime.tryParse(json['issue_date'] as String)
+            : null,
+        expiryDate: json['expiry_date'] != null
+            ? DateTime.tryParse(json['expiry_date'] as String)
+            : null,
+        status: json['status'] as String?,
+        verified: json['verified'] as bool? ?? false,
+      );
+
+  bool get isExpired => expiryDate != null && expiryDate!.isBefore(DateTime.now());
+}
+
 class WorkerEmployer {
   final String id;
   final String nameEn;
