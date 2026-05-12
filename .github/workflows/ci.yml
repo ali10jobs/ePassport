@@ -110,7 +110,19 @@ jobs:
           DB_PASSWORD: ci_password
           REDIS_HOST: 127.0.0.1
           REDIS_PORT: 6379
-        run: vendor/bin/pest
+        run: |
+          set +e
+          vendor/bin/pest --colors=never >/tmp/pest.stdout 2>/tmp/pest.stderr
+          rc=$?
+          {
+            echo "===== exit=$rc ====="
+            echo "----- stdout -----"
+            cat /tmp/pest.stdout
+            echo "----- stderr -----"
+            cat /tmp/pest.stderr
+          } > /tmp/pest.log
+          cat /tmp/pest.log
+          exit $rc
 
       # The unauthenticated REST quota for logs/annotations is tiny, so we
       # push the failing migrate output to a sticky branch the developer
@@ -122,14 +134,18 @@ jobs:
           if [ ! -f /tmp/migrate.log ]; then
             echo "(no migrate log captured)" > /tmp/migrate.log
           fi
+          if [ ! -f /tmp/pest.log ]; then
+            echo "(no pest log captured)" > /tmp/pest.log
+          fi
           git config user.email "ci-bot@local"
           git config user.name "ci-bot"
           git checkout --orphan ci-debug-backend
           git rm -rf . >/dev/null 2>&1 || true
           cp /tmp/migrate.log migrate.log
+          cp /tmp/pest.log pest.log
           echo "${{ github.sha }}" > sha.txt
-          git add migrate.log sha.txt
-          git -c commit.gpgsign=false commit -m "ci debug: backend migrate ${{ github.sha }}"
+          git add migrate.log pest.log sha.txt
+          git -c commit.gpgsign=false commit -m "ci debug: backend ${{ github.sha }}"
           git push -f origin ci-debug-backend
 
   mobile:
