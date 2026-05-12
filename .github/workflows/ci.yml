@@ -20,15 +20,15 @@ jobs:
 
     services:
       postgres:
-        image: postgres:16-alpine
+        image: postgres:16
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: forge
+          POSTGRES_PASSWORD: ci_password
           POSTGRES_DB: epassport_test
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U postgres"
+          --health-cmd pg_isready
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
@@ -57,25 +57,26 @@ jobs:
         run: |
           cp .env.example .env
           php artisan key:generate
-          # Point Laravel at the CI postgres service. We rewrite .env
-          # explicitly (rather than relying on system-env override) so
-          # both `artisan migrate` and the test runner agree.
-          sed -i 's/^DB_HOST=.*/DB_HOST=127.0.0.1/'                .env
-          sed -i 's/^DB_PORT=.*/DB_PORT=5432/'                      .env
-          sed -i 's/^DB_DATABASE=.*/DB_DATABASE=epassport_test/'    .env
-          sed -i 's/^DB_USERNAME=.*/DB_USERNAME=postgres/'          .env
-          sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=postgres/'          .env
-
-      - name: Diagnose DB connectivity
-        run: |
-          grep ^DB_ .env
-          php -r "var_dump(extension_loaded('pdo_pgsql'));"
-          php artisan db:show --database=pgsql || true
+          sed -i 's/^DB_USERNAME=.*/DB_USERNAME=forge/' .env
+          sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=ci_password/' .env
 
       - name: Migrate
-        run: php artisan migrate --force -vvv
+        env:
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          DB_DATABASE: epassport_test
+          DB_USERNAME: forge
+          DB_PASSWORD: ci_password
+        run: php artisan migrate --force
 
       - name: Test
+        env:
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          DB_USERNAME: forge
+          DB_PASSWORD: ci_password
         run: vendor/bin/pest
 
   mobile:
