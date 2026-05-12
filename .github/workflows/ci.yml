@@ -59,6 +59,11 @@ jobs:
           php artisan key:generate
           sed -i 's/^DB_USERNAME=.*/DB_USERNAME=forge/' .env
           sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=ci_password/' .env
+          # Replace Redis-backed services with no-op equivalents — we
+          # don't run a redis side-service in CI for MVP simplicity.
+          sed -i 's/^CACHE_STORE=.*/CACHE_STORE=array/' .env
+          sed -i 's/^QUEUE_CONNECTION=.*/QUEUE_CONNECTION=sync/' .env
+          sed -i 's/^SESSION_DRIVER=.*/SESSION_DRIVER=array/' .env
 
       - name: Migrate
         env:
