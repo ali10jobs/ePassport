@@ -50,9 +50,21 @@ endpoints:
         custom: []
         name: photo
         description: 'Must be a file. Must be an image. Must not be greater than 10240 kilobytes.'
-        required: true
+        required: false
         example: null
         type: file
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      photos:
+        custom: []
+        name: photos
+        description: 'Must be a file. Must be an image. Must not be greater than 10240 kilobytes.'
+        required: false
+        example:
+          - null
+        type: 'file[]'
         enumValues: []
         exampleWasSpecified: false
         nullable: false
@@ -62,7 +74,7 @@ endpoints:
         name: category
         description: ''
         required: true
-        example: fire
+        example: other
         type: string
         enumValues:
           - fall
@@ -73,6 +85,8 @@ endpoints:
           - housekeeping
           - ppe
           - environmental
+          - toxic
+          - impact
           - other
         exampleWasSpecified: false
         nullable: false
@@ -95,20 +109,20 @@ endpoints:
       description:
         custom: []
         name: description
-        description: 'Must not be greater than 2000 characters.'
-        required: false
+        description: 'Must be at least 5 characters. Must not be greater than 2000 characters.'
+        required: true
         example: 'Eius et animi quos velit et.'
         type: string
         enumValues: []
         exampleWasSpecified: false
-        nullable: true
+        nullable: false
         deprecated: false
       description_lang:
         custom: []
         name: description_lang
         description: ''
         required: false
-        example: ar
+        example: en
         type: string
         enumValues:
           - en
@@ -161,16 +175,18 @@ endpoints:
         nullable: true
         deprecated: false
     cleanBodyParameters:
-      category: fire
+      category: other
       severity: high
       description: 'Eius et animi quos velit et.'
-      description_lang: ar
+      description_lang: en
       project_id: 21c4122b-d554-3723-966c-6d723ea5293f
       site_id: add3503c-ebff-3875-93af-b8c6a695762b
       latitude: -89
       longitude: -180
     fileParameters:
       photo: null
+      photos:
+        - null
     responses: []
     responseFields: []
     auth: []
@@ -236,7 +252,7 @@ endpoints:
           content-type: application/json
           x-ratelimit-limit: '10'
           x-ratelimit-remaining: '9'
-          x-request-id: 84dddc6e-8f6b-4d7e-82ce-f0bf52120b22
+          x-request-id: e902bda5-cd5d-4e38-b9fa-c1a3c2daa423
           access-control-allow-origin: '*'
         description: null
     responseFields: []

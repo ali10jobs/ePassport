@@ -1,25 +1,105 @@
-name: 'API Keys'
+name: 'Hazard Reports — Authenticated'
 description: |-
 
-  Long-lived API keys for ERP / machine-to-machine integrations. Built on
-  Sanctum personal access tokens with scoped abilities. The full token is
-  returned ONCE at creation; subsequent reads only return the prefix and
-  metadata.
+  Authenticated views: list, single read, status updates, internal/public notes.
+
+  Authorization scoping is handled at the policy layer (added in Phase 3+).
+  For week-1 the controller is auth-only; per-user/per-org filtering will be
+  layered in via policy + query scope.
 endpoints:
   -
     custom: []
     httpMethods:
       - GET
-    uri: api/v1/auth/api-keys
+    uri: 'api/v1/hazard-reports/{hazardReport_id}/photo/{index}'
     metadata:
       custom: []
-      groupName: 'API Keys'
+      groupName: 'Hazard Reports — Authenticated'
       groupDescription: |-
 
-        Long-lived API keys for ERP / machine-to-machine integrations. Built on
-        Sanctum personal access tokens with scoped abilities. The full token is
-        returned ONCE at creation; subsequent reads only return the prefix and
-        metadata.
+        Authenticated views: list, single read, status updates, internal/public notes.
+
+        Authorization scoping is handled at the policy layer (added in Phase 3+).
+        For week-1 the controller is auth-only; per-user/per-org filtering will be
+        layered in via policy + query scope.
+      subgroup: ''
+      subgroupDescription: ''
+      title: |-
+        Stream a single hazard photo by index. Reached via a signed URL (no
+        auth middleware) so mobile clients can use Image.network without
+        needing to attach a bearer token.
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      hazardReport_id:
+        custom: []
+        name: hazardReport_id
+        description: 'The ID of the hazardReport.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      index:
+        custom: []
+        name: index
+        description: ''
+        required: true
+        example: '564'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      hazardReport_id: architecto
+      index: '564'
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 404
+        content: '{"error":{"code":"RESOURCE_NOT_FOUND","message":"The requested endpoint or resource was not found.","details":null,"request_id":"c81a31b5-0007-4511-b874-9bbe83808824"}}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          x-request-id: c81a31b5-0007-4511-b874-9bbe83808824
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/hazard-reports
+    metadata:
+      custom: []
+      groupName: 'Hazard Reports — Authenticated'
+      groupDescription: |-
+
+        Authenticated views: list, single read, status updates, internal/public notes.
+
+        Authorization scoping is handled at the policy layer (added in Phase 3+).
+        For week-1 the controller is auth-only; per-user/per-org filtering will be
+        layered in via policy + query scope.
       subgroup: ''
       subgroupDescription: ''
       title: ''
@@ -41,11 +121,11 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"b6eacc2e-e580-4687-8659-75d3e03555c7"}}'
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"7a9c7a34-f7e6-42af-93b5-c54b28245624"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-request-id: b6eacc2e-e580-4687-8659-75d3e03555c7
+          x-request-id: 7a9c7a34-f7e6-42af-93b5-c54b28245624
           access-control-allow-origin: '*'
         description: null
     responseFields: []
@@ -60,21 +140,20 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: api/v1/auth/api-keys/abilities
+    uri: 'api/v1/hazard-reports/{hazardReport_id}'
     metadata:
       custom: []
-      groupName: 'API Keys'
+      groupName: 'Hazard Reports — Authenticated'
       groupDescription: |-
 
-        Long-lived API keys for ERP / machine-to-machine integrations. Built on
-        Sanctum personal access tokens with scoped abilities. The full token is
-        returned ONCE at creation; subsequent reads only return the prefix and
-        metadata.
+        Authenticated views: list, single read, status updates, internal/public notes.
+
+        Authorization scoping is handled at the policy layer (added in Phase 3+).
+        For week-1 the controller is auth-only; per-user/per-org filtering will be
+        layered in via policy + query scope.
       subgroup: ''
       subgroupDescription: ''
-      title: |-
-        Available abilities catalog. UI for issuing keys uses this to render
-        the ability checklist.
+      title: ''
       description: ''
       authenticated: true
       deprecated: false
@@ -82,8 +161,20 @@ endpoints:
       Authorization: 'Bearer {YOUR_AUTH_KEY}'
       Content-Type: application/json
       Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
+    urlParameters:
+      hazardReport_id:
+        custom: []
+        name: hazardReport_id
+        description: 'The ID of the hazardReport.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      hazardReport_id: architecto
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -93,11 +184,11 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"f0eb85b7-4a90-46a3-aa6e-e25f4c0ca478"}}'
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"b68d60d7-1975-447c-9f26-8720acfb144f"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-request-id: f0eb85b7-4a90-46a3-aa6e-e25f4c0ca478
+          x-request-id: b68d60d7-1975-447c-9f26-8720acfb144f
           access-control-allow-origin: '*'
         description: null
     responseFields: []
@@ -111,20 +202,21 @@ endpoints:
   -
     custom: []
     httpMethods:
-      - POST
-    uri: api/v1/auth/api-keys
+      - PATCH
+    uri: 'api/v1/hazard-reports/{hazardReport_id}'
     metadata:
       custom: []
-      groupName: 'API Keys'
+      groupName: 'Hazard Reports — Authenticated'
       groupDescription: |-
 
-        Long-lived API keys for ERP / machine-to-machine integrations. Built on
-        Sanctum personal access tokens with scoped abilities. The full token is
-        returned ONCE at creation; subsequent reads only return the prefix and
-        metadata.
+        Authenticated views: list, single read, status updates, internal/public notes.
+
+        Authorization scoping is handled at the policy layer (added in Phase 3+).
+        For week-1 the controller is auth-only; per-user/per-org filtering will be
+        layered in via policy + query scope.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Create a new API key. The plaintext token is returned ONCE; store it now.'
+      title: 'Update status / assignment / resolution of a hazard report.'
       description: ''
       authenticated: true
       deprecated: false
@@ -132,62 +224,76 @@ endpoints:
       Authorization: 'Bearer {YOUR_AUTH_KEY}'
       Content-Type: application/json
       Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      name:
+    urlParameters:
+      hazardReport_id:
         custom: []
-        name: name
-        description: 'Must not be greater than 64 characters.'
+        name: hazardReport_id
+        description: 'The ID of the hazardReport.'
         required: true
-        example: b
+        example: architecto
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-      abilities:
+    cleanUrlParameters:
+      hazardReport_id: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      status:
         custom: []
-        name: abilities
+        name: status
         description: ''
-        required: false
-        example:
-          - workers.write
-        type: 'string[]'
+        required: true
+        example: under_review
+        type: string
         enumValues:
-          - workers.read
-          - workers.write
-          - equipment.read
-          - equipment.write
-          - permits.read
-          - permits.write
-          - scans.read
-          - scans.create
-          - hazards.read
-          - hazards.write
-          - webhooks.manage
-          - dashboards.read
+          - under_review
+          - action_issued
+          - resolved
+          - dismissed
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-      expires_at:
+      resolution_summary:
         custom: []
-        name: expires_at
-        description: 'Must be a valid date. Must be a date after <code>now</code>.'
+        name: resolution_summary
+        description: 'Must not be greater than 2000 characters.'
         required: false
-        example: '2052-05-30'
+        example: b
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      assigned_to_user_id:
+        custom: []
+        name: assigned_to_user_id
+        description: 'The <code>id</code> of an existing record in the users table.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      assigned_to_organization_id:
+        custom: []
+        name: assigned_to_organization_id
+        description: 'Must be a valid UUID. The <code>id</code> of an existing record in the organizations table.'
+        required: false
+        example: a4855dc5-0acb-33c3-b921-f4291f719ca0
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: true
         deprecated: false
     cleanBodyParameters:
-      name: b
-      abilities:
-        - workers.write
-      expires_at: '2052-05-30'
+      status: under_review
+      resolution_summary: b
+      assigned_to_user_id: 16
+      assigned_to_organization_id: a4855dc5-0acb-33c3-b921-f4291f719ca0
     fileParameters: []
     responses: []
     responseFields: []
@@ -201,20 +307,23 @@ endpoints:
   -
     custom: []
     httpMethods:
-      - DELETE
-    uri: 'api/v1/auth/api-keys/{tokenId}'
+      - POST
+    uri: 'api/v1/hazard-reports/{hazardReport_id}/notes'
     metadata:
       custom: []
-      groupName: 'API Keys'
+      groupName: 'Hazard Reports — Authenticated'
       groupDescription: |-
 
-        Long-lived API keys for ERP / machine-to-machine integrations. Built on
-        Sanctum personal access tokens with scoped abilities. The full token is
-        returned ONCE at creation; subsequent reads only return the prefix and
-        metadata.
+        Authenticated views: list, single read, status updates, internal/public notes.
+
+        Authorization scoping is handled at the policy layer (added in Phase 3+).
+        For week-1 the controller is auth-only; per-user/per-org filtering will be
+        layered in via policy + query scope.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Revoke an API key.'
+      title: |-
+        Add an internal or public note. Internal notes are visible only via
+        authenticated GET; public notes appear on the anonymous status check.
       description: ''
       authenticated: true
       deprecated: false
@@ -223,10 +332,10 @@ endpoints:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
-      tokenId:
+      hazardReport_id:
         custom: []
-        name: tokenId
-        description: ''
+        name: hazardReport_id
+        description: 'The ID of the hazardReport.'
         required: true
         example: architecto
         type: string
@@ -235,11 +344,63 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      tokenId: architecto
+      hazardReport_id: architecto
     queryParameters: []
     cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
+    bodyParameters:
+      note_type:
+        custom: []
+        name: note_type
+        description: ''
+        required: true
+        example: internal
+        type: string
+        enumValues:
+          - internal
+          - public
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      body:
+        custom: []
+        name: body
+        description: 'Must be at least 1 character. Must not be greater than 4000 characters.'
+        required: true
+        example: b
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      body_lang:
+        custom: []
+        name: body_lang
+        description: ''
+        required: false
+        example: ar
+        type: string
+        enumValues:
+          - en
+          - ar
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      author_organization_id:
+        custom: []
+        name: author_organization_id
+        description: 'Must be a valid UUID. The <code>id</code> of an existing record in the organizations table.'
+        required: false
+        example: a4855dc5-0acb-33c3-b921-f4291f719ca0
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      note_type: internal
+      body: b
+      body_lang: ar
+      author_organization_id: a4855dc5-0acb-33c3-b921-f4291f719ca0
     fileParameters: []
     responses: []
     responseFields: []

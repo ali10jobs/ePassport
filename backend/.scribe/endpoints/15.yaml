@@ -1,0 +1,306 @@
+name: 'Permits — Lifecycle'
+description: |-
+
+  Submit / approve / reject / close transitions, plus lifecycle history.
+  Each transition validates current status and writes an immutable PermitEvent.
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'api/v1/permits/{permit_id}/submit'
+    metadata:
+      custom: []
+      groupName: 'Permits — Lifecycle'
+      groupDescription: |-
+
+        Submit / approve / reject / close transitions, plus lifecycle history.
+        Each transition validates current status and writes an immutable PermitEvent.
+      subgroup: ''
+      subgroupDescription: ''
+      title: |-
+        Submit a draft permit. Re-runs all validation against named workers and
+        equipment. On failure returns 422 PERMIT_VALIDATION_FAILED with a full
+        per-worker / per-equipment breakdown so the UI can surface exactly which
+        worker has which expired cert.
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      permit_id:
+        custom: []
+        name: permit_id
+        description: 'The ID of the permit.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      permit_id: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'api/v1/permits/{permit_id}/approve'
+    metadata:
+      custom: []
+      groupName: 'Permits — Lifecycle'
+      groupDescription: |-
+
+        Submit / approve / reject / close transitions, plus lifecycle history.
+        Each transition validates current status and writes an immutable PermitEvent.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Approve a submitted permit (consultant role).'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      permit_id:
+        custom: []
+        name: permit_id
+        description: 'The ID of the permit.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      permit_id: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      comment:
+        custom: []
+        name: comment
+        description: 'Must not be greater than 2000 characters.'
+        required: false
+        example: b
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      comment: b
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'api/v1/permits/{permit_id}/reject'
+    metadata:
+      custom: []
+      groupName: 'Permits — Lifecycle'
+      groupDescription: |-
+
+        Submit / approve / reject / close transitions, plus lifecycle history.
+        Each transition validates current status and writes an immutable PermitEvent.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Reject a submitted permit with mandatory reason.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      permit_id:
+        custom: []
+        name: permit_id
+        description: 'The ID of the permit.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      permit_id: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      reason:
+        custom: []
+        name: reason
+        description: 'Must be at least 5 characters. Must not be greater than 2000 characters.'
+        required: true
+        example: b
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      reason: b
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'api/v1/permits/{permit_id}/close'
+    metadata:
+      custom: []
+      groupName: 'Permits — Lifecycle'
+      groupDescription: |-
+
+        Submit / approve / reject / close transitions, plus lifecycle history.
+        Each transition validates current status and writes an immutable PermitEvent.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Close an approved permit once work is complete.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      permit_id:
+        custom: []
+        name: permit_id
+        description: 'The ID of the permit.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      permit_id: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      closure_notes:
+        custom: []
+        name: closure_notes
+        description: 'Must not be greater than 2000 characters.'
+        required: false
+        example: b
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      closure_notes: b
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v1/permits/{permit_id}/events'
+    metadata:
+      custom: []
+      groupName: 'Permits — Lifecycle'
+      groupDescription: |-
+
+        Submit / approve / reject / close transitions, plus lifecycle history.
+        Each transition validates current status and writes an immutable PermitEvent.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Lifecycle history.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      permit_id:
+        custom: []
+        name: permit_id
+        description: 'The ID of the permit.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      permit_id: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"48a5a2ff-150d-49d5-b98a-a4abae5d299a"}}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          x-request-id: 48a5a2ff-150d-49d5-b98a-a4abae5d299a
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
