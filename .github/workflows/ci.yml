@@ -87,7 +87,17 @@ jobs:
           DB_PASSWORD: ci_password
           REDIS_HOST: 127.0.0.1
           REDIS_PORT: 6379
-        run: php artisan migrate --force --env=testing
+          REDIS_PASSWORD: ''
+        run: |
+          set +e
+          php artisan migrate --force --env=testing -vvv 2>&1 | tee /tmp/migrate.log
+          rc=${PIPESTATUS[0]}
+          if [ $rc -ne 0 ]; then
+            grep -vE '^\s*$' /tmp/migrate.log | tail -50 | while IFS= read -r line; do
+              echo "::error::$(echo "$line" | cut -c1-280)"
+            done
+          fi
+          exit $rc
 
       - name: Test
         env:
