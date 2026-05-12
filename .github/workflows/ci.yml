@@ -14,6 +14,9 @@ jobs:
   backend:
     name: Backend (Pest + Postgres)
     runs-on: ubuntu-latest
+    # Needs write so the failure-debug step can push a debug branch.
+    permissions:
+      contents: write
     defaults:
       run:
         working-directory: backend
@@ -104,6 +107,26 @@ jobs:
           REDIS_HOST: 127.0.0.1
           REDIS_PORT: 6379
         run: vendor/bin/pest
+
+      # The unauthenticated REST quota for logs/annotations is tiny, so we
+      # push the failing migrate output to a sticky branch the developer
+      # can `git fetch` locally. Remove this step once CI is green.
+      - name: Push debug log on failure
+        if: failure()
+        working-directory: ${{ github.workspace }}
+        run: |
+          if [ ! -f /tmp/migrate.log ]; then
+            echo "(no migrate log captured)" > /tmp/migrate.log
+          fi
+          git config user.email "ci-bot@local"
+          git config user.name "ci-bot"
+          git checkout --orphan ci-debug-backend
+          git rm -rf . >/dev/null 2>&1 || true
+          cp /tmp/migrate.log migrate.log
+          echo "${{ github.sha }}" > sha.txt
+          git add migrate.log sha.txt
+          git -c commit.gpgsign=false commit -m "ci debug: backend migrate ${{ github.sha }}"
+          git push -f origin ci-debug-backend
 
   mobile:
     name: Mobile (Flutter analyze)
