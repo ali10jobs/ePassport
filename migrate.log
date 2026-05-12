@@ -1,0 +1,47 @@
+===== exit=0 =====
+----- stdout -----
+
+   INFO  Preparing database.  
+
+  Creating migration table ....................................... 6.98ms DONE
+
+   INFO  Running migrations.  
+
+  0001_01_01_000000_create_users_table .......................... 11.24ms DONE
+  0001_01_01_000001_create_cache_table ........................... 4.77ms DONE
+  0001_01_01_000002_create_jobs_table ............................ 8.58ms DONE
+  2026_05_06_113124_create_personal_access_tokens_table .......... 5.21ms DONE
+  2026_05_06_113135_create_permission_tables .................... 23.81ms DONE
+  2026_05_06_113136_create_activity_log_table .................... 4.96ms DONE
+  2026_05_06_113136_create_media_table ........................... 5.68ms DONE
+  2026_05_06_113137_add_event_column_to_activity_log_table ....... 0.88ms DONE
+  2026_05_06_113138_add_batch_uuid_column_to_activity_log_table .. 0.76ms DONE
+  2026_05_06_113139_alter_activity_log_subject_id_to_string ...... 8.36ms DONE
+  2026_05_06_120000_alter_users_add_profile_fields ............... 3.41ms DONE
+  2026_05_06_120001_create_organizations_table ................... 5.42ms DONE
+  2026_05_06_120002_create_user_organization_roles_table ......... 5.49ms DONE
+  2026_05_06_120003_create_projects_table ........................ 6.51ms DONE
+  2026_05_06_120004_create_engagements_table ..................... 8.73ms DONE
+  2026_05_06_120005_create_sites_table ........................... 5.37ms DONE
+  2026_05_06_120006_create_certification_types_table ............. 5.42ms DONE
+  2026_05_06_120007_create_permit_types_table .................... 4.49ms DONE
+  2026_05_06_120008_create_permit_type_required_certifications_table  5.04ms DONE
+  2026_05_06_120009_create_workers_table ......................... 8.68ms DONE
+  2026_05_06_120010_create_worker_certifications_table ........... 7.32ms DONE
+  2026_05_06_120011_create_worker_medical_records_table .......... 5.29ms DONE
+  2026_05_06_120012_create_equipment_table ....................... 7.68ms DONE
+  2026_05_06_120013_create_equipment_certifications_table ........ 5.27ms DONE
+  2026_05_06_120014_create_equipment_operator_pairings_table ..... 6.01ms DONE
+  2026_05_06_120015_create_permits_table ........................ 13.71ms DONE
+  2026_05_06_120016_create_permit_workers_table .................. 5.33ms DONE
+  2026_05_06_120017_create_permit_equipment_table ................ 5.01ms DONE
+  2026_05_06_120018_create_permit_events_table ................... 5.94ms DONE
+  2026_05_06_120019_create_scan_events_table ..................... 8.77ms DONE
+  2026_05_06_120020_create_hazard_reports_table ................. 12.03ms DONE
+  2026_05_06_120021_create_hazard_report_notes_table ............. 6.72ms DONE
+  2026_05_06_120022_create_webhook_subscriptions_table ........... 7.33ms DONE
+  2026_05_06_120023_create_webhook_deliveries_table .............. 7.40ms DONE
+  2026_05_06_120024_alter_scan_events_subject_type_nullable ...... 0.99ms DONE
+  2026_05_06_120025_alter_workers_add_medical_profile_fields ..... 2.92ms DONE
+
+----- stderr -----

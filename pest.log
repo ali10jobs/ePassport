@@ -1,0 +1,99 @@
+===== exit=2 =====
+----- stdout -----
+
+   PASS  Tests\Unit\ExampleTest
+  ✓ that true is true
+
+   PASS  Tests\Feature\Api\V1\ApiKeyTest
+  ✓ it returns the abilities catalog                                     1.12s  
+  ✓ it issues a scoped API key and revokes it                            0.62s  
+  ✓ it rejects unknown abilities with VALIDATION_FAILED                  0.62s  
+
+   PASS  Tests\Feature\Api\V1\AuditLogTest
+  ✓ it records permit status transitions in the activity log with the a… 0.68s  
+  ✓ it records worker certification creation in the activity log         0.63s  
+
+   PASS  Tests\Feature\Api\V1\AuthTest
+  ✓ it logs in via token mode and returns a bearer + user with orgs      0.65s  
+  ✓ it returns UNAUTHENTICATED on bad credentials                        0.63s  
+  ✓ it returns UNAUTHENTICATED on /me without token                      0.62s  
+  ✓ it returns user identity with org memberships on /me                 0.62s  
+
+   PASS  Tests\Feature\Api\V1\AuthorizationScopingTest
+  ✓ it does not expose workers from an org the user is not engaged with  0.64s  
+  ✓ it subcontractor sees only their own org workers                     0.61s  
+
+   PASS  Tests\Feature\Api\V1\DashboardTest
+  ✓ it returns the client dashboard for a client user                    0.64s  
+  ✓ it returns the main contractor dashboard scoped to the user org      0.64s  
+  ✓ it returns ORG_CONTEXT_MISSING when the role does not match the use… 0.62s  
+
+   PASS  Tests\Feature\Api\V1\HazardReportTest
+  ✓ it accepts an anonymous hazard report and strips EXIF                0.64s  
+  ✓ it rejects anonymous submission without a photo                      0.62s  
+  ✓ it NEVER captures reporter PII on anonymous submission               0.65s  
+  ✓ it public status check exposes only public notes (never internal)    0.63s  
+
+   FAIL  Tests\Feature\Api\V1\HealthTest
+  ✓ it returns 200 with database + redis probes ok                       0.02s  
+  ⨯ it serves the OpenAPI spec at the canonical path                     0.33s  
+
+   PASS  Tests\Feature\Api\V1\PermitAttachByTokenTest
+  ✓ it attaches a worker to a permit via helmet QR token                 0.63s  
+  ✓ it attaches a worker via coverall token (same worker resolved)       0.64s  
+  ✓ it reports unknown tokens without failing the request                0.64s  
+  ✓ it attaches equipment via QR token                                   0.62s  
+  ✓ it rejects attach attempts on non-draft permits with 409             0.62s  
+
+   PASS  Tests\Feature\Api\V1\PermitTest
+  ✓ it creates a draft permit with auto permit_number                    0.65s  
+  ✓ it hard-blocks submit when a named worker has an expired required c… 0.68s  
+  ✓ it rejects submitting a permit not in draft status                   0.64s  
+
+   PASS  Tests\Feature\Api\V1\ScanEquipmentOperatorTest
+  ✓ it returns GREEN for a paired operator + valid TPI equipment         0.65s  
+  ✓ it returns RED with OPERATOR_NOT_AUTHORIZED when the worker is not…  0.67s  
+  ✓ it returns RED stacking EQUIPMENT_TPI_EXPIRED + OPERATOR_NOT_AUTHOR… 0.63s  
+
+   PASS  Tests\Feature\Api\V1\ScanVerificationTest
+  ✓ it returns GREEN for a clean worker scan                             0.63s  
+  ✓ it returns RED with CERT_EXPIRED for a worker with an expired certi… 0.63s  
+  ✓ it returns RED with EQUIPMENT_TPI_EXPIRED for equipment with expire… 0.69s  
+  ✓ it returns IMPERSONATION_FLAG when helmet and coverall belong to di… 0.64s  
+  ✓ it returns RED with UNKNOWN_QR for an unrecognised token             0.64s  
+  ✓ it writes a ScanEvent row with hashed scan_token (raw token never p… 0.65s  
+
+   PASS  Tests\Feature\Api\V1\WebhookTest
+  ✓ it creates a webhook subscription and returns the secret ONCE        0.65s  
+  ✓ it rejects unknown event names with VALIDATION_FAILED                0.64s  
+  ✓ it domain event dispatch matches subscriptions and queues a deliver… 0.63s  
+
+   PASS  Tests\Feature\Api\V1\WorkerTest
+  ✓ it lists workers with pagination                                     0.64s  
+  ✓ it creates a worker and auto-assigns helmet+coverall QR tokens       0.67s  
+  ✓ it rejects worker create without required fields with VALIDATION_FA… 0.65s  
+  ✓ it returns the consolidated e-Passport view for a worker             0.64s  
+  ✓ it returns helmet QR as image/png                                    0.69s  
+  ────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\Api\V1\HealthTest > it se…  InvalidArgumentException   
+  Please provide a valid cache path.
+
+  at vendor/laravel/framework/src/Illuminate/View/Compilers/Compiler.php:67
+     63▕         $shouldCache = true,
+     64▕         $compiledExtension = 'php',
+     65▕     ) {
+     66▕         if (! $cachePath) {
+  ➜  67▕             throw new InvalidArgumentException('Please provide a valid cache path.');
+     68▕         }
+     69▕ 
+     70▕         $this->files = $files;
+     71▕         $this->cachePath = $cachePath;
+
+      [2m+37 vendor frames [22m
+  38  tests/Feature/Api/V1/HealthTest.php:16
+
+
+  Tests:    1 failed, 45 passed (182 assertions)
+  Duration: 28.49s
+
+----- stderr -----
