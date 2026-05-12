@@ -1,0 +1,102 @@
+# Render blueprint — `render.yaml` for the ePassport backend.
+# Apply via Render dashboard → New → Blueprint → point at this repo. The
+# `sync: false` lines are secrets you set once in the Render UI (so they
+# never live in git).
+
+services:
+  - type: web
+    name: epassport-api
+    runtime: docker
+    plan: free
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /up
+    autoDeploy: true
+    branch: main
+
+    envVars:
+      - key: APP_NAME
+        value: ePassport
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: 'false'
+      - key: APP_TIMEZONE
+        value: UTC
+      - key: APP_LOCALE
+        value: en
+      - key: LOG_CHANNEL
+        value: stack
+      - key: LOG_STACK
+        value: single
+      - key: LOG_LEVEL
+        value: warning
+
+      # Sessions / cache / queue — keep simple for MVP (no Redis required)
+      - key: SESSION_DRIVER
+        value: cookie
+      - key: SESSION_LIFETIME
+        value: '120'
+      - key: SESSION_ENCRYPT
+        value: 'true'
+      - key: SESSION_PATH
+        value: /
+      - key: SESSION_SECURE_COOKIE
+        value: 'true'
+      - key: SESSION_SAME_SITE
+        value: lax
+      - key: CACHE_STORE
+        value: database
+      - key: CACHE_PREFIX
+        value: epassport_prod
+      - key: QUEUE_CONNECTION
+        value: sync
+      - key: BROADCAST_CONNECTION
+        value: log
+
+      # Mail — log channel for MVP
+      - key: MAIL_MAILER
+        value: log
+      - key: MAIL_FROM_ADDRESS
+        value: noreply@epassport.local
+      - key: MAIL_FROM_NAME
+        value: ePassport
+
+      - key: DB_CONNECTION
+        value: pgsql
+
+      # Photo storage — Cloudflare R2 (S3-compatible)
+      - key: FILESYSTEM_DISK
+        value: s3
+      - key: AWS_DEFAULT_REGION
+        value: auto
+      - key: AWS_USE_PATH_STYLE_ENDPOINT
+        value: 'true'
+
+      # ----- Secrets — set these in the Render dashboard, not in git -----
+      - key: APP_KEY
+        sync: false                          # base64:... from `artisan key:generate --show`
+      - key: APP_URL
+        sync: false                          # https://<this service>.onrender.com (set after first deploy)
+      - key: SANCTUM_STATEFUL_DOMAINS
+        sync: false                          # <your-web>.vercel.app
+      # Supabase
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: '6543'
+      - key: DB_DATABASE
+        value: postgres
+      - key: DB_USERNAME
+        sync: false                          # postgres.<project-ref>
+      - key: DB_PASSWORD
+        sync: false
+      # Cloudflare R2
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+      - key: AWS_BUCKET
+        sync: false                          # epassport-hazard-photos
+      - key: AWS_ENDPOINT
+        sync: false                          # https://<account-id>.r2.cloudflarestorage.com
