@@ -219,12 +219,27 @@ class _AnonymousHazardScreenState extends ConsumerState<AnonymousHazardScreen> {
         _error = e.message;
         _submitting = false;
       });
-    } catch (_) {
+    } catch (e) {
       setState(() {
-        _error = ref.read(stringsProvider).couldNotSubmitNetwork;
+        // Show the real failure rather than a generic "check your network"
+        // line — Dio surfaces "connection refused", "timeout", DNS failures,
+        // and TLS errors here, which are exactly what we need to debug
+        // physical-device problems (LAN IP wrong, cleartext blocked, etc.).
+        _error =
+            '${ref.read(stringsProvider).couldNotSubmitNetwork}\n${_describeNetworkError(e)}';
         _submitting = false;
       });
     }
+  }
+
+  /// Pulls a human-readable tail out of a DioException without dumping the
+  /// full stack trace. Other exception types fall back to toString().
+  String _describeNetworkError(Object e) {
+    final s = e.toString();
+    // DioException renders as `DioException [type]: message…` — keep the
+    // first line which carries the actionable bit.
+    final firstLine = s.split('\n').first;
+    return firstLine.length > 220 ? '${firstLine.substring(0, 220)}…' : firstLine;
   }
 
   @override

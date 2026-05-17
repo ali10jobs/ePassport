@@ -3,6 +3,8 @@
 /// classes — but for v1.0 hand-written keeps the surface minimal.
 library;
 
+import 'api_client.dart' show apiBaseUrl;
+
 class UserOrganization {
   final String id;
   final String nameEn;
@@ -249,6 +251,7 @@ class WorkerPassport {
       inductionValidUntil: induction['valid_until'] != null
           ? DateTime.tryParse(induction['valid_until'] as String)
           : null,
+      photoUrl: _resolveAssetUrl(data['photo_path'] as String?),
     );
     return WorkerPassport(
       summary: summary,
@@ -344,6 +347,29 @@ class WorkerEmployer {
       );
 }
 
+/// Rewrites loopback / dev-host URLs to the configured API base so the
+/// Android emulator (which can't reach the host's 127.0.0.1) can still
+/// fetch dev assets seeded with absolute URLs.
+String? _resolveAssetUrl(String? raw) {
+  if (raw == null || raw.isEmpty) return raw;
+  final uri = Uri.tryParse(raw);
+  if (uri == null) return raw;
+  // Relative path → resolve against API base.
+  if (!uri.hasScheme) {
+    final base = Uri.parse(apiBaseUrl);
+    return base.resolveUri(uri).toString();
+  }
+  // Loopback host → replace authority with API base authority.
+  final h = uri.host;
+  final isLoopback =
+      h == '127.0.0.1' || h == 'localhost' || h == '0.0.0.0' || h == '::1';
+  if (!isLoopback) return raw;
+  final base = Uri.parse(apiBaseUrl);
+  return uri
+      .replace(scheme: base.scheme, host: base.host, port: base.port)
+      .toString();
+}
+
 class WorkerSummary {
   final String id;
   final String fullNameEn;
@@ -352,6 +378,9 @@ class WorkerSummary {
   final String? employeeId;
   final WorkerEmployer? employer;
   final DateTime? inductionValidUntil;
+  /// Absolute URL to the worker's portrait, or null if none on file. Server
+  /// resolves this to a publicly-fetchable URL (signed when stored privately).
+  final String? photoUrl;
 
   WorkerSummary({
     required this.id,
@@ -361,6 +390,7 @@ class WorkerSummary {
     required this.employeeId,
     required this.employer,
     required this.inductionValidUntil,
+    required this.photoUrl,
   });
 
   factory WorkerSummary.fromJson(Map<String, dynamic> json) {
@@ -380,6 +410,7 @@ class WorkerSummary {
       inductionValidUntil: data['induction_valid_until'] != null
           ? DateTime.tryParse(data['induction_valid_until'] as String)
           : null,
+      photoUrl: _resolveAssetUrl(data['photo_path'] as String?),
     );
   }
 }

@@ -9,10 +9,21 @@ import 'api_exception.dart';
 import 'auth_storage.dart';
 import 'models.dart';
 
+/// Default points at the hosted Render backend so release builds and
+/// physical devices work out of the box. For local dev against a Laravel
+/// server on your laptop, override at build time:
+///
+///   flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8000   # Android emulator
+///   flutter run --dart-define=API_BASE_URL=http://<LAN_IP>:8000   # physical device on Wi-Fi
 const String _kApiBase = String.fromEnvironment(
   'API_BASE_URL',
-  defaultValue: 'http://10.0.2.2:8000',
+  defaultValue: 'https://epassport-api-5s8v.onrender.com',
 );
+
+/// Public, top-level accessor so models can rewrite absolute asset URLs that
+/// were minted by the backend against `127.0.0.1` / `localhost` (unreachable
+/// from the Android emulator) to point at whatever API base this build uses.
+String get apiBaseUrl => _kApiBase;
 
 final authStorageProvider = Provider<AuthStorage>((ref) => AuthStorage());
 

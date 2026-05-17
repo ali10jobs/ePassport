@@ -165,7 +165,10 @@ class _ScanResultScreenState extends ConsumerState<ScanResultScreen> {
         children: [
           _StatusBanner(color: _statusColor, icon: _statusIcon, label: statusLabel),
           const SizedBox(height: 20),
-          _Portrait(borderColor: _success ? Colors.transparent : _statusColor),
+          _Portrait(
+            borderColor: _success ? Colors.transparent : _statusColor,
+            photoUrl: _worker?.photoUrl,
+          ),
           const SizedBox(height: 14),
           Center(
             child: Text(
@@ -294,11 +297,14 @@ class _StatusBanner extends StatelessWidget {
 }
 
 class _Portrait extends StatelessWidget {
-  const _Portrait({required this.borderColor});
+  const _Portrait({required this.borderColor, this.photoUrl});
   final Color borderColor;
+  final String? photoUrl;
 
   @override
   Widget build(BuildContext context) {
+    final url = photoUrl;
+    final hasPhoto = url != null && url.isNotEmpty;
     return Center(
       child: Container(
         width: 140,
@@ -313,8 +319,33 @@ class _Portrait extends StatelessWidget {
             width: borderColor == Colors.transparent ? 1 : 3,
           ),
         ),
+        clipBehavior: Clip.antiAlias,
         alignment: Alignment.center,
-        child: Icon(Icons.person, size: 64, color: UiTokens.muted),
+        child: hasPhoto
+            ? Image.network(
+                url,
+                fit: BoxFit.cover,
+                width: 140,
+                height: 140,
+                loadingBuilder: (context, child, progress) {
+                  if (progress == null) return child;
+                  return Center(
+                    child: SizedBox.square(
+                      dimension: 28,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        value: progress.expectedTotalBytes == null
+                            ? null
+                            : progress.cumulativeBytesLoaded /
+                                progress.expectedTotalBytes!,
+                      ),
+                    ),
+                  );
+                },
+                errorBuilder: (_, _, _) =>
+                    Icon(Icons.person, size: 64, color: UiTokens.muted),
+              )
+            : Icon(Icons.person, size: 64, color: UiTokens.muted),
       ),
     );
   }
