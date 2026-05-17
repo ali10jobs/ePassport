@@ -17,7 +17,7 @@ import 'models.dart';
 ///   flutter run --dart-define=API_BASE_URL=http://LAN_IP:8000     # physical device on Wi-Fi
 const String _kApiBase = String.fromEnvironment(
   'API_BASE_URL',
-  defaultValue: 'https://epassport-api-5s8v.onrender.com',
+  defaultValue: 'https://168-144-128-76.nip.io',
 );
 
 /// Public, top-level accessor so models can rewrite absolute asset URLs that
