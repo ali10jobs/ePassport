@@ -1,15 +1,12 @@
-import { ArrowLeft, Printer, Radio } from 'lucide-react';
-import QRCode from 'qrcode';
+import { ArrowLeft, Printer } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 
-import { endpoints } from '@/api/client';
 import type { WorkerPassport } from '@/api/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { TBody, TD, TH, THead, TR, Table } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CertStatusBadge, InductionStatusBadge } from '@/components/shared/StatusBadge';
@@ -256,11 +253,6 @@ function ProfileHeader({ worker }: { worker: WorkerPassport }) {
   const { t, i18n } = useTranslation();
   const isArabic = i18n.language.startsWith('ar');
   const { data: qrBlob, isLoading: qrLoading, isError: qrError } = useWorkerHelmetQr(worker.id);
-  const [nfcStatus, setNfcStatus] = useState<'idle' | 'tap' | 'writing' | 'done' | 'error'>('idle');
-  const [nfcError, setNfcError] = useState<string | null>(null);
-  const [handoff, setHandoff] = useState<{ url: string; expires_at: string } | null>(null);
-  const [handoffQr, setHandoffQr] = useState<string | null>(null);
-  const [handoffLoading, setHandoffLoading] = useState(false);
 
   const qrUrl = useMemo(
     () => (qrBlob ? URL.createObjectURL(qrBlob) : null),
@@ -279,105 +271,6 @@ function ProfileHeader({ worker }: { worker: WorkerPassport }) {
     .slice(0, 2)
     .join('')
     .toUpperCase();
-
-  const openMobileHandoff = async () => {
-    setHandoffLoading(true);
-    setNfcError(null);
-    try {
-      const res = await endpoints.workers.nfcHandoff(worker.id);
-      const dataUrl = await QRCode.toDataURL(res.data.url, { width: 320, margin: 1 });
-      setHandoff(res.data);
-      setHandoffQr(dataUrl);
-    } catch (err) {
-      setNfcStatus('error');
-      setNfcError(err instanceof Error ? err.message : String(err));
-    } finally {
-      setHandoffLoading(false);
-    }
-  };
-
-  const handleWriteNfc = async () => {
-    setNfcError(null);
-    // No Web NFC here (desktop / iOS / Firefox / etc.) → fall back to the
-    // mobile-app handoff: show a QR the operator scans with the Flutter app
-    // which then writes the NFC tag using native APIs.
-    if (typeof window === 'undefined' || !('NDEFReader' in window)) {
-      await openMobileHandoff();
-      return;
-    }
-
-    // Explicitly inspect permission state. Chrome treats `name: "nfc"` as a
-    // valid PermissionName even though the lib.dom union doesn't list it yet.
-    try {
-      const perms = (
-        navigator as Navigator & {
-          permissions?: {
-            query: (d: { name: string }) => Promise<{ state: 'granted' | 'denied' | 'prompt' }>;
-          };
-        }
-      ).permissions;
-      if (perms?.query) {
-        const status = await perms.query({ name: 'nfc' });
-        if (status.state === 'denied') {
-          setNfcStatus('error');
-          setNfcError(
-            t(
-              'worker_detail.nfc_denied',
-              'NFC permission was denied. Enable it in your browser site settings, then try again.'
-            )
-          );
-          return;
-        }
-        // For 'prompt' or 'granted' we fall through. The browser's permission
-        // dialog (if any) appears on the first write() call below, which is
-        // still inside this user-gesture handler.
-      }
-    } catch {
-      // Permissions API may throw on unsupported names; ignore and let
-      // write() surface the real error.
-    }
-
-    const payload = {
-      v: 1,
-      id: worker.id,
-      employee_id: worker.employee_id,
-      name_en: worker.full_name_en,
-      name_ar: worker.full_name_ar,
-      trade: worker.trade,
-      nationality: worker.nationality,
-      employer: worker.employer.name_en,
-      induction: worker.induction.status,
-      medical_fit: worker.medical_fitness?.is_currently_fit ?? null,
-      issued_at: new Date().toISOString(),
-    };
-
-    try {
-      setNfcStatus('tap');
-      // Web NFC isn't in lib.dom yet — narrow the constructor through unknown.
-      type NdefReader = {
-        write: (msg: {
-          records: Array<
-            | { recordType: 'mime'; mediaType: string; data: string }
-            | { recordType: 'text'; data: string; lang?: string }
-          >;
-        }) => Promise<void>;
-      };
-      const Ctor = (window as unknown as { NDEFReader: new () => NdefReader }).NDEFReader;
-      const reader = new Ctor();
-      setNfcStatus('writing');
-      await reader.write({
-        records: [
-          { recordType: 'mime', mediaType: 'application/json', data: JSON.stringify(payload) },
-          { recordType: 'text', data: `${worker.full_name_en} (${worker.employee_id})` },
-        ],
-      });
-      setNfcStatus('done');
-      setTimeout(() => setNfcStatus('idle'), 3000);
-    } catch (err) {
-      setNfcStatus('error');
-      setNfcError(err instanceof Error ? err.message : String(err));
-    }
-  };
 
   const handlePrint = () => {
     if (!qrUrl) return;
@@ -471,72 +364,9 @@ function ProfileHeader({ worker }: { worker: WorkerPassport }) {
               <Printer className="size-3.5 mr-1.5" />
               {t('worker_detail.print_qr', 'Print QR')}
             </Button>
-            <Button
-              size="sm"
-              variant="secondary"
-              onClick={handleWriteNfc}
-              disabled={nfcStatus === 'tap' || nfcStatus === 'writing'}
-              className="w-full"
-            >
-              <Radio className="size-3.5 mr-1.5" />
-              {nfcStatus === 'tap' || nfcStatus === 'writing'
-                ? t('worker_detail.nfc_writing', 'Tap NFC tag…')
-                : t('worker_detail.nfc_write', 'Write NFC')}
-            </Button>
-            {nfcStatus === 'done' && (
-              <p className="text-xs text-success text-center">
-                {t('worker_detail.nfc_done', 'Written to NFC.')}
-              </p>
-            )}
-            {nfcStatus === 'error' && nfcError && (
-              <p className="text-[11px] text-destructive text-center max-w-36 leading-snug">
-                {nfcError}
-              </p>
-            )}
-            {handoffLoading && (
-              <p className="text-[11px] text-muted-foreground text-center">
-                {t('common.loading', 'Loading…')}
-              </p>
-            )}
           </div>
         </div>
       </CardContent>
-      <Dialog
-        open={!!handoff && !!handoffQr}
-        onOpenChange={(open) => {
-          if (!open) {
-            setHandoff(null);
-            setHandoffQr(null);
-          }
-        }}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('worker_detail.nfc_handoff_title', 'Write NFC from mobile')}</DialogTitle>
-            <DialogDescription>
-              {t(
-                'worker_detail.nfc_handoff_desc',
-                'Scan this QR with the ePassport mobile app. The app will fetch the worker profile and write it to the NFC tag.'
-              )}
-            </DialogDescription>
-          </DialogHeader>
-          {handoffQr && (
-            <div className="flex flex-col items-center gap-3 py-2">
-              <img
-                src={handoffQr}
-                alt={t('worker_detail.nfc_handoff_qr_alt', 'Mobile handoff QR')}
-                className="size-64 bg-white rounded-md border border-border"
-              />
-              <p className="text-xs text-muted-foreground text-center">
-                {t('worker_detail.nfc_handoff_expires', 'Expires at')}{' '}
-                <span className="mono tabular-nums">
-                  {handoff ? new Date(handoff.expires_at).toLocaleTimeString() : ''}
-                </span>
-              </p>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
     </Card>
   );
 }
