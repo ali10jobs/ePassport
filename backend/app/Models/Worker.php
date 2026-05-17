@@ -80,6 +80,25 @@ class Worker extends Model implements HasMedia
         return trim("{$this->first_name_ar} {$this->last_name_ar}");
     }
 
+    /**
+     * Resolve `photo_path` to a URL the client can `<img src=>` directly.
+     * - absolute URL → returned as-is (lets seeders / one-offs point at any host)
+     * - relative key → presigned R2 URL (1 week TTL, the v4 signing max)
+     */
+    public function getPhotoUrlAttribute(): ?string
+    {
+        $path = $this->photo_path;
+        if (! $path) {
+            return null;
+        }
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return $path;
+        }
+
+        return \Illuminate\Support\Facades\Storage::disk('s3')
+            ->temporaryUrl($path, now()->addDays(7));
+    }
+
     public function employerOrganization(): BelongsTo
     {
         return $this->belongsTo(Organization::class, 'employer_organization_id');

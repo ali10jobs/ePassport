@@ -104,7 +104,7 @@ class WorkerService
                 'emergency_contact_phone' => $worker->emergency_contact_phone,
             ],
             'certifications' => $certs,
-            'photo_path' => $worker->photo_path,
+            'photo_path' => $worker->photo_url,
         ];
     }
 }

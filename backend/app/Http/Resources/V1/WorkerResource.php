@@ -39,7 +39,7 @@ class WorkerResource extends JsonResource
             'induction_status' => $this->induction_status,
             'induction_date' => optional($this->induction_date)->toDateString(),
             'induction_valid_until' => optional($this->induction_valid_until)->toDateString(),
-            'photo_path' => $this->photo_path,
+            'photo_path' => $this->photo_url,
             'metadata' => $this->metadata,
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
