@@ -14,7 +14,7 @@ import 'models.dart';
 /// server on your laptop, override at build time:
 ///
 ///   flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8000   # Android emulator
-///   flutter run --dart-define=API_BASE_URL=http://<LAN_IP>:8000   # physical device on Wi-Fi
+///   flutter run --dart-define=API_BASE_URL=http://LAN_IP:8000     # physical device on Wi-Fi
 const String _kApiBase = String.fromEnvironment(
   'API_BASE_URL',
   defaultValue: 'https://epassport-api-5s8v.onrender.com',
@@ -44,8 +44,11 @@ class ApiClient {
         _dio = dio ??
             Dio(BaseOptions(
               baseUrl: _kApiBase,
-              connectTimeout: const Duration(seconds: 30),
-              receiveTimeout: const Duration(seconds: 30),
+              // 60s covers Render's cold-start window (~30s) plus the
+              // tail of a slow multipart upload over cellular.
+              connectTimeout: const Duration(seconds: 60),
+              receiveTimeout: const Duration(seconds: 90),
+              sendTimeout: const Duration(seconds: 90),
               responseType: ResponseType.json,
               headers: {
                 'Accept': 'application/json',
@@ -65,7 +68,41 @@ class ApiClient {
         }
         handler.next(options);
       },
+      // Retry transient upstream failures (Render cold start = 502/503/504,
+      // network blips = connectionTimeout). Safe because every mutation
+      // already carries an Idempotency-Key the server dedupes on; the key
+      // is preserved across retries by the `containsKey` guard above.
+      onError: (err, handler) async {
+        if (_shouldRetry(err) &&
+            (err.requestOptions.extra['retryCount'] as int? ?? 0) < 2) {
+          final attempt =
+              (err.requestOptions.extra['retryCount'] as int? ?? 0) + 1;
+          err.requestOptions.extra['retryCount'] = attempt;
+          // 2s, then 5s — long enough for a Render container to wake.
+          await Future<void>.delayed(Duration(seconds: attempt * 2 + 1));
+          try {
+            final res = await _dio.fetch<dynamic>(err.requestOptions);
+            return handler.resolve(res);
+          } on DioException catch (e) {
+            return handler.next(e);
+          }
+        }
+        handler.next(err);
+      },
     ));
+  }
+
+  /// Retry only on transient signals: gateway/proxy errors from upstream
+  /// platforms (Render, Vercel, Cloudflare) and TCP-level timeouts.
+  static bool _shouldRetry(DioException err) {
+    if (err.type == DioExceptionType.connectionTimeout ||
+        err.type == DioExceptionType.sendTimeout ||
+        err.type == DioExceptionType.receiveTimeout ||
+        err.type == DioExceptionType.connectionError) {
+      return true;
+    }
+    final code = err.response?.statusCode;
+    return code == 502 || code == 503 || code == 504;
   }
 
   static bool _isMutation(String method) {
