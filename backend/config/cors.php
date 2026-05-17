@@ -11,8 +11,8 @@ return [
     ],
 
     'allowed_origins_patterns' => [
-        // Vercel preview deployments for the same project.
-        '#^https://epassport-web-[a-z0-9-]+\.vercel\.app$#',
+        // Any Vercel deployment (production alias + previews) for this project.
+        '#^https://epassport-[a-z0-9-]+\.vercel\.app$#',
     ],
 
     'allowed_headers' => ['*'],
