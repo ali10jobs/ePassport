@@ -41,7 +41,14 @@ class DashboardController extends Controller
     {
         $org = $this->resolveOrgForUser($request, Organization::ROLE_MAIN_CONTRACTOR);
 
-        return response()->json(['data' => $this->dashboards->mainContractorSummary($org)]);
+        $certRanges = array_filter([
+            'expired_from' => $request->query('expired_from'),
+            'expired_to' => $request->query('expired_to'),
+            'expiring_from' => $request->query('expiring_from'),
+            'expiring_to' => $request->query('expiring_to'),
+        ], fn ($v) => $v !== null && $v !== '');
+
+        return response()->json(['data' => $this->dashboards->mainContractorSummary($org, $certRanges)]);
     }
 
     /**

@@ -28,6 +28,9 @@ dependencies:
   mobile_scanner: ^5.2.3
   image_picker: ^1.1.2
 
+  # NFC writing (worker handoff flow)
+  nfc_manager: ^3.5.0
+
   # Storage + secure
   flutter_secure_storage: ^9.2.2
 

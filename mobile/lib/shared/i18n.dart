@@ -17,6 +17,34 @@ class AppStrings {
   String get profile => _t('Profile', 'الملف الشخصي');
   String get account => _t('Account', 'الحساب');
   String get settings => _t('Settings', 'الإعدادات');
+
+  // NFC handoff (write worker profile to NFC tag)
+  String get nfcWriteSidebar => _t('Write NFC tag', 'كتابة بطاقة NFC');
+  String get nfcHandoffScanHint => _t(
+        'Scan the QR shown on the admin web (Write NFC).',
+        'امسح الرمز الظاهر على لوحة الإدارة (كتابة NFC).',
+      );
+  String get nfcHandoffFetching =>
+      _t('Fetching worker profile…', 'جاري جلب بيانات العامل…');
+  String get nfcHoldNear => _t('Hold the NFC tag near the phone', 'قرّب بطاقة NFC من الجهاز');
+  String get nfcWriting => _t('Writing to tag…', 'جاري الكتابة على البطاقة…');
+  String get nfcWriteDone => _t('Tag written successfully', 'تمت الكتابة على البطاقة');
+  String get nfcWriteFailed => _t('Could not write to tag', 'تعذّر الكتابة على البطاقة');
+  String get nfcTagNotWritable =>
+      _t('This tag is not writable.', 'هذه البطاقة غير قابلة للكتابة.');
+  String get nfcUnavailable =>
+      _t('NFC is not available on this device.', 'خدمة NFC غير متوفرة على هذا الجهاز.');
+  String get nfcHandoffBadPayload => _t(
+        'The handoff response was malformed.',
+        'استجابة التحويل غير صالحة.',
+      );
+  String get nfcHandoffExpired => _t(
+        'The QR has expired. Ask the admin to generate a new one.',
+        'انتهت صلاحية الرمز. اطلب من المسؤول إنشاء رمز جديد.',
+      );
+  String get nfcHandoffFetchFailed =>
+      _t('Could not fetch worker profile', 'تعذّر جلب بيانات العامل');
+  String get nfcWriteAnother => _t('Write another', 'كتابة أخرى');
   String get signOut => _t('Sign out', 'تسجيل الخروج');
   String get language => _t('Language', 'اللغة');
   String get appearance => _t('Appearance', 'المظهر');

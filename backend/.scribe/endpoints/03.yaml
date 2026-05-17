@@ -70,11 +70,11 @@ endpoints:
       -
         custom: []
         status: 404
-        content: '{"error":{"code":"RESOURCE_NOT_FOUND","message":"The requested endpoint or resource was not found.","details":null,"request_id":"c81a31b5-0007-4511-b874-9bbe83808824"}}'
+        content: '{"error":{"code":"RESOURCE_NOT_FOUND","message":"The requested endpoint or resource was not found.","details":null,"request_id":"b3b4b2ec-2277-4869-bde4-c73aa9c62646"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-request-id: c81a31b5-0007-4511-b874-9bbe83808824
+          x-request-id: b3b4b2ec-2277-4869-bde4-c73aa9c62646
           access-control-allow-origin: '*'
         description: null
     responseFields: []
@@ -121,11 +121,11 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"7a9c7a34-f7e6-42af-93b5-c54b28245624"}}'
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"8d77dc71-b340-458b-bfa5-91d3f716d9b6"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-request-id: 7a9c7a34-f7e6-42af-93b5-c54b28245624
+          x-request-id: 8d77dc71-b340-458b-bfa5-91d3f716d9b6
           access-control-allow-origin: '*'
         description: null
     responseFields: []
@@ -184,11 +184,11 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"b68d60d7-1975-447c-9f26-8720acfb144f"}}'
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"12b14e39-71b7-48df-afd5-5c9f0b9ad8ca"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-request-id: b68d60d7-1975-447c-9f26-8720acfb144f
+          x-request-id: 12b14e39-71b7-48df-afd5-5c9f0b9ad8ca
           access-control-allow-origin: '*'
         description: null
     responseFields: []
@@ -353,7 +353,7 @@ endpoints:
         name: note_type
         description: ''
         required: true
-        example: internal
+        example: public
         type: string
         enumValues:
           - internal
@@ -397,7 +397,7 @@ endpoints:
         nullable: true
         deprecated: false
     cleanBodyParameters:
-      note_type: internal
+      note_type: public
       body: b
       body_lang: ar
       author_organization_id: a4855dc5-0acb-33c3-b921-f4291f719ca0

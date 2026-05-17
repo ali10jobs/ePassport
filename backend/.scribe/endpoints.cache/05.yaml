@@ -97,11 +97,11 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"c191a7fe-bcac-483a-b6e7-6d3b2d81d34d"}}'
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"8588635f-4c6d-4e20-b289-3ed14903a8c2"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-request-id: c191a7fe-bcac-483a-b6e7-6d3b2d81d34d
+          x-request-id: 8588635f-4c6d-4e20-b289-3ed14903a8c2
           access-control-allow-origin: '*'
         description: null
     responseFields: []
@@ -297,7 +297,7 @@ endpoints:
         name: induction_status
         description: ''
         required: false
-        example: inducted
+        example: not_inducted
         type: string
         enumValues:
           - not_inducted
@@ -311,7 +311,7 @@ endpoints:
         name: induction_date
         description: 'Must be a valid date.'
         required: false
-        example: '2026-05-12T18:39:35'
+        example: '2026-05-12T22:01:13'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -354,8 +354,8 @@ endpoints:
       phone: 'n'
       email: ashly64@example.com
       trade: v
-      induction_status: inducted
-      induction_date: '2026-05-12T18:39:35'
+      induction_status: not_inducted
+      induction_date: '2026-05-12T22:01:13'
       induction_valid_until: '2052-06-04'
     fileParameters: []
     responses: []
@@ -411,11 +411,11 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"45010499-38c7-4de0-9edd-7d3d474e95f6"}}'
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"3b2789ea-d74c-420c-a5bf-d34dce9b0acc"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-request-id: 45010499-38c7-4de0-9edd-7d3d474e95f6
+          x-request-id: 3b2789ea-d74c-420c-a5bf-d34dce9b0acc
           access-control-allow-origin: '*'
         description: null
     responseFields: []
@@ -626,7 +626,7 @@ endpoints:
         name: induction_date
         description: 'Must be a valid date.'
         required: false
-        example: '2026-05-12T18:39:35'
+        example: '2026-05-12T22:01:13'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -637,7 +637,7 @@ endpoints:
         name: induction_valid_until
         description: 'Must be a valid date.'
         required: false
-        example: '2026-05-12T18:39:35'
+        example: '2026-05-12T22:01:13'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -669,8 +669,8 @@ endpoints:
       email: ashly64@example.com
       trade: v
       induction_status: inducted
-      induction_date: '2026-05-12T18:39:35'
-      induction_valid_until: '2026-05-12T18:39:35'
+      induction_date: '2026-05-12T22:01:13'
+      induction_valid_until: '2026-05-12T22:01:13'
     fileParameters: []
     responses: []
     responseFields: []
@@ -777,11 +777,11 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"f4f85b72-82b2-4781-853a-7f0db8a03285"}}'
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"4fb9bbfe-b01b-41b1-b33b-1e528f78c1e7"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-request-id: f4f85b72-82b2-4781-853a-7f0db8a03285
+          x-request-id: 4fb9bbfe-b01b-41b1-b33b-1e528f78c1e7
           access-control-allow-origin: '*'
         description: null
     responseFields: []
@@ -839,11 +839,11 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"935bbf56-51c7-4b42-b811-535d9b4972f3"}}'
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"5a8f5c2b-94b9-400e-9e32-43ac99bdb2ed"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-request-id: 935bbf56-51c7-4b42-b811-535d9b4972f3
+          x-request-id: 5a8f5c2b-94b9-400e-9e32-43ac99bdb2ed
           access-control-allow-origin: '*'
         description: null
     responseFields: []
@@ -898,11 +898,11 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"17656311-f04f-4f3f-8ba6-813c171042f0"}}'
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"46ee8b3b-244f-461f-abf2-2a0099cc4947"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-request-id: 17656311-f04f-4f3f-8ba6-813c171042f0
+          x-request-id: 46ee8b3b-244f-461f-abf2-2a0099cc4947
           access-control-allow-origin: '*'
         description: null
     responseFields: []

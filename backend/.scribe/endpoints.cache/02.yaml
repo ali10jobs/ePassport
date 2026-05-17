@@ -74,7 +74,7 @@ endpoints:
         name: category
         description: ''
         required: true
-        example: other
+        example: fire
         type: string
         enumValues:
           - fall
@@ -122,7 +122,7 @@ endpoints:
         name: description_lang
         description: ''
         required: false
-        example: en
+        example: ar
         type: string
         enumValues:
           - en
@@ -175,10 +175,10 @@ endpoints:
         nullable: true
         deprecated: false
     cleanBodyParameters:
-      category: other
+      category: fire
       severity: high
       description: 'Eius et animi quos velit et.'
-      description_lang: en
+      description_lang: ar
       project_id: 21c4122b-d554-3723-966c-6d723ea5293f
       site_id: add3503c-ebff-3875-93af-b8c6a695762b
       latitude: -89
@@ -252,7 +252,7 @@ endpoints:
           content-type: application/json
           x-ratelimit-limit: '10'
           x-ratelimit-remaining: '9'
-          x-request-id: e902bda5-cd5d-4e38-b9fa-c1a3c2daa423
+          x-request-id: a049c8fc-0848-4d68-bda6-8ab51c287fc0
           access-control-allow-origin: '*'
         description: null
     responseFields: []

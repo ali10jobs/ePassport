@@ -5,6 +5,7 @@ import {
   ApiError,
   type AnonymousHazardStatus,
   type ApiErrorBody,
+  type CertRangeParams,
   type ClientDashboard,
   type ConsultantDashboard,
   type EquipmentListItem,
@@ -152,6 +153,22 @@ export const endpoints = {
     },
     async passport(workerId: string): Promise<{ data: WorkerPassport }> {
       return api<{ data: WorkerPassport }>(`/api/v1/workers/${workerId}/passport`);
+    },
+    async helmetQrPng(workerId: string): Promise<Blob> {
+      // ofetch's typed instance is JSON-only; cast through `unknown` to use a
+      // binary responseType while keeping `api`'s auth/error plumbing.
+      return (api as unknown as (
+        url: string,
+        opts: { responseType: 'blob' }
+      ) => Promise<Blob>)(`/api/v1/workers/${workerId}/qr/helmet`, {
+        responseType: 'blob',
+      });
+    },
+    async nfcHandoff(workerId: string): Promise<{ data: { url: string; expires_at: string } }> {
+      return api<{ data: { url: string; expires_at: string } }>(
+        `/api/v1/workers/${workerId}/nfc-handoff`,
+        { method: 'POST' }
+      );
     },
   },
 
@@ -387,8 +404,17 @@ export const endpoints = {
     async client(): Promise<{ data: ClientDashboard }> {
       return api<{ data: ClientDashboard }>('/api/v1/dashboards/client/summary');
     },
-    async mainContractor(): Promise<{ data: MainContractorDashboard }> {
-      return api<{ data: MainContractorDashboard }>('/api/v1/dashboards/main-contractor/summary');
+    async mainContractor(
+      params: CertRangeParams = {}
+    ): Promise<{ data: MainContractorDashboard }> {
+      const query: Record<string, string> = {};
+      if (params.expired_from) query.expired_from = params.expired_from;
+      if (params.expired_to) query.expired_to = params.expired_to;
+      if (params.expiring_from) query.expiring_from = params.expiring_from;
+      if (params.expiring_to) query.expiring_to = params.expiring_to;
+      return api<{ data: MainContractorDashboard }>('/api/v1/dashboards/main-contractor/summary', {
+        query,
+      });
     },
     async consultant(): Promise<{ data: ConsultantDashboard }> {
       return api<{ data: ConsultantDashboard }>('/api/v1/dashboards/consultant/summary');

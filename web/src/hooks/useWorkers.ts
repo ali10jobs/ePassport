@@ -25,3 +25,16 @@ export function useWorkerPassport(workerId: string | undefined) {
     enabled: !!workerId,
   });
 }
+
+/**
+ * Fetches the worker's helmet QR PNG (authenticated, so we must pull it as a
+ * Blob and turn it into an objectURL the <img> can render).
+ */
+export function useWorkerHelmetQr(workerId: string | undefined) {
+  return useQuery({
+    queryKey: ['workers', 'qr', 'helmet', workerId],
+    queryFn: () => endpoints.workers.helmetQrPng(workerId!),
+    enabled: !!workerId,
+    staleTime: 60_000,
+  });
+}

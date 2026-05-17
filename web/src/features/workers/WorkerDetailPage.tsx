@@ -1,15 +1,19 @@
-import { ArrowLeft } from 'lucide-react';
-import { useState } from 'react';
+import { ArrowLeft, Printer, Radio } from 'lucide-react';
+import QRCode from 'qrcode';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 
+import { endpoints } from '@/api/client';
+import type { WorkerPassport } from '@/api/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { TBody, TD, TH, THead, TR, Table } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CertStatusBadge, InductionStatusBadge } from '@/components/shared/StatusBadge';
-import { useWorkerPassport } from '@/hooks/useWorkers';
+import { useWorkerHelmetQr, useWorkerPassport } from '@/hooks/useWorkers';
 
 export function WorkerDetailPage() {
   const { t } = useTranslation();
@@ -38,16 +42,12 @@ export function WorkerDetailPage() {
             <ArrowLeft className="size-4 rtl:rotate-180" />
           </Button>
         </Link>
-        <div className="min-w-0">
-          <div className="flex items-baseline gap-2">
-            <h2 className="text-lg font-medium truncate">{worker.full_name_en}</h2>
-            <span className="mono text-xs text-muted-foreground">{worker.employee_id}</span>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            {worker.trade ?? '—'} · {worker.employer.name_en ?? '—'}
-          </p>
-        </div>
+        <h2 className="text-sm text-muted-foreground">
+          {t('workers.detail.crumb', 'Worker profile')}
+        </h2>
       </div>
+
+      <ProfileHeader worker={worker} />
 
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList>
@@ -189,34 +189,36 @@ export function WorkerDetailPage() {
 
         <TabsContent value="medical">
           <Card>
-            <CardContent className="space-y-3">
-              {worker.medical_fitness ? (
-                <dl className="grid grid-cols-2 gap-3 text-sm">
-                  <Field
-                    label={t('worker_detail.medical_status', 'Status')}
-                    value={worker.medical_fitness.status.replace(/_/g, ' ')}
-                  />
-                  <Field
-                    label={t('worker_detail.medical_currently_fit', 'Currently fit')}
-                    value={worker.medical_fitness.is_currently_fit ? 'Yes' : 'No'}
-                  />
-                  <Field
-                    label={t('worker_detail.medical_exam_date', 'Last exam')}
-                    value={worker.medical_fitness.exam_date ?? '—'}
-                    mono
-                  />
-                  <Field
-                    label={t('worker_detail.medical_valid_until', 'Valid until')}
-                    value={worker.medical_fitness.valid_until ?? '—'}
-                    mono
-                  />
-                </dl>
-              ) : (
-                <p className="text-sm text-muted-foreground">
-                  {t('worker_detail.medical_none', 'No medical record on file.')}
-                </p>
-              )}
-            </CardContent>
+            {worker.medical_fitness ? (
+              <Table>
+                <THead>
+                  <TR>
+                    <TH>{t('worker_detail.medical_status', 'Status')}</TH>
+                    <TH>{t('worker_detail.medical_currently_fit', 'Currently fit')}</TH>
+                    <TH>{t('worker_detail.medical_exam_date', 'Last exam')}</TH>
+                    <TH>{t('worker_detail.medical_valid_until', 'Valid until')}</TH>
+                  </TR>
+                </THead>
+                <TBody>
+                  <TR>
+                    <TD className="capitalize">
+                      {worker.medical_fitness.status.replace(/_/g, ' ')}
+                    </TD>
+                    <TD>{worker.medical_fitness.is_currently_fit ? 'Yes' : 'No'}</TD>
+                    <TD className="mono tabular-nums">
+                      {worker.medical_fitness.exam_date ?? '—'}
+                    </TD>
+                    <TD className="mono tabular-nums">
+                      {worker.medical_fitness.valid_until ?? '—'}
+                    </TD>
+                  </TR>
+                </TBody>
+              </Table>
+            ) : (
+              <CardContent className="text-sm text-muted-foreground py-12 text-center">
+                {t('worker_detail.medical_none', 'No medical record on file.')}
+              </CardContent>
+            )}
           </Card>
         </TabsContent>
       </Tabs>
@@ -239,4 +241,328 @@ function Field({
       <dd className={mono ? 'mono tabular-nums' : ''}>{value}</dd>
     </div>
   );
+}
+
+/**
+ * Hero card at the top of the worker detail screen: avatar on the left,
+ * identity and status chips in the middle, helmet QR + print on the right.
+ *
+ * The QR PNG is fetched as a blob (the endpoint is authenticated, so we
+ * can't use a plain <img src>). The Print button opens a tiny print-only
+ * window containing the QR + worker name + employee ID so the operator
+ * can stick it on a helmet.
+ */
+function ProfileHeader({ worker }: { worker: WorkerPassport }) {
+  const { t, i18n } = useTranslation();
+  const isArabic = i18n.language.startsWith('ar');
+  const { data: qrBlob, isLoading: qrLoading, isError: qrError } = useWorkerHelmetQr(worker.id);
+  const [nfcStatus, setNfcStatus] = useState<'idle' | 'tap' | 'writing' | 'done' | 'error'>('idle');
+  const [nfcError, setNfcError] = useState<string | null>(null);
+  const [handoff, setHandoff] = useState<{ url: string; expires_at: string } | null>(null);
+  const [handoffQr, setHandoffQr] = useState<string | null>(null);
+  const [handoffLoading, setHandoffLoading] = useState(false);
+
+  const qrUrl = useMemo(
+    () => (qrBlob ? URL.createObjectURL(qrBlob) : null),
+    [qrBlob]
+  );
+  useEffect(() => {
+    return () => {
+      if (qrUrl) URL.revokeObjectURL(qrUrl);
+    };
+  }, [qrUrl]);
+
+  const initials = (worker.full_name_en || '?')
+    .split(/\s+/)
+    .map((w) => w[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
+
+  const openMobileHandoff = async () => {
+    setHandoffLoading(true);
+    setNfcError(null);
+    try {
+      const res = await endpoints.workers.nfcHandoff(worker.id);
+      const dataUrl = await QRCode.toDataURL(res.data.url, { width: 320, margin: 1 });
+      setHandoff(res.data);
+      setHandoffQr(dataUrl);
+    } catch (err) {
+      setNfcStatus('error');
+      setNfcError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setHandoffLoading(false);
+    }
+  };
+
+  const handleWriteNfc = async () => {
+    setNfcError(null);
+    // No Web NFC here (desktop / iOS / Firefox / etc.) → fall back to the
+    // mobile-app handoff: show a QR the operator scans with the Flutter app
+    // which then writes the NFC tag using native APIs.
+    if (typeof window === 'undefined' || !('NDEFReader' in window)) {
+      await openMobileHandoff();
+      return;
+    }
+
+    // Explicitly inspect permission state. Chrome treats `name: "nfc"` as a
+    // valid PermissionName even though the lib.dom union doesn't list it yet.
+    try {
+      const perms = (
+        navigator as Navigator & {
+          permissions?: {
+            query: (d: { name: string }) => Promise<{ state: 'granted' | 'denied' | 'prompt' }>;
+          };
+        }
+      ).permissions;
+      if (perms?.query) {
+        const status = await perms.query({ name: 'nfc' });
+        if (status.state === 'denied') {
+          setNfcStatus('error');
+          setNfcError(
+            t(
+              'worker_detail.nfc_denied',
+              'NFC permission was denied. Enable it in your browser site settings, then try again.'
+            )
+          );
+          return;
+        }
+        // For 'prompt' or 'granted' we fall through. The browser's permission
+        // dialog (if any) appears on the first write() call below, which is
+        // still inside this user-gesture handler.
+      }
+    } catch {
+      // Permissions API may throw on unsupported names; ignore and let
+      // write() surface the real error.
+    }
+
+    const payload = {
+      v: 1,
+      id: worker.id,
+      employee_id: worker.employee_id,
+      name_en: worker.full_name_en,
+      name_ar: worker.full_name_ar,
+      trade: worker.trade,
+      nationality: worker.nationality,
+      employer: worker.employer.name_en,
+      induction: worker.induction.status,
+      medical_fit: worker.medical_fitness?.is_currently_fit ?? null,
+      issued_at: new Date().toISOString(),
+    };
+
+    try {
+      setNfcStatus('tap');
+      // Web NFC isn't in lib.dom yet — narrow the constructor through unknown.
+      type NdefReader = {
+        write: (msg: {
+          records: Array<
+            | { recordType: 'mime'; mediaType: string; data: string }
+            | { recordType: 'text'; data: string; lang?: string }
+          >;
+        }) => Promise<void>;
+      };
+      const Ctor = (window as unknown as { NDEFReader: new () => NdefReader }).NDEFReader;
+      const reader = new Ctor();
+      setNfcStatus('writing');
+      await reader.write({
+        records: [
+          { recordType: 'mime', mediaType: 'application/json', data: JSON.stringify(payload) },
+          { recordType: 'text', data: `${worker.full_name_en} (${worker.employee_id})` },
+        ],
+      });
+      setNfcStatus('done');
+      setTimeout(() => setNfcStatus('idle'), 3000);
+    } catch (err) {
+      setNfcStatus('error');
+      setNfcError(err instanceof Error ? err.message : String(err));
+    }
+  };
+
+  const handlePrint = () => {
+    if (!qrUrl) return;
+    const w = window.open('', '_blank', 'width=420,height=560');
+    if (!w) return;
+    w.document.write(`<!doctype html>
+<html>
+  <head>
+    <title>${escapeHtml(worker.full_name_en)} — Helmet QR</title>
+    <style>
+      *{box-sizing:border-box}
+      body{font-family:system-ui,-apple-system,sans-serif;margin:0;padding:32px;text-align:center;color:#111}
+      h1{font-size:18px;margin:0 0 4px}
+      p{font-size:12px;color:#555;margin:0 0 16px}
+      .id{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;color:#555;margin-top:8px}
+      img{width:280px;height:280px;image-rendering:pixelated}
+      @media print { @page { margin: 12mm; } body{padding:0} }
+    </style>
+  </head>
+  <body>
+    <h1>${escapeHtml(worker.full_name_en)}</h1>
+    <p>${escapeHtml(worker.employer.name_en ?? '')}</p>
+    <img src="${qrUrl}" alt="Helmet QR" />
+    <div class="id">${escapeHtml(worker.employee_id)}</div>
+    <script>window.onload = () => { window.focus(); window.print(); };</script>
+  </body>
+</html>`);
+    w.document.close();
+  };
+
+  return (
+    <Card>
+      <CardContent className="p-6">
+        <div className="flex flex-col md:flex-row gap-6 items-start">
+          <Avatar photoPath={worker.photo_path} initials={initials} />
+
+          <div className="flex-1 min-w-0 space-y-2">
+            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <h1 className="text-2xl font-semibold leading-tight truncate">
+                {isArabic && worker.full_name_ar ? worker.full_name_ar : worker.full_name_en}
+              </h1>
+              <span className="mono text-xs text-muted-foreground">
+                {worker.employee_id}
+              </span>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              {worker.trade ?? t('worker_detail.no_trade', 'No trade')} ·{' '}
+              {worker.employer.name_en ?? '—'}
+            </p>
+            <div className="flex flex-wrap gap-2 pt-2">
+              <InductionStatusBadge status={worker.induction.status} />
+              {worker.medical_fitness && (
+                <Badge
+                  variant={worker.medical_fitness.is_currently_fit ? 'success' : 'destructive'}
+                >
+                  {t('worker_detail.medical', 'Medical fitness')}:{' '}
+                  {worker.medical_fitness.status.replace(/_/g, ' ')}
+                </Badge>
+              )}
+              {worker.nationality && (
+                <Badge variant="neutral" className="mono uppercase">
+                  {worker.nationality}
+                </Badge>
+              )}
+            </div>
+          </div>
+
+          <div className="flex flex-col items-center gap-2 shrink-0">
+            <div className="size-36 rounded-md border border-border bg-white flex items-center justify-center overflow-hidden">
+              {qrLoading && (
+                <span className="text-xs text-muted-foreground">
+                  {t('common.loading', 'Loading…')}
+                </span>
+              )}
+              {qrError && (
+                <span className="text-xs text-destructive text-center px-2">
+                  {t('worker_detail.qr_error', 'QR unavailable')}
+                </span>
+              )}
+              {qrUrl && (
+                <img src={qrUrl} alt={t('worker_detail.qr_alt', 'Helmet QR')} className="size-full object-contain" />
+              )}
+            </div>
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={handlePrint}
+              disabled={!qrUrl}
+              className="w-full"
+            >
+              <Printer className="size-3.5 mr-1.5" />
+              {t('worker_detail.print_qr', 'Print QR')}
+            </Button>
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={handleWriteNfc}
+              disabled={nfcStatus === 'tap' || nfcStatus === 'writing'}
+              className="w-full"
+            >
+              <Radio className="size-3.5 mr-1.5" />
+              {nfcStatus === 'tap' || nfcStatus === 'writing'
+                ? t('worker_detail.nfc_writing', 'Tap NFC tag…')
+                : t('worker_detail.nfc_write', 'Write NFC')}
+            </Button>
+            {nfcStatus === 'done' && (
+              <p className="text-xs text-success text-center">
+                {t('worker_detail.nfc_done', 'Written to NFC.')}
+              </p>
+            )}
+            {nfcStatus === 'error' && nfcError && (
+              <p className="text-[11px] text-destructive text-center max-w-36 leading-snug">
+                {nfcError}
+              </p>
+            )}
+            {handoffLoading && (
+              <p className="text-[11px] text-muted-foreground text-center">
+                {t('common.loading', 'Loading…')}
+              </p>
+            )}
+          </div>
+        </div>
+      </CardContent>
+      <Dialog
+        open={!!handoff && !!handoffQr}
+        onOpenChange={(open) => {
+          if (!open) {
+            setHandoff(null);
+            setHandoffQr(null);
+          }
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('worker_detail.nfc_handoff_title', 'Write NFC from mobile')}</DialogTitle>
+            <DialogDescription>
+              {t(
+                'worker_detail.nfc_handoff_desc',
+                'Scan this QR with the ePassport mobile app. The app will fetch the worker profile and write it to the NFC tag.'
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          {handoffQr && (
+            <div className="flex flex-col items-center gap-3 py-2">
+              <img
+                src={handoffQr}
+                alt={t('worker_detail.nfc_handoff_qr_alt', 'Mobile handoff QR')}
+                className="size-64 bg-white rounded-md border border-border"
+              />
+              <p className="text-xs text-muted-foreground text-center">
+                {t('worker_detail.nfc_handoff_expires', 'Expires at')}{' '}
+                <span className="mono tabular-nums">
+                  {handoff ? new Date(handoff.expires_at).toLocaleTimeString() : ''}
+                </span>
+              </p>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </Card>
+  );
+}
+
+function Avatar({ photoPath, initials }: { photoPath: string | null; initials: string }) {
+  if (photoPath) {
+    return (
+      <img
+        src={photoPath}
+        alt=""
+        className="size-24 rounded-full object-cover border border-border shrink-0"
+      />
+    );
+  }
+  return (
+    <div className="size-24 rounded-full bg-muted text-muted-foreground flex items-center justify-center text-2xl font-medium shrink-0">
+      {initials}
+    </div>
+  );
+}
+
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }

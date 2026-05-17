@@ -17,6 +17,8 @@ interface MetricCardProps {
   href?: string;
   /** Optional extra rows shown beneath the primary number. */
   breakdown?: Array<{ label: string; value: string | number }>;
+  /** Extra classes applied to the outer Card (e.g. `h-full` for grid-row stretching). */
+  className?: string;
 }
 
 const toneClass: Record<NonNullable<MetricCardProps['tone']>, string> = {
@@ -39,12 +41,14 @@ export function MetricCard({
   tone = 'default',
   href,
   breakdown,
+  className,
 }: MetricCardProps) {
   const content = (
     <Card
       className={cn(
         href &&
-          'hover:border-foreground/20 transition-colors duration-100 cursor-pointer'
+          'hover:border-foreground/20 transition-colors duration-100 cursor-pointer',
+        className
       )}
     >
       <CardHeader>
@@ -88,5 +92,11 @@ export function MetricCard({
     </Card>
   );
 
-  return href ? <Link to={href}>{content}</Link> : content;
+  return href ? (
+    <Link to={href} className={cn('block', className?.includes('h-full') && 'h-full')}>
+      {content}
+    </Link>
+  ) : (
+    content
+  );
 }

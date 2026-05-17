@@ -43,6 +43,13 @@ Route::get('/hazard-reports/{hazardReport}/photo/{index}', [HazardReportControll
     ->name('hazards.photo')
     ->whereNumber('index');
 
+// NFC handoff payload — same trust model as the hazard photo route. Issued
+// by the authenticated nfcHandoff() endpoint with a 5-min TTL so the mobile
+// companion app can fetch the worker's NFC payload after scanning the QR.
+Route::get('/workers/{worker}/nfc-handoff/payload', [WorkerController::class, 'nfcHandoffPayload'])
+    ->middleware('signed')
+    ->name('workers.nfc_handoff.payload');
+
 // Authenticated endpoints
 Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout'])->name('auth.logout');
@@ -67,6 +74,7 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
         Route::get('/{worker}/passport', [WorkerController::class, 'passport'])->name('passport');
         Route::get('/{worker}/qr/helmet', [WorkerController::class, 'helmetQr'])->name('qr.helmet');
         Route::get('/{worker}/qr/coverall', [WorkerController::class, 'coverallQr'])->name('qr.coverall');
+        Route::post('/{worker}/nfc-handoff', [WorkerController::class, 'nfcHandoff'])->name('nfc_handoff');
 
         // Worker certifications
         Route::get('/{worker}/certifications', [WorkerCertificationController::class, 'index'])->name('certifications.index');

@@ -12,6 +12,7 @@ import '../features/hazard/hazards_screen.dart';
 import '../features/launch/launch_screen.dart';
 import '../features/permits/permits_screen.dart';
 import '../features/profile/profile_screen.dart';
+import '../features/scan/nfc_write_screen.dart';
 import '../features/scan/scan_screen.dart';
 import '../features/settings/settings_screen.dart';
 import '../features/splash/splash_screen.dart';
@@ -52,6 +53,7 @@ GoRouter _buildRouter(Ref ref) {
       GoRoute(path: '/login', builder: (_, __) => const LoginScreen()),
       GoRoute(path: '/dashboard', builder: (_, __) => const DashboardScreen()),
       GoRoute(path: '/scan', builder: (_, __) => const ScanScreen()),
+      GoRoute(path: '/nfc-write', builder: (_, __) => const NfcWriteScreen()),
       GoRoute(path: '/permits', builder: (_, __) => const PermitsScreen()),
       GoRoute(path: '/profile', builder: (_, __) => const ProfileScreen()),
       GoRoute(path: '/account', builder: (_, __) => const AccountScreen()),

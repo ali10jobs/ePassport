@@ -135,7 +135,8 @@
     "pagination": "{{from}}–{{to}} من {{total}}",
     "error_loading": "تعذر تحميل قائمة العمال.",
     "detail": {
-      "error": "تعذر تحميل بيانات العامل."
+      "error": "تعذر تحميل بيانات العامل.",
+      "crumb": "ملف العامل"
     }
   },
   "worker_detail": {
@@ -162,7 +163,20 @@
     "col_issuer": "جهة الإصدار",
     "col_issue_date": "تاريخ الإصدار",
     "col_expiry": "تاريخ الانتهاء",
-    "col_status": "الحالة"
+    "col_status": "الحالة",
+    "no_trade": "بدون مهنة",
+    "qr_alt": "رمز QR للخوذة",
+    "qr_error": "تعذّر تحميل رمز QR",
+    "print_qr": "طباعة رمز QR",
+    "nfc_write": "كتابة على NFC",
+    "nfc_writing": "قرّب بطاقة NFC…",
+    "nfc_done": "تمت الكتابة على NFC.",
+    "nfc_unsupported": "خدمة NFC غير متوفرة في هذا المتصفح. استخدم Chrome على أندرويد مع تفعيل NFC.",
+    "nfc_denied": "تم رفض إذن NFC. فعّله من إعدادات الموقع في المتصفح ثم حاول مرة أخرى.",
+    "nfc_handoff_title": "كتابة NFC من الجوال",
+    "nfc_handoff_desc": "امسح هذا الرمز عبر تطبيق ePassport على الجوال. سيقوم التطبيق بجلب بيانات العامل وكتابتها على بطاقة NFC.",
+    "nfc_handoff_qr_alt": "رمز التحويل للجوال",
+    "nfc_handoff_expires": "ينتهي عند"
   },
   "status": {
     "cert": {

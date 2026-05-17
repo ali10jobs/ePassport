@@ -374,6 +374,15 @@ export interface CertExpiryCounts {
   expiring_30_days: number;
   expiring_60_days: number;
   expiring_90_days: number;
+  expired_in_range?: number | null;
+  expiring_in_range?: number | null;
+}
+
+export interface CertRangeParams {
+  expired_from?: string;
+  expired_to?: string;
+  expiring_from?: string;
+  expiring_to?: string;
 }
 
 export interface ScanCountsLast24h {

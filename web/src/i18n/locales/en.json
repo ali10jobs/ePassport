@@ -74,7 +74,8 @@
     "pagination": "{{from}}–{{to}} of {{total}}",
     "error_loading": "Could not load workers.",
     "detail": {
-      "error": "Could not load worker."
+      "error": "Could not load worker.",
+      "crumb": "Worker profile"
     }
   },
   "worker_detail": {
@@ -101,7 +102,20 @@
     "col_issuer": "Issuer",
     "col_issue_date": "Issued",
     "col_expiry": "Expiry",
-    "col_status": "Status"
+    "col_status": "Status",
+    "no_trade": "No trade",
+    "qr_alt": "Helmet QR",
+    "qr_error": "QR unavailable",
+    "print_qr": "Print QR",
+    "nfc_write": "Write NFC",
+    "nfc_writing": "Tap NFC tag…",
+    "nfc_done": "Written to NFC.",
+    "nfc_unsupported": "Web NFC is not available in this browser. Use Chrome on Android with NFC enabled.",
+    "nfc_denied": "NFC permission was denied. Enable it in your browser site settings, then try again.",
+    "nfc_handoff_title": "Write NFC from mobile",
+    "nfc_handoff_desc": "Scan this QR with the ePassport mobile app. The app will fetch the worker profile and write it to the NFC tag.",
+    "nfc_handoff_qr_alt": "Mobile handoff QR",
+    "nfc_handoff_expires": "Expires at"
   },
   "status": {
     "cert": {

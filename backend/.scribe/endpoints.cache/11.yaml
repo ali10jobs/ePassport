@@ -41,11 +41,11 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"bad63b5c-97fe-4479-a9c4-437c5ee3378d"}}'
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"6a5deccc-846b-43ef-b940-6753d6440793"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-request-id: bad63b5c-97fe-4479-a9c4-437c5ee3378d
+          x-request-id: 6a5deccc-846b-43ef-b940-6753d6440793
           access-control-allow-origin: '*'
         description: null
     responseFields: []
@@ -125,7 +125,7 @@ endpoints:
         description: ''
         required: true
         example:
-          - scan.impersonation_flag
+          - scan.red
         type: 'string[]'
         enumValues:
           - scan.green
@@ -171,7 +171,7 @@ endpoints:
       label: g
       url: 'http://www.okuneva.com/fugiat-sunt-nihil-accusantium-harum-mollitia.html'
       events:
-        - scan.impersonation_flag
+        - scan.red
       headers:
         - k
       active: false
@@ -231,11 +231,11 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"f7b08c4c-80c4-45f1-a2d9-86b39ddf20a9"}}'
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"1383ed64-d36d-49ae-a13f-26ff520c266f"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-request-id: f7b08c4c-80c4-45f1-a2d9-86b39ddf20a9
+          x-request-id: 1383ed64-d36d-49ae-a13f-26ff520c266f
           access-control-allow-origin: '*'
         description: null
     responseFields: []
@@ -314,7 +314,7 @@ endpoints:
         description: ''
         required: true
         example:
-          - permit.submitted
+          - hazard_report.submitted
         type: 'string[]'
         enumValues:
           - scan.green
@@ -358,7 +358,7 @@ endpoints:
       label: b
       url: 'http://bailey.com/'
       events:
-        - permit.submitted
+        - hazard_report.submitted
       active: false
     fileParameters: []
     responses: []

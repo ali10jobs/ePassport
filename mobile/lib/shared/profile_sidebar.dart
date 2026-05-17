@@ -56,6 +56,14 @@ class ProfileSidebar extends ConsumerWidget {
                       context.go('/account');
                     },
                   ),
+                  _SidebarRow(
+                    icon: Icons.nfc_outlined,
+                    label: strings.nfcWriteSidebar,
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      context.go('/nfc-write');
+                    },
+                  ),
                 ],
               ),
             ),

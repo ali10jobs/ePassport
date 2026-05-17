@@ -16,6 +16,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\URL;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
@@ -185,6 +186,56 @@ class WorkerController extends Controller
             'Content-Type' => 'image/png',
             'Content-Disposition' => sprintf('inline; filename="worker-%s-coverall.png"', $worker->id),
             'Cache-Control' => 'private, no-store',
+        ]);
+    }
+
+    /**
+     * Mint a short-lived signed URL the mobile companion app can fetch to
+     * pull this worker's NFC payload (without needing a bearer token of its
+     * own — the signed URL is the credential, 5 min TTL).
+     *
+     * Web shows a QR with this URL on desktop where Web NFC is unavailable;
+     * the operator scans it with the Flutter app which then writes the tag.
+     *
+     * @authenticated
+     */
+    public function nfcHandoff(Worker $worker): JsonResponse
+    {
+        $expiresAt = now()->addMinutes(5);
+        $url = URL::temporarySignedRoute(
+            'v1.workers.nfc_handoff.payload',
+            $expiresAt,
+            ['worker' => $worker->id],
+        );
+
+        return response()->json([
+            'data' => [
+                'url' => $url,
+                'expires_at' => $expiresAt->toIso8601String(),
+            ],
+        ]);
+    }
+
+    /**
+     * Returns the NFC payload for the signed handoff URL. No bearer auth —
+     * the URL's signature + expiry is the credential. The payload matches
+     * what the web tried to write directly via Web NFC.
+     */
+    public function nfcHandoffPayload(Worker $worker): JsonResponse
+    {
+        return response()->json([
+            'data' => [
+                'v' => 1,
+                'id' => $worker->id,
+                'employee_id' => $worker->employee_id,
+                'name_en' => $worker->full_name_en,
+                'name_ar' => $worker->full_name_ar,
+                'trade' => $worker->trade,
+                'nationality' => $worker->nationality,
+                'employer_id' => $worker->employer_organization_id,
+                'helmet_qr_token' => $worker->helmet_qr_token,
+                'issued_at' => now()->toIso8601String(),
+            ],
         ]);
     }
 

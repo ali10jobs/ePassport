@@ -1,6 +1,7 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ApiError, type DashboardPayload } from '@/api/types';
+import { ApiError, type CertRangeParams, type DashboardPayload } from '@/api/types';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
 import { useDashboard } from '@/hooks/useDashboard';
@@ -25,7 +26,8 @@ export function DashboardPage() {
   // subcontractor) — which is what the dashboard routes care about.
   // Backend resolves the org behind the scenes; we just need the role tag.
   const role = inferRoleFromUser(user);
-  const { data, isLoading, isError, error } = useDashboard(role);
+  const [certRanges, setCertRanges] = useState<CertRangeParams>({});
+  const { data, isLoading, isError, error } = useDashboard(role, certRanges);
 
   if (!user) return null;
 
@@ -70,15 +72,29 @@ export function DashboardPage() {
   const payload = data?.data;
   if (!payload) return null;
 
-  return <Dispatch payload={payload} />;
+  return <Dispatch payload={payload} certRanges={certRanges} onCertRangesChange={setCertRanges} />;
 }
 
-function Dispatch({ payload }: { payload: DashboardPayload }) {
+function Dispatch({
+  payload,
+  certRanges,
+  onCertRangesChange,
+}: {
+  payload: DashboardPayload;
+  certRanges: CertRangeParams;
+  onCertRangesChange: (next: CertRangeParams) => void;
+}) {
   switch (payload.role) {
     case 'client':
       return <ClientView data={payload} />;
     case 'main_contractor':
-      return <MainContractorView data={payload} />;
+      return (
+        <MainContractorView
+          data={payload}
+          certRanges={certRanges}
+          onCertRangesChange={onCertRangesChange}
+        />
+      );
     case 'consultant':
       return <ConsultantView data={payload} />;
     case 'subcontractor':

@@ -45,8 +45,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     } on ApiException catch (e) {
       setState(() => _error =
           e.code == ErrorCodes.unauthenticated ? s.loginFailed : e.message);
-    } catch (_) {
-      setState(() => _error = s.loginFailed);
+    } catch (e, st) {
+      // Surface the underlying exception for in-field diagnosis. The previous
+      // generic "could not sign in" hid Dio/Socket/Handshake errors.
+      setState(() => _error =
+          '${s.loginFailed}: ${e.runtimeType} ${e.toString().split('\n').first}');
+      // ignore: avoid_print
+      print('login error: $e\n$st');
     } finally {
       if (mounted) setState(() => _submitting = false);
     }

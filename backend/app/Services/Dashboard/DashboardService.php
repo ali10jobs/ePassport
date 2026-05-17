@@ -70,7 +70,10 @@ class DashboardService
      *
      * @return array<string, mixed>
      */
-    public function mainContractorSummary(Organization $contractorOrg): array
+    /**
+     * @param  array{expired_from?: string, expired_to?: string, expiring_from?: string, expiring_to?: string}  $certRanges
+     */
+    public function mainContractorSummary(Organization $contractorOrg, array $certRanges = []): array
     {
         $orgIds = [$contractorOrg->id];
         // Subcontractors engaged under this main contractor
@@ -95,7 +98,7 @@ class DashboardService
                         ->whereIn('result', ['pass', 'pass_with_conditions']))
                     ->count(),
             ],
-            'certifications' => $this->certExpiryCounts($allOrgIds),
+            'certifications' => $this->certExpiryCounts($allOrgIds, $certRanges),
             'permits' => array_merge(
                 $this->permitCountsForOrg($contractorOrg->id),
                 ['recently_rejected' => Permit::where('issuing_organization_id', $contractorOrg->id)
@@ -174,10 +177,15 @@ class DashboardService
     /**
      * Cert expiry counts in 30/60/90 day buckets, scoped to the given employer orgs.
      *
+     * When $ranges contains expired_from/expired_to or expiring_from/expiring_to
+     * the corresponding *_in_range count is computed using those bounds (both
+     * required to activate a range — partial inputs are ignored).
+     *
      * @param  array<int, string>  $employerOrgIds
-     * @return array<string, int>
+     * @param  array{expired_from?: string, expired_to?: string, expiring_from?: string, expiring_to?: string}  $ranges
+     * @return array<string, int|null>
      */
-    private function certExpiryCounts(array $employerOrgIds): array
+    private function certExpiryCounts(array $employerOrgIds, array $ranges = []): array
     {
         $base = WorkerCertification::query()
             ->whereHas('worker', fn ($q) => $q->whereIn('employer_organization_id', $employerOrgIds))
@@ -185,12 +193,44 @@ class DashboardService
 
         $today = Carbon::now()->startOfDay()->toDateString();
 
-        return [
+        $out = [
             'expired' => (clone $base)->where('expiry_date', '<', $today)->count(),
             'expiring_30_days' => (clone $base)->whereBetween('expiry_date', [$today, Carbon::now()->addDays(30)->toDateString()])->count(),
             'expiring_60_days' => (clone $base)->whereBetween('expiry_date', [$today, Carbon::now()->addDays(60)->toDateString()])->count(),
             'expiring_90_days' => (clone $base)->whereBetween('expiry_date', [$today, Carbon::now()->addDays(90)->toDateString()])->count(),
+            'expired_in_range' => null,
+            'expiring_in_range' => null,
         ];
+
+        if (! empty($ranges['expired_from']) && ! empty($ranges['expired_to'])) {
+            [$lo, $hi] = self::normalizeRange($ranges['expired_from'], $ranges['expired_to']);
+            $out['expired_in_range'] = (clone $base)
+                ->where('expiry_date', '<', $today)
+                ->whereBetween('expiry_date', [$lo, $hi])
+                ->count();
+        }
+
+        if (! empty($ranges['expiring_from']) && ! empty($ranges['expiring_to'])) {
+            [$lo, $hi] = self::normalizeRange($ranges['expiring_from'], $ranges['expiring_to']);
+            $out['expiring_in_range'] = (clone $base)
+                ->where('expiry_date', '>=', $today)
+                ->whereBetween('expiry_date', [$lo, $hi])
+                ->count();
+        }
+
+        return $out;
+    }
+
+    /**
+     * Return [low, high] regardless of input order so reversed date pickers
+     * (UI lets users pick "from" later than "to") still produce a valid
+     * SQL BETWEEN clause.
+     *
+     * @return array{0: string, 1: string}
+     */
+    private static function normalizeRange(string $a, string $b): array
+    {
+        return strcmp($a, $b) <= 0 ? [$a, $b] : [$b, $a];
     }
 
     /** @param array<int, string> $projectIds */

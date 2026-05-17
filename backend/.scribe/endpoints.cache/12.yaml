@@ -39,11 +39,11 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"26b5853f-3001-48b4-85c7-b00bc297d425"}}'
+        content: '{"error":{"code":"UNAUTHENTICATED","message":"Authentication required.","details":null,"request_id":"0e7cd5de-bfbd-4b49-8025-5d66afddb8f5"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-request-id: 26b5853f-3001-48b4-85c7-b00bc297d425
+          x-request-id: 0e7cd5de-bfbd-4b49-8025-5d66afddb8f5
           access-control-allow-origin: '*'
         description: null
     responseFields: []
