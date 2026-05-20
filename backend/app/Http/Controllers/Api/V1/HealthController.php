@@ -63,8 +63,15 @@ class HealthController extends Controller
     {
         $user = $request->user();
 
-        return response()->json([
-            'data' => [
+        // /me is hit on every page navigation in the web frontend and on
+        // every cold app launch in mobile. The org membership shape is
+        // stable inside a session, so we cache for 60s keyed on user id.
+        // The token-based Sanctum auth check still runs on every request,
+        // so a revoked token never sees the cached payload.
+        $payload = \Illuminate\Support\Facades\Cache::remember(
+            "me:user:{$user->id}",
+            60,
+            fn () => [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
@@ -77,9 +84,11 @@ class HealthController extends Controller
                     'role' => $org->pivot->role,
                     'org_role' => $org->role,
                     'is_default' => (bool) $org->pivot->is_default,
-                ]),
+                ])->all(),
             ],
-        ]);
+        );
+
+        return response()->json(['data' => $payload]);
     }
 
     private function redisInUse(): bool
