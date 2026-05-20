@@ -11,6 +11,7 @@ use App\Models\ScanEvent;
 use App\Models\Worker;
 use App\Models\WorkerCertification;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Computes role-scoped dashboard metrics. Each method returns a structured
@@ -160,13 +161,20 @@ class DashboardService
      */
     public function subcontractorSummary(Organization $subOrg): array
     {
+        $w = Worker::query()
+            ->where('employer_organization_id', $subOrg->id)
+            ->selectRaw('COUNT(*) AS total')
+            ->selectRaw('COUNT(*) FILTER (WHERE induction_status = ?) AS inducted', [Worker::INDUCTION_INDUCTED])
+            ->selectRaw('COUNT(*) FILTER (WHERE induction_status <> ?) AS not_inducted', [Worker::INDUCTION_INDUCTED])
+            ->first();
+
         return [
             'role' => 'subcontractor',
             'organization_id' => $subOrg->id,
             'workers' => [
-                'total' => Worker::where('employer_organization_id', $subOrg->id)->count(),
-                'inducted' => Worker::where('employer_organization_id', $subOrg->id)->where('induction_status', Worker::INDUCTION_INDUCTED)->count(),
-                'not_inducted' => Worker::where('employer_organization_id', $subOrg->id)->where('induction_status', '!=', Worker::INDUCTION_INDUCTED)->count(),
+                'total' => (int) ($w?->total ?? 0),
+                'inducted' => (int) ($w?->inducted ?? 0),
+                'not_inducted' => (int) ($w?->not_inducted ?? 0),
             ],
             'equipment' => [
                 'mine' => Equipment::where('owner_organization_id', $subOrg->id)->count(),
@@ -188,38 +196,57 @@ class DashboardService
      */
     private function certExpiryCounts(array $employerOrgIds, array $ranges = []): array
     {
-        $base = WorkerCertification::query()
-            ->whereHas('worker', fn ($q) => $q->whereIn('employer_organization_id', $employerOrgIds))
-            ->whereNotNull('expiry_date');
+        if ($employerOrgIds === []) {
+            return [
+                'expired' => 0, 'expiring_30_days' => 0, 'expiring_60_days' => 0, 'expiring_90_days' => 0,
+                'expired_in_range' => null, 'expiring_in_range' => null,
+            ];
+        }
 
         $today = Carbon::now()->startOfDay()->toDateString();
+        $in30 = Carbon::now()->addDays(30)->toDateString();
+        $in60 = Carbon::now()->addDays(60)->toDateString();
+        $in90 = Carbon::now()->addDays(90)->toDateString();
 
-        $out = [
-            'expired' => (clone $base)->where('expiry_date', '<', $today)->count(),
-            'expiring_30_days' => (clone $base)->whereBetween('expiry_date', [$today, Carbon::now()->addDays(30)->toDateString()])->count(),
-            'expiring_60_days' => (clone $base)->whereBetween('expiry_date', [$today, Carbon::now()->addDays(60)->toDateString()])->count(),
-            'expiring_90_days' => (clone $base)->whereBetween('expiry_date', [$today, Carbon::now()->addDays(90)->toDateString()])->count(),
-            'expired_in_range' => null,
-            'expiring_in_range' => null,
-        ];
+        // Single roll-up across all expiry buckets. The previous version cloned
+        // the base query and ran a COUNT per bucket → 4-6 separate Postgres
+        // round trips.
+        $query = WorkerCertification::query()
+            ->whereHas('worker', fn ($q) => $q->whereIn('employer_organization_id', $employerOrgIds))
+            ->whereNotNull('expiry_date')
+            ->selectRaw('COUNT(*) FILTER (WHERE expiry_date < ?) AS expired', [$today])
+            ->selectRaw('COUNT(*) FILTER (WHERE expiry_date BETWEEN ? AND ?) AS expiring_30_days', [$today, $in30])
+            ->selectRaw('COUNT(*) FILTER (WHERE expiry_date BETWEEN ? AND ?) AS expiring_60_days', [$today, $in60])
+            ->selectRaw('COUNT(*) FILTER (WHERE expiry_date BETWEEN ? AND ?) AS expiring_90_days', [$today, $in90]);
 
-        if (! empty($ranges['expired_from']) && ! empty($ranges['expired_to'])) {
+        $hasExpiredRange = ! empty($ranges['expired_from']) && ! empty($ranges['expired_to']);
+        $hasExpiringRange = ! empty($ranges['expiring_from']) && ! empty($ranges['expiring_to']);
+
+        if ($hasExpiredRange) {
             [$lo, $hi] = self::normalizeRange($ranges['expired_from'], $ranges['expired_to']);
-            $out['expired_in_range'] = (clone $base)
-                ->where('expiry_date', '<', $today)
-                ->whereBetween('expiry_date', [$lo, $hi])
-                ->count();
+            $query->selectRaw(
+                'COUNT(*) FILTER (WHERE expiry_date < ? AND expiry_date BETWEEN ? AND ?) AS expired_in_range',
+                [$today, $lo, $hi]
+            );
         }
-
-        if (! empty($ranges['expiring_from']) && ! empty($ranges['expiring_to'])) {
+        if ($hasExpiringRange) {
             [$lo, $hi] = self::normalizeRange($ranges['expiring_from'], $ranges['expiring_to']);
-            $out['expiring_in_range'] = (clone $base)
-                ->where('expiry_date', '>=', $today)
-                ->whereBetween('expiry_date', [$lo, $hi])
-                ->count();
+            $query->selectRaw(
+                'COUNT(*) FILTER (WHERE expiry_date >= ? AND expiry_date BETWEEN ? AND ?) AS expiring_in_range',
+                [$today, $lo, $hi]
+            );
         }
 
-        return $out;
+        $row = $query->first();
+
+        return [
+            'expired' => (int) ($row?->expired ?? 0),
+            'expiring_30_days' => (int) ($row?->expiring_30_days ?? 0),
+            'expiring_60_days' => (int) ($row?->expiring_60_days ?? 0),
+            'expiring_90_days' => (int) ($row?->expiring_90_days ?? 0),
+            'expired_in_range' => $hasExpiredRange ? (int) ($row?->expired_in_range ?? 0) : null,
+            'expiring_in_range' => $hasExpiringRange ? (int) ($row?->expiring_in_range ?? 0) : null,
+        ];
     }
 
     /**
@@ -237,56 +264,101 @@ class DashboardService
     /** @param array<int, string> $projectIds */
     private function permitCountsForProjects(array $projectIds): array
     {
+        if ($projectIds === []) {
+            return ['active_approved' => 0, 'awaiting_review' => 0, 'closed_this_week' => 0];
+        }
+        $row = Permit::query()
+            ->whereIn('project_id', $projectIds)
+            ->selectRaw("COUNT(*) FILTER (WHERE status = ?) AS active_approved", [Permit::STATUS_APPROVED])
+            ->selectRaw("COUNT(*) FILTER (WHERE status = ?) AS awaiting_review", [Permit::STATUS_SUBMITTED])
+            ->selectRaw("COUNT(*) FILTER (WHERE status = ? AND closed_at >= ?) AS closed_this_week", [Permit::STATUS_CLOSED, now()->startOfWeek()])
+            ->first();
+
         return [
-            'active_approved' => Permit::whereIn('project_id', $projectIds)->where('status', Permit::STATUS_APPROVED)->count(),
-            'awaiting_review' => Permit::whereIn('project_id', $projectIds)->where('status', Permit::STATUS_SUBMITTED)->count(),
-            'closed_this_week' => Permit::whereIn('project_id', $projectIds)->where('status', Permit::STATUS_CLOSED)->where('closed_at', '>=', now()->startOfWeek())->count(),
+            'active_approved' => (int) ($row?->active_approved ?? 0),
+            'awaiting_review' => (int) ($row?->awaiting_review ?? 0),
+            'closed_this_week' => (int) ($row?->closed_this_week ?? 0),
         ];
     }
 
     private function permitCountsForOrg(string $orgId): array
     {
+        $row = Permit::query()
+            ->where('issuing_organization_id', $orgId)
+            ->selectRaw("COUNT(*) FILTER (WHERE status = ?) AS active_approved", [Permit::STATUS_APPROVED])
+            ->selectRaw("COUNT(*) FILTER (WHERE status = ?) AS drafts", [Permit::STATUS_DRAFT])
+            ->selectRaw("COUNT(*) FILTER (WHERE status = ?) AS awaiting_review", [Permit::STATUS_SUBMITTED])
+            ->first();
+
         return [
-            'active_approved' => Permit::where('issuing_organization_id', $orgId)->where('status', Permit::STATUS_APPROVED)->count(),
-            'drafts' => Permit::where('issuing_organization_id', $orgId)->where('status', Permit::STATUS_DRAFT)->count(),
-            'awaiting_review' => Permit::where('issuing_organization_id', $orgId)->where('status', Permit::STATUS_SUBMITTED)->count(),
+            'active_approved' => (int) ($row?->active_approved ?? 0),
+            'drafts' => (int) ($row?->drafts ?? 0),
+            'awaiting_review' => (int) ($row?->awaiting_review ?? 0),
         ];
     }
 
     /** @param array<int, string> $projectIds */
     private function hazardCountsForProjects(array $projectIds): array
     {
+        if ($projectIds === []) {
+            return ['submitted_mtd' => 0, 'open_critical' => 0, 'resolved_mtd' => 0];
+        }
         $startOfMonth = now()->startOfMonth();
+        $row = HazardReport::query()
+            ->whereIn('project_id', $projectIds)
+            ->selectRaw("COUNT(*) FILTER (WHERE created_at >= ?) AS submitted_mtd", [$startOfMonth])
+            ->selectRaw(
+                "COUNT(*) FILTER (WHERE severity = ? AND status NOT IN (?, ?)) AS open_critical",
+                [HazardReport::SEVERITY_CRITICAL, HazardReport::STATUS_RESOLVED, HazardReport::STATUS_DISMISSED]
+            )
+            ->selectRaw(
+                "COUNT(*) FILTER (WHERE status = ? AND resolved_at >= ?) AS resolved_mtd",
+                [HazardReport::STATUS_RESOLVED, $startOfMonth]
+            )
+            ->first();
 
         return [
-            'submitted_mtd' => HazardReport::whereIn('project_id', $projectIds)->where('created_at', '>=', $startOfMonth)->count(),
-            'open_critical' => HazardReport::whereIn('project_id', $projectIds)
-                ->where('severity', HazardReport::SEVERITY_CRITICAL)
-                ->whereNotIn('status', [HazardReport::STATUS_RESOLVED, HazardReport::STATUS_DISMISSED])->count(),
-            'resolved_mtd' => HazardReport::whereIn('project_id', $projectIds)
-                ->where('status', HazardReport::STATUS_RESOLVED)
-                ->where('resolved_at', '>=', $startOfMonth)->count(),
+            'submitted_mtd' => (int) ($row?->submitted_mtd ?? 0),
+            'open_critical' => (int) ($row?->open_critical ?? 0),
+            'resolved_mtd' => (int) ($row?->resolved_mtd ?? 0),
         ];
     }
 
     private function hazardCountsForAssignedOrg(string $orgId): array
     {
+        $row = HazardReport::query()
+            ->where('assigned_to_organization_id', $orgId)
+            ->selectRaw("COUNT(*) AS assigned_to_us")
+            ->selectRaw(
+                "COUNT(*) FILTER (WHERE status NOT IN (?, ?)) AS open_assigned_to_us",
+                [HazardReport::STATUS_RESOLVED, HazardReport::STATUS_DISMISSED]
+            )
+            ->first();
+
         return [
-            'assigned_to_us' => HazardReport::where('assigned_to_organization_id', $orgId)->count(),
-            'open_assigned_to_us' => HazardReport::where('assigned_to_organization_id', $orgId)
-                ->whereNotIn('status', [HazardReport::STATUS_RESOLVED, HazardReport::STATUS_DISMISSED])->count(),
+            'assigned_to_us' => (int) ($row?->assigned_to_us ?? 0),
+            'open_assigned_to_us' => (int) ($row?->open_assigned_to_us ?? 0),
         ];
     }
 
     private function scanCountsLast24h(): array
     {
-        $since = now()->subDay();
+        // Single FILTER-aggregation query instead of 4 separate COUNT trips.
+        // Postgres rolls all four counts off one scan_events scan; saves
+        // ~3 round-trip ms on each dashboard request.
+        $row = ScanEvent::query()
+            ->where('scanned_at', '>=', now()->subDay())
+            ->selectRaw('COUNT(*) AS total_24h')
+            ->selectRaw("COUNT(*) FILTER (WHERE result = ?) AS green_24h", [ScanEvent::RESULT_GREEN])
+            ->selectRaw("COUNT(*) FILTER (WHERE result = ?) AS red_24h", [ScanEvent::RESULT_RED])
+            ->selectRaw("COUNT(*) FILTER (WHERE result = ?) AS impersonation_24h", [ScanEvent::RESULT_IMPERSONATION_FLAG])
+            ->first();
 
         return [
-            'total_24h' => ScanEvent::where('scanned_at', '>=', $since)->count(),
-            'green_24h' => ScanEvent::where('result', ScanEvent::RESULT_GREEN)->where('scanned_at', '>=', $since)->count(),
-            'red_24h' => ScanEvent::where('result', ScanEvent::RESULT_RED)->where('scanned_at', '>=', $since)->count(),
-            'impersonation_24h' => ScanEvent::where('result', ScanEvent::RESULT_IMPERSONATION_FLAG)->where('scanned_at', '>=', $since)->count(),
+            'total_24h' => (int) ($row?->total_24h ?? 0),
+            'green_24h' => (int) ($row?->green_24h ?? 0),
+            'red_24h' => (int) ($row?->red_24h ?? 0),
+            'impersonation_24h' => (int) ($row?->impersonation_24h ?? 0),
         ];
     }
 }

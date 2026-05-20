@@ -9,6 +9,7 @@ use App\Models\Organization;
 use App\Services\Dashboard\DashboardService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * @group Dashboards
@@ -21,6 +22,13 @@ class DashboardController extends Controller
     public function __construct(private readonly DashboardService $dashboards) {}
 
     /**
+     * Cache window for dashboard payloads. Numbers refresh every 30s — short
+     * enough to feel live for the mobile/web UI, long enough that rapid
+     * navigation and polling collapse into a single DB hit per window.
+     */
+    private const SUMMARY_TTL_SECONDS = 30;
+
+    /**
      * Client dashboard: cross-project metrics across all owned projects.
      *
      * @authenticated
@@ -29,7 +37,13 @@ class DashboardController extends Controller
     {
         $org = $this->resolveOrgForUser($request, Organization::ROLE_CLIENT);
 
-        return response()->json(['data' => $this->dashboards->clientSummary($org)]);
+        $data = Cache::remember(
+            "dash:client:{$org->id}",
+            self::SUMMARY_TTL_SECONDS,
+            fn () => $this->dashboards->clientSummary($org),
+        );
+
+        return response()->json(['data' => $data]);
     }
 
     /**
@@ -48,7 +62,14 @@ class DashboardController extends Controller
             'expiring_to' => $request->query('expiring_to'),
         ], fn ($v) => $v !== null && $v !== '');
 
-        return response()->json(['data' => $this->dashboards->mainContractorSummary($org, $certRanges)]);
+        $rangesKey = $certRanges === [] ? 'none' : md5(json_encode($certRanges));
+        $data = Cache::remember(
+            "dash:maincon:{$org->id}:{$rangesKey}",
+            self::SUMMARY_TTL_SECONDS,
+            fn () => $this->dashboards->mainContractorSummary($org, $certRanges),
+        );
+
+        return response()->json(['data' => $data]);
     }
 
     /**
@@ -60,7 +81,13 @@ class DashboardController extends Controller
     {
         $org = $this->resolveOrgForUser($request, Organization::ROLE_CONSULTANT);
 
-        return response()->json(['data' => $this->dashboards->consultantSummary($org)]);
+        $data = Cache::remember(
+            "dash:consultant:{$org->id}",
+            self::SUMMARY_TTL_SECONDS,
+            fn () => $this->dashboards->consultantSummary($org),
+        );
+
+        return response()->json(['data' => $data]);
     }
 
     /**
@@ -72,7 +99,13 @@ class DashboardController extends Controller
     {
         $org = $this->resolveOrgForUser($request, Organization::ROLE_SUBCONTRACTOR);
 
-        return response()->json(['data' => $this->dashboards->subcontractorSummary($org)]);
+        $data = Cache::remember(
+            "dash:subcon:{$org->id}",
+            self::SUMMARY_TTL_SECONDS,
+            fn () => $this->dashboards->subcontractorSummary($org),
+        );
+
+        return response()->json(['data' => $data]);
     }
 
     /**
