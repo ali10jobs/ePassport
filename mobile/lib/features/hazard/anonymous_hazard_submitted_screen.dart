@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import '../../shared/app_shell.dart';
 import '../../shared/i18n.dart';
 import '../../shared/ui_tokens.dart';
+import 'hazards_screen.dart' show allHazardsProvider;
 
 /// Hazard submitted — matches
 /// MobileScreens/stitch/hazard_submission_success_annotated_refinements.
@@ -34,7 +35,7 @@ class AnonymousHazardSubmittedScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final s = ref.watch(stringsProvider);
-    final body = _buildBody(context, s, severity);
+    final body = _buildBody(context, ref, s, severity);
     if (inAppShell) {
       return AppShell(
         tab: AppTab.hazards,
@@ -74,7 +75,8 @@ class AnonymousHazardSubmittedScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildBody(BuildContext context, AppStrings s, String severity) {
+  Widget _buildBody(
+      BuildContext context, WidgetRef ref, AppStrings s, String severity) {
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
       children: [
@@ -93,7 +95,24 @@ class AnonymousHazardSubmittedScreen extends ConsumerWidget {
         _PrimaryPill(
           label: s.returnToHazards,
           icon: Icons.warning_amber_rounded,
-          onTap: () => context.go(inAppShell ? '/hazards' : '/launch'),
+          onTap: () async {
+            // Invalidate AND await the refetch before navigating — otherwise
+            // the user lands on /hazards while the new fetch is still in
+            // flight, and autoDispose hands them the previous cached list
+            // (looks identical to "no refresh happened").
+            if (inAppShell) {
+              ref.invalidate(allHazardsProvider);
+              try {
+                await ref.read(allHazardsProvider.future);
+              } catch (_) {
+                // Swallow fetch errors here — the user can still pull-to-refresh
+                // on the hazards screen if the network was momentarily down.
+              }
+            }
+            if (context.mounted) {
+              context.go(inAppShell ? '/hazards' : '/launch');
+            }
+          },
         ),
         const SizedBox(height: 10),
         Center(

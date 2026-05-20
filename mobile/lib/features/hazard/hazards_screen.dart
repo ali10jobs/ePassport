@@ -9,7 +9,11 @@ import '../../shared/app_shell.dart';
 import '../../shared/i18n.dart';
 import '../../shared/ui_tokens.dart';
 
-final _allHazardsProvider =
+/// Public so other screens (e.g. the post-submission confirmation) can call
+/// `ref.invalidate(allHazardsProvider)` to force a fresh fetch when the user
+/// returns here. Without that the autoDispose provider holds onto its cached
+/// value because the HazardsScreen stays mounted underneath the pushed routes.
+final allHazardsProvider =
     FutureProvider.autoDispose<List<HazardReport>>((ref) async {
   return ref.read(apiClientProvider).fetchHazardReports();
 });
@@ -27,14 +31,14 @@ class _HazardsScreenState extends ConsumerState<HazardsScreen> {
   @override
   Widget build(BuildContext context) {
     final s = ref.watch(stringsProvider);
-    final async = ref.watch(_allHazardsProvider);
+    final async = ref.watch(allHazardsProvider);
 
     return AppShell(
       tab: AppTab.hazards,
       child: RefreshIndicator(
         onRefresh: () async {
-          ref.invalidate(_allHazardsProvider);
-          await ref.read(_allHazardsProvider.future);
+          ref.invalidate(allHazardsProvider);
+          await ref.read(allHazardsProvider.future);
         },
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
