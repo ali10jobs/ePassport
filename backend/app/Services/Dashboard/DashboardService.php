@@ -107,6 +107,7 @@ class DashboardService
                     ->count()],
             ),
             'hazards' => $this->hazardCountsForAssignedOrg($contractorOrg->id),
+            'scans' => $this->scanCountsLast24h(),
         ];
     }
 

@@ -7,6 +7,8 @@ use App\Models\Engagement;
 use App\Models\Equipment;
 use App\Models\EquipmentCertification;
 use App\Models\Organization;
+use App\Models\Permit;
+use App\Models\PermitType;
 use App\Models\Project;
 use App\Models\Site;
 use App\Models\User;
@@ -129,6 +131,9 @@ class DemoDataSeeder extends Seeder
 
         // ---- Equipment ----
         $this->seedEquipment($mainContractor);
+
+        // ---- Permits (pending states so the mobile dashboard tile is non-zero) ----
+        $this->seedPermits($project, $site, $mainContractor, $contractorUser);
 
         $this->command?->info('Demo data seeded.');
         $this->command?->info('  - 4 organizations, 1 project, 1 site, 3 engagements');
@@ -392,6 +397,43 @@ class DemoDataSeeder extends Seeder
                 'restrictions_ar' => $unfit ? 'يمنع العمل على الارتفاعات حتى المراجعة' : null,
             ]
         );
+    }
+
+    private function seedPermits(Project $project, Site $site, Organization $issuer, User $creator): void
+    {
+        // 2 drafts + 2 awaiting consultant review = 4 in the "pending" buckets
+        // for the main contractor's dashboard.
+        $rows = [
+            ['HOT_WORK', Permit::STATUS_DRAFT, 'Welding handrails on level 12 north face', 'لحام الدرابزين بالطابق 12 من الواجهة الشمالية'],
+            ['WORKING_AT_HEIGHTS', Permit::STATUS_DRAFT, 'Scaffold installation level 18', 'تركيب السقالات بالطابق 18'],
+            ['CONFINED_SPACE', Permit::STATUS_SUBMITTED, 'Tank entry for inspection — basement-2', 'الدخول إلى الخزان للفحص - الطابق الأرضي السفلي 2'],
+            ['LIFTING', Permit::STATUS_SUBMITTED, 'Mobile crane lift — HVAC unit to roof', 'رفع وحدة التكييف إلى السطح برافعة متحركة'],
+        ];
+
+        foreach ($rows as $i => [$typeCode, $status, $scopeEn, $scopeAr]) {
+            $type = PermitType::where('code', $typeCode)->first();
+            if ($type === null) {
+                continue;
+            }
+
+            Permit::firstOrCreate(
+                ['permit_number' => 'PRM-2026-DEMO-'.str_pad((string) ($i + 1), 3, '0', STR_PAD_LEFT)],
+                [
+                    'project_id' => $project->id,
+                    'site_id' => $site->id,
+                    'issuing_organization_id' => $issuer->id,
+                    'permit_type_id' => $type->id,
+                    'status' => $status,
+                    'scope_en' => $scopeEn,
+                    'scope_ar' => $scopeAr,
+                    'valid_from' => now()->startOfDay(),
+                    'valid_until' => now()->addDays(7)->endOfDay(),
+                    'created_by_user_id' => $creator->id,
+                    'submitted_by_user_id' => $status === Permit::STATUS_SUBMITTED ? $creator->id : null,
+                    'submitted_at' => $status === Permit::STATUS_SUBMITTED ? now()->subHours($i + 1) : null,
+                ]
+            );
+        }
     }
 
     private function seedEquipment(Organization $owner): void
