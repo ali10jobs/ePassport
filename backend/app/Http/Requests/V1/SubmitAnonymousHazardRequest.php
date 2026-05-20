@@ -50,6 +50,11 @@ class SubmitAnonymousHazardRequest extends FormRequest
             'site_id' => ['nullable', 'uuid', 'exists:sites,id'],
             'latitude' => ['nullable', 'numeric', 'between:-90,90'],
             'longitude' => ['nullable', 'numeric', 'between:-180,180'],
+            // When true AND the request carries a valid Sanctum token, the
+            // report is attributed to the authenticated user instead of being
+            // recorded as anonymous. Submitters still default to anonymous so
+            // the no-PII guarantee of the public endpoint is preserved.
+            'make_public_identity' => ['nullable', 'boolean'],
         ];
     }
 

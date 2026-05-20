@@ -66,24 +66,27 @@ class HazardReportAnonymousController extends Controller
 
         $anonId = (string) Str::uuid();
 
+        // The submitter may attach their identity by passing make_public_identity=true
+        // together with a valid Sanctum token. Without the flag (the default) the
+        // report stays fully anonymous — no reporter_user_id, no is_anonymous flip.
+        $authUser = Auth::guard('sanctum')->user();
+        $makePublicIdentity = (bool) $request->validated('make_public_identity', false);
+        $attributeToUser = $makePublicIdentity && $authUser !== null;
+
         // If the submitter is authenticated and didn't pass a project_id,
         // infer one from their accessible projects so the report rolls into
-        // the right inbox / dashboard. Submitter PII still isn't recorded:
-        // reporter_user_id stays null and is_anonymous stays true.
+        // the right inbox / dashboard.
         $projectId = $request->validated('project_id');
-        if ($projectId === null) {
-            $authUser = Auth::guard('sanctum')->user();
-            if ($authUser !== null) {
-                $request->setUserResolver(fn () => $authUser);
-                $accessible = $this->orgContext->forRequest($request)->accessibleProjectIds();
-                $projectId = $accessible[0] ?? null;
-            }
+        if ($projectId === null && $authUser !== null) {
+            $request->setUserResolver(fn () => $authUser);
+            $accessible = $this->orgContext->forRequest($request)->accessibleProjectIds();
+            $projectId = $accessible[0] ?? null;
         }
 
         $report = HazardReport::create([
             'anonymous_report_id' => $anonId,
-            'is_anonymous' => true,
-            'reporter_user_id' => null,
+            'is_anonymous' => ! $attributeToUser,
+            'reporter_user_id' => $attributeToUser ? $authUser->id : null,
             'project_id' => $projectId,
             'site_id' => $request->validated('site_id'),
             'category' => $request->validated('category'),
@@ -115,6 +118,8 @@ class HazardReportAnonymousController extends Controller
                 'anonymous_report_id' => $report->anonymous_report_id,
                 'status' => $report->status,
                 'submitted_at' => $report->created_at->toIso8601String(),
+                'is_anonymous' => $report->is_anonymous,
+                'reporter_name' => $attributeToUser ? $authUser->name : null,
                 'check_status_url' => sprintf('/api/v1/hazard-reports/anonymous/%s', $report->anonymous_report_id),
             ],
         ], 201);

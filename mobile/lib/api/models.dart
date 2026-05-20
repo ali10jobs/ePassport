@@ -505,11 +505,15 @@ class AnonymousHazardSubmitted {
   final String anonymousReportId;
   final String status;
   final DateTime submittedAt;
+  final bool isAnonymous;
+  final String? reporterName;
 
   AnonymousHazardSubmitted({
     required this.anonymousReportId,
     required this.status,
     required this.submittedAt,
+    this.isAnonymous = true,
+    this.reporterName,
   });
 
   factory AnonymousHazardSubmitted.fromJson(Map<String, dynamic> json) {
@@ -518,6 +522,8 @@ class AnonymousHazardSubmitted {
       anonymousReportId: data['anonymous_report_id'] as String,
       status: data['status'] as String? ?? 'submitted',
       submittedAt: DateTime.parse(data['submitted_at'] as String),
+      isAnonymous: data['is_anonymous'] as bool? ?? true,
+      reporterName: data['reporter_name'] as String?,
     );
   }
 }

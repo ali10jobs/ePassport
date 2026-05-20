@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../api/api_client.dart';
 import '../../api/api_exception.dart';
+import '../../routing/auth_state.dart';
 import '../../shared/app_shell.dart';
 import '../../shared/i18n.dart';
 import '../../shared/ui_tokens.dart';
@@ -46,6 +47,7 @@ class _AnonymousHazardScreenState extends ConsumerState<AnonymousHazardScreen> {
   String _category = 'fall';
   double _severity = 0.85;
   bool _gpsOn = true;
+  bool _submitAnonymously = true;
   final List<Uint8List> _photos = [];
   static const int _maxPhotos = 5;
   bool _stripping = false;
@@ -200,6 +202,7 @@ class _AnonymousHazardScreenState extends ConsumerState<AnonymousHazardScreen> {
       _error = null;
     });
     try {
+      final makePublic = widget.inAppShell && !_submitAnonymously;
       final res = await ref.read(apiClientProvider).submitAnonymousHazard(
             description: desc,
             descriptionLang: s.isAr ? 'ar' : 'en',
@@ -208,12 +211,19 @@ class _AnonymousHazardScreenState extends ConsumerState<AnonymousHazardScreen> {
             photos: _photos,
             latitude: _gpsOn ? _position?.latitude : null,
             longitude: _gpsOn ? _position?.longitude : null,
+            makePublicIdentity: makePublic,
           );
       if (!mounted) return;
+      final sev = _severityApiValue();
       final route = widget.inAppShell
-          ? '/hazards/submitted/${res.anonymousReportId}'
-          : '/hazard/submitted/${res.anonymousReportId}';
-      context.pushReplacement(route);
+          ? '/hazards/submitted/${res.anonymousReportId}?severity=$sev'
+          : '/hazard/submitted/${res.anonymousReportId}?severity=$sev';
+      context.pushReplacement(route, extra: <String, dynamic>{
+        'photos': _photos,
+        'reporter_name': res.reporterName,
+        'is_anonymous': res.isAnonymous,
+        'category': _category,
+      });
     } on ApiException catch (e) {
       setState(() {
         _error = e.message;
@@ -323,6 +333,14 @@ class _AnonymousHazardScreenState extends ConsumerState<AnonymousHazardScreen> {
             if (v) _resolveGps();
           },
         ),
+        if (widget.inAppShell) ...[
+          const SizedBox(height: 18),
+          _VisibilityToggle(
+            anonymous: _submitAnonymously,
+            reporterName: ref.watch(authControllerProvider).user?.name,
+            onChanged: (v) => setState(() => _submitAnonymously = v),
+          ),
+        ],
         const SizedBox(height: 18),
         const _PrivacyNotice(),
         if (_error != null) ...[
@@ -850,6 +868,104 @@ class _GpsRow extends ConsumerWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _VisibilityToggle extends ConsumerWidget {
+  const _VisibilityToggle({
+    required this.anonymous,
+    required this.reporterName,
+    required this.onChanged,
+  });
+  final bool anonymous;
+  final String? reporterName;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final s = ref.watch(stringsProvider);
+    return Container(
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+      decoration: BoxDecoration(
+        color: UiTokens.surface,
+        border: Border.all(color: UiTokens.border),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            s.submitAs,
+            style: TextStyle(
+              color: UiTokens.ink,
+              fontSize: 12,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 0.8,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: _SegmentButton(
+                  label: s.submitAsAnonymous,
+                  selected: anonymous,
+                  onTap: () => onChanged(true),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _SegmentButton(
+                  label: reporterName == null
+                      ? s.submitAsMyself
+                      : s.submitAsNamed(reporterName!),
+                  selected: !anonymous,
+                  onTap: () => onChanged(false),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SegmentButton extends StatelessWidget {
+  const _SegmentButton({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: selected ? UiTokens.ink : UiTokens.surfaceMuted,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(6),
+        onTap: onTap,
+        child: Container(
+          alignment: Alignment.center,
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+          child: Text(
+            label,
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: selected ? UiTokens.inkInverse : UiTokens.ink,
+              fontSize: 12,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ),
       ),
     );
   }

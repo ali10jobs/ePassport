@@ -252,6 +252,7 @@ class ApiClient {
     String? projectId,
     double? latitude,
     double? longitude,
+    bool makePublicIdentity = false,
   }) async {
     assert(photos.isNotEmpty, 'at least one photo required');
     final form = FormData();
@@ -263,6 +264,7 @@ class ApiClient {
       if (projectId != null) MapEntry('project_id', projectId),
       if (latitude != null) MapEntry('latitude', latitude.toString()),
       if (longitude != null) MapEntry('longitude', longitude.toString()),
+      if (makePublicIdentity) const MapEntry('make_public_identity', '1'),
     ]);
     // PHP/Laravel only parses repeated fields into an array when the key
     // carries the `[]` suffix; without it only the last value is kept and

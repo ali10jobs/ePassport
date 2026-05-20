@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,18 +13,28 @@ import '../../shared/ui_tokens.dart';
 /// MobileScreens/stitch/hazard_submission_success_annotated_refinements.
 class AnonymousHazardSubmittedScreen extends ConsumerWidget {
   final String anonymousReportId;
+  final String severity;
   final bool inAppShell;
+  final List<Uint8List> photos;
+  final String? reporterName;
+  final bool isAnonymous;
+  final String? category;
 
   const AnonymousHazardSubmittedScreen({
     super.key,
     required this.anonymousReportId,
+    this.severity = 'high',
     this.inAppShell = false,
+    this.photos = const [],
+    this.reporterName,
+    this.isAnonymous = true,
+    this.category,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final s = ref.watch(stringsProvider);
-    final body = _buildBody(context, s);
+    final body = _buildBody(context, s, severity);
     if (inAppShell) {
       return AppShell(
         tab: AppTab.hazards,
@@ -62,19 +74,26 @@ class AnonymousHazardSubmittedScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildBody(BuildContext context, AppStrings s) {
+  Widget _buildBody(BuildContext context, AppStrings s, String severity) {
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
       children: [
         _SuccessBanner(text: s.reportSubmittedTitle),
         const SizedBox(height: 20),
-        _ReportIdCard(reportId: anonymousReportId, s: s),
+        _ReportIdCard(
+          reportId: anonymousReportId,
+          severity: severity,
+          photos: photos,
+          reporterName: reporterName,
+          isAnonymous: isAnonymous,
+          category: category,
+          s: s,
+        ),
         const SizedBox(height: 20),
         _PrimaryPill(
-          label: s.returnToDashboard,
-          icon: Icons.dashboard_outlined,
-          onTap: () =>
-              context.go(inAppShell ? '/dashboard' : '/launch'),
+          label: s.returnToHazards,
+          icon: Icons.warning_amber_rounded,
+          onTap: () => context.go(inAppShell ? '/hazards' : '/launch'),
         ),
         const SizedBox(height: 10),
         Center(
@@ -145,8 +164,21 @@ class _SuccessBanner extends StatelessWidget {
 }
 
 class _ReportIdCard extends StatelessWidget {
-  const _ReportIdCard({required this.reportId, required this.s});
+  const _ReportIdCard({
+    required this.reportId,
+    required this.severity,
+    required this.photos,
+    required this.reporterName,
+    required this.isAnonymous,
+    required this.category,
+    required this.s,
+  });
   final String reportId;
+  final String severity;
+  final List<Uint8List> photos;
+  final String? reporterName;
+  final bool isAnonymous;
+  final String? category;
   final AppStrings s;
 
   @override
@@ -194,26 +226,68 @@ class _ReportIdCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          AspectRatio(
-            aspectRatio: 16 / 9,
-            child: Container(
-              decoration: BoxDecoration(
-                color: UiTokens.surfaceMuted,
-                borderRadius: BorderRadius.circular(6),
-                border: Border.all(color: UiTokens.border),
-              ),
-              alignment: Alignment.center,
-              child: Icon(Icons.badge_outlined,
-                  color: UiTokens.muted, size: 36),
-            ),
-          ),
+          _PhotoGallery(photos: photos),
           const SizedBox(height: 16),
           _MetaLine(label: s.status, value: s.verified, valueColor: UiTokens.success),
           Divider(color: UiTokens.border, height: 24),
-          _MetaLine(label: s.priority, value: s.priorityHigh),
+          _MetaLine(label: s.priority, value: s.priorityLabelFor(severity)),
+          Divider(color: UiTokens.border, height: 24),
+          _MetaLine(
+            label: s.submittedBy,
+            value: isAnonymous ? s.anonymous : (reporterName ?? s.anonymous),
+          ),
           Divider(color: UiTokens.border, height: 24),
           _MetaLine(label: s.reference, value: '#H-$short'),
         ],
+      ),
+    );
+  }
+}
+
+class _PhotoGallery extends StatelessWidget {
+  const _PhotoGallery({required this.photos});
+  final List<Uint8List> photos;
+
+  @override
+  Widget build(BuildContext context) {
+    if (photos.isEmpty) {
+      return AspectRatio(
+        aspectRatio: 16 / 9,
+        child: Container(
+          decoration: BoxDecoration(
+            color: UiTokens.surfaceMuted,
+            borderRadius: BorderRadius.circular(6),
+            border: Border.all(color: UiTokens.border),
+          ),
+          alignment: Alignment.center,
+          child: Icon(Icons.image_outlined, color: UiTokens.muted, size: 36),
+        ),
+      );
+    }
+    if (photos.length == 1) {
+      return AspectRatio(
+        aspectRatio: 16 / 9,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(6),
+          child: Image.memory(photos.first, fit: BoxFit.cover),
+        ),
+      );
+    }
+    return SizedBox(
+      height: 110,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: photos.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        itemBuilder: (_, i) {
+          return ClipRRect(
+            borderRadius: BorderRadius.circular(6),
+            child: AspectRatio(
+              aspectRatio: 1,
+              child: Image.memory(photos[i], fit: BoxFit.cover),
+            ),
+          );
+        },
       ),
     );
   }

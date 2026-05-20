@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -68,10 +70,19 @@ GoRouter _buildRouter(Ref ref) {
       ),
       GoRoute(
         path: '/hazards/submitted/:id',
-        builder: (_, state) => AnonymousHazardSubmittedScreen(
-          anonymousReportId: state.pathParameters['id'] ?? '',
-          inAppShell: true,
-        ),
+        builder: (_, state) {
+          final extra = (state.extra is Map) ? state.extra as Map : const {};
+          final photos = (extra['photos'] as List?)?.cast<Uint8List>() ?? const [];
+          return AnonymousHazardSubmittedScreen(
+            anonymousReportId: state.pathParameters['id'] ?? '',
+            severity: state.uri.queryParameters['severity'] ?? 'high',
+            inAppShell: true,
+            photos: photos,
+            reporterName: extra['reporter_name'] as String?,
+            isAnonymous: extra['is_anonymous'] as bool? ?? true,
+            category: extra['category'] as String?,
+          );
+        },
       ),
       GoRoute(
         path: '/hazards/:id',
@@ -84,9 +95,18 @@ GoRouter _buildRouter(Ref ref) {
       ),
       GoRoute(
         path: '/hazard/submitted/:id',
-        builder: (_, state) => AnonymousHazardSubmittedScreen(
-          anonymousReportId: state.pathParameters['id'] ?? '',
-        ),
+        builder: (_, state) {
+          final extra = (state.extra is Map) ? state.extra as Map : const {};
+          final photos = (extra['photos'] as List?)?.cast<Uint8List>() ?? const [];
+          return AnonymousHazardSubmittedScreen(
+            anonymousReportId: state.pathParameters['id'] ?? '',
+            severity: state.uri.queryParameters['severity'] ?? 'high',
+            photos: photos,
+            reporterName: extra['reporter_name'] as String?,
+            isAnonymous: extra['is_anonymous'] as bool? ?? true,
+            category: extra['category'] as String?,
+          );
+        },
       ),
     ],
     errorBuilder: (_, state) => Scaffold(

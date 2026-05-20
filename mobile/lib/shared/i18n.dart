@@ -358,7 +358,22 @@ class AppStrings {
   String get gallery => _t('Gallery', 'المعرض');
   String get severity => _t('Severity', 'الخطورة');
   String get severityLow => _t('Low', 'منخفض');
+  String get severityMedium => _t('Medium', 'متوسط');
+  String get severityHigh => _t('High', 'مرتفع');
   String get severityCritical => _t('Critical', 'حرج');
+  String priorityLabelFor(String severity) {
+    switch (severity) {
+      case 'low':
+        return _t('LOW', 'منخفضة');
+      case 'medium':
+        return _t('MEDIUM', 'متوسطة');
+      case 'critical':
+        return _t('CRITICAL', 'حرجة');
+      case 'high':
+      default:
+        return _t('HIGH', 'مرتفعة');
+    }
+  }
   String get severityCalloutDescription => _t(
         'Requires immediate supervisor intervention and area cordoning.',
         'يتطلب تدخلاً فورياً من المشرف وتطويق المنطقة.',
@@ -383,6 +398,14 @@ class AppStrings {
       );
 
   // Hazard submitted
+  String get submitAs => _t('SUBMIT AS', 'إرسال كـ');
+  String get submitAsAnonymous => _t('Anonymous', 'مجهول');
+  String get submitAsMyself => _t('Myself', 'باسمي');
+  String submitAsNamed(String name) =>
+      isAr ? 'باسمي ($name)' : 'Myself ($name)';
+  String get submittedBy => _t('Submitted by', 'مقدم البلاغ');
+  String get anonymous => _t('Anonymous', 'مجهول');
+
   String get reportSubmittedTitle => _t(
         'Report Submitted\nSuccessfully',
         'تم إرسال البلاغ\nبنجاح',
@@ -394,7 +417,7 @@ class AppStrings {
   String get priority => _t('Priority', 'الأولوية');
   String get priorityHigh => _t('HIGH', 'مرتفعة');
   String get reference => _t('Reference', 'المرجع');
-  String get returnToDashboard => _t('Return to Dashboard', 'العودة إلى الرئيسية');
+  String get returnToHazards => _t('Return to Hazards', 'العودة إلى البلاغات');
   String get copyReportId => _t('Copy Report ID', 'نسخ معرف البلاغ');
   String get reportIdCopied => _t('Report ID copied', 'تم نسخ معرف البلاغ');
 }
