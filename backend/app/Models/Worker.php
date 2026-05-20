@@ -95,8 +95,18 @@ class Worker extends Model implements HasMedia
             return $path;
         }
 
-        return \Illuminate\Support\Facades\Storage::disk('s3')
-            ->temporaryUrl($path, now()->addDays(7));
+        // Cache the presigned URL — re-signing on every list render added
+        // ~5-10ms per worker, which adds up fast on a 25-worker page. Cache
+        // for 6 days (the URL itself is valid for 7 days), keyed by path so
+        // photo re-uploads bust the entry cleanly via path change.
+        $cacheKey = 'worker:photo_url:'.sha1($path);
+
+        return \Illuminate\Support\Facades\Cache::remember(
+            $cacheKey,
+            now()->addDays(6),
+            fn () => \Illuminate\Support\Facades\Storage::disk('s3')
+                ->temporaryUrl($path, now()->addDays(7)),
+        );
     }
 
     public function employerOrganization(): BelongsTo
