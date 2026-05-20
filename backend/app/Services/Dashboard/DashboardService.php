@@ -84,13 +84,21 @@ class DashboardService
 
         $allOrgIds = array_merge($orgIds, $subOrgIds);
 
+        // workers.mine + workers.subs in one query (was 2)
+        $workerOrgIdsForQuery = array_merge([$contractorOrg->id], $subOrgIds);
+        $wRow = Worker::query()
+            ->whereIn('employer_organization_id', $workerOrgIdsForQuery)
+            ->selectRaw('COUNT(*) FILTER (WHERE employer_organization_id = ?) AS mine', [$contractorOrg->id])
+            ->selectRaw($subOrgIds === [] ? '0 AS subs' : 'COUNT(*) FILTER (WHERE employer_organization_id <> ?) AS subs', $subOrgIds === [] ? [] : [$contractorOrg->id])
+            ->first();
+
         return [
             'role' => 'main_contractor',
             'organization_id' => $contractorOrg->id,
             'subcontractors' => $subOrgIds,
             'workers' => [
-                'mine' => Worker::where('employer_organization_id', $contractorOrg->id)->count(),
-                'subs' => Worker::whereIn('employer_organization_id', $subOrgIds)->count(),
+                'mine' => (int) ($wRow?->mine ?? 0),
+                'subs' => (int) ($wRow?->subs ?? 0),
             ],
             'equipment' => [
                 'mine' => Equipment::where('owner_organization_id', $contractorOrg->id)->count(),
@@ -100,13 +108,7 @@ class DashboardService
                     ->count(),
             ],
             'certifications' => $this->certExpiryCounts($allOrgIds, $certRanges),
-            'permits' => array_merge(
-                $this->permitCountsForOrg($contractorOrg->id),
-                ['recently_rejected' => Permit::where('issuing_organization_id', $contractorOrg->id)
-                    ->where('status', Permit::STATUS_REJECTED)
-                    ->where('rejected_at', '>=', now()->subDays(7))
-                    ->count()],
-            ),
+            'permits' => $this->permitCountsForOrg($contractorOrg->id, withRecentlyRejected: true),
             'hazards' => $this->hazardCountsForAssignedOrg($contractorOrg->id),
             'scans' => $this->scanCountsLast24h(),
         ];
@@ -281,20 +283,33 @@ class DashboardService
         ];
     }
 
-    private function permitCountsForOrg(string $orgId): array
+    private function permitCountsForOrg(string $orgId, bool $withRecentlyRejected = false): array
     {
-        $row = Permit::query()
+        $query = Permit::query()
             ->where('issuing_organization_id', $orgId)
             ->selectRaw("COUNT(*) FILTER (WHERE status = ?) AS active_approved", [Permit::STATUS_APPROVED])
             ->selectRaw("COUNT(*) FILTER (WHERE status = ?) AS drafts", [Permit::STATUS_DRAFT])
-            ->selectRaw("COUNT(*) FILTER (WHERE status = ?) AS awaiting_review", [Permit::STATUS_SUBMITTED])
-            ->first();
+            ->selectRaw("COUNT(*) FILTER (WHERE status = ?) AS awaiting_review", [Permit::STATUS_SUBMITTED]);
 
-        return [
+        if ($withRecentlyRejected) {
+            $query->selectRaw(
+                "COUNT(*) FILTER (WHERE status = ? AND rejected_at >= ?) AS recently_rejected",
+                [Permit::STATUS_REJECTED, now()->subDays(7)]
+            );
+        }
+
+        $row = $query->first();
+
+        $out = [
             'active_approved' => (int) ($row?->active_approved ?? 0),
             'drafts' => (int) ($row?->drafts ?? 0),
             'awaiting_review' => (int) ($row?->awaiting_review ?? 0),
         ];
+        if ($withRecentlyRejected) {
+            $out['recently_rejected'] = (int) ($row?->recently_rejected ?? 0);
+        }
+
+        return $out;
     }
 
     /** @param array<int, string> $projectIds */
